@@ -238,36 +238,45 @@ main {
 /* MOBILE */
 /* Phiên bản Mobile */
 /* Mobile Layout */
-/* Mobile Layout */
-/* Mobile layout - chỉ áp dụng cho điện thoại */
 @media (max-width: 768px) {
     body {
         overflow: hidden;
         height: 100vh;
         display: flex;
         flex-direction: column;
-        padding-bottom: 60px; /* chừa chỗ menu dưới */
     }
 
+    header {
+        flex-shrink: 0;
+        padding: 8px 12px;
+        min-height: 60px;
+    }
+
+    .center-title {
+        font-size: 1.6rem;
+        text-align: center;
+        flex: 1;
+        white-space: nowrap;
+    }
+
+    /* Info cuộn được, fit chiều cao màn hình */
     main {
         flex: 1;
         display: flex;
         flex-direction: column;
         padding: 0;
-        gap: 0;
+        overflow: hidden;
     }
 
     .info {
         position: relative;
         flex: 1;
         padding: 16px;
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        justify-content: center; /* căn giữa nội dung */
+        overflow-y: auto;
+        max-height: calc(100vh - 60px - 50px); /* trừ header và menu */
     }
 
-    /* Nút đổi chế độ & ngôn ngữ nổi góc phải info */
+    /* Nút đổi chế độ & ngôn ngữ */
     .floating-controls {
         position: absolute;
         top: 10px;
@@ -277,30 +286,31 @@ main {
         z-index: 10;
     }
 
-    /* Menu ngang cố định dưới đáy */
+    /* Menu full width không khuất */
     .menu {
         position: fixed;
         bottom: 0;
         left: 0;
-        width: 100%;
+        width: 100vw;
         flex-direction: row;
-        justify-content: space-around;
+        justify-content: space-between;
         background-color: var(--bg);
-        padding: 6px;
-        gap: 5px;
+        padding: 4px;
         border-top: 1px solid #ccc;
         box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-        min-height: auto;
+        min-height: 50px;
+        gap: 4px;
     }
 
     .menu a {
         flex: 1;
         padding: 8px 0;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         border-radius: 6px;
+        white-space: nowrap;
     }
 
-    /* Popup full màn hình trên mobile */
+    /* Popup full màn hình */
     .modal-content {
         width: 95%;
         max-width: none;
@@ -509,9 +519,9 @@ main {
     // MOBILE
     // MOBILE
     // MOBILE
-    function adjustMobileLayout() {
+function adjustMobileLayout() {
     if (window.innerWidth <= 768) {
-        // Tạo khối floating-controls trong info nếu chưa có
+        // Tạo nút trong info
         if (!document.querySelector(".floating-controls")) {
             const controls = document.createElement("div");
             controls.className = "floating-controls";
@@ -522,7 +532,7 @@ main {
             document.querySelector(".info").prepend(controls);
         }
 
-        // Chuyển icon Facebook & Instagram sang bên trái YattaD
+        // Chuyển icon FB & IG sang trái
         const leftArea = document.querySelector("header .left");
         const fbIcon = document.querySelector('header .right a[href*="facebook"]');
         const igIcon = document.querySelector('header .right a[href*="instagram"]');
@@ -533,9 +543,8 @@ main {
     }
 }
 
-// Chạy khi load và khi resize
-adjustMobileLayout();
 window.addEventListener("resize", adjustMobileLayout);
+window.addEventListener("load", adjustMobileLayout);
 
 </script>
 </body>
