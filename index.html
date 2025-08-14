@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>YattaD</title>
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 <style>
-    @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css');
     body {
         margin: 0;
         font-family: 'Saira', sans-serif;
@@ -68,20 +69,19 @@
         height: calc(100vh - 60px);
     }
     .info {
-    flex: 1;
-    padding: 20px;
-    padding-left: 40px; /* Cách lề trái 40px cho thoáng */
-    border-right: 1px solid #ccc;
-    overflow-y: auto;
-}
-
-strong {
-    font-weight: 800; /* Đậm hơn bình thường */
-    color: #d9534f;   /* Màu nhấn đỏ nhẹ */
-}
-body.dark strong {
-    color: #ff6666;   /* Màu nhấn đỏ sáng cho nền tối */
-}
+        flex: 1;
+        padding: 20px;
+        padding-left: 40px; /* cách lề trái cho thoáng */
+        border-right: 1px solid #ccc;
+        overflow-y: auto;
+    }
+    strong {
+        font-weight: 800;
+        color: #d9534f;
+    }
+    body.dark strong {
+        color: #ff6666;
+    }
     .menu {
         flex: 1;
         padding: 20px;
@@ -145,6 +145,7 @@ body.dark strong {
         height: auto;
         border: 2px solid var(--text);
         border-radius: 8px;
+        cursor: pointer;
     }
     .close-btn {
         margin-top: 20px;
@@ -155,6 +156,24 @@ body.dark strong {
         cursor: pointer;
         font-weight: bold;
         border-radius: 4px;
+    }
+
+    /* Modal ảnh phóng to */
+    .image-modal {
+        display: none;
+        position: fixed;
+        z-index: 300;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-color: rgba(0,0,0,0.8);
+        justify-content: center;
+        align-items: center;
+    }
+    .image-modal img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.5);
     }
 </style>
 </head>
@@ -195,7 +214,7 @@ body.dark strong {
     <!-- Modal QR -->
     <div id="payment-modal" class="modal">
         <div class="modal-content">
-            <h2>Cổng Thanh Toán</h2>
+            <h2>Quét mã dưới đây để thanh toán</h2>
             <div class="qr-list">
                 <div class="qr-item">
                     <p><strong>BIDV</strong></p>
@@ -207,14 +226,14 @@ body.dark strong {
                 </div>
                 <div class="qr-item">
                     <p><strong>PayPal</strong></p>
-                    <img src="QR/Paypal.webp" alt="QR PayPal">
+                    <img src="QR/PayPal.webp" alt="QR PayPal">
                 </div>
             </div>
             <button class="close-btn" id="close-modal">Đóng</button>
         </div>
     </div>
 
- <!-- Modal ảnh phóng to -->
+    <!-- Modal ảnh phóng to -->
     <div id="image-modal" class="image-modal">
         <img src="" alt="QR Phóng to" id="large-image">
     </div>
