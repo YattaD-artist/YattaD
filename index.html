@@ -6,7 +6,6 @@
 <title>YattaD</title>
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
 <style>
     body {
         margin: 0;
@@ -71,7 +70,7 @@
     .info {
         flex: 1;
         padding: 20px;
-        padding-left: 40px; /* cách lề trái cho thoáng */
+        padding-left: 40px;
         border-right: 1px solid #ccc;
         overflow-y: auto;
     }
@@ -107,8 +106,6 @@
         background-color: var(--text);
         color: var(--bg);
     }
-
-    /* Modal QR */
     .modal {
         display: none;
         position: fixed;
@@ -128,17 +125,11 @@
         text-align: center;
         color: var(--text);
     }
-    .modal-content h2 {
-        margin-bottom: 20px;
-    }
     .qr-list {
         display: flex;
         gap: 20px;
         flex-wrap: wrap;
         justify-content: center;
-    }
-    .qr-item {
-        text-align: center;
     }
     .qr-item img {
         width: 150px;
@@ -157,8 +148,6 @@
         font-weight: bold;
         border-radius: 4px;
     }
-
-    /* Modal ảnh phóng to */
     .image-modal {
         display: none;
         position: fixed;
@@ -178,71 +167,151 @@
 </style>
 </head>
 <body>
-    <header>
-        <div class="left">
-            <button class="icon-btn" id="theme-toggle"><i class="fas fa-adjust"></i></button>
-        </div>
-        <div class="center-title">YattaD</div>
-        <div class="right">
-            <a href="https://www.facebook.com/Fb.YattaD/" target="_blank" class="icon-btn"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://www.instagram.com/yattad.art/" target="_blank" class="icon-btn"><i class="fab fa-instagram"></i></a>
-            <button class="icon-btn" onclick="copyToClipboard('YattaD')" title="Copy Discord"><i class="fab fa-discord"></i></button>
-            <button class="icon-btn" onclick="copyToClipboard('Yattadwork@gmail.com')" title="Copy Gmail"><i class="fas fa-envelope"></i></button>
-        </div>
-    </header>
-    <main>
-        <div class="info">
-            <h2>Thông tin cá nhân</h2>
-            <p>(Còn cập nhật thêm)</p>
-            <h3><strong>Họ và Tên:</strong> Ngô Xuân Đạt</h3>   
-            <h3><strong>Năm sinh:</strong> 1998</h3>
-            <h3><strong>Giới tính:</strong> Nam</h3>
-            <h3><strong>Quốc tịch:</strong> Việt Nam</h3>
-            <h3><strong>Sở thích:</strong> Mĩ Thuật, Biên Kịch, Học hỏi điều mới</h3>
-            <h3><strong>Công việc:</strong> Freelancer <strong>Artist</strong></h3>
-            <h3><strong>Học vấn:</strong> Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong></h3>
-        </div>
-        <div class="menu">
-            <a href="#">Xưởng Tranh Vẽ</a>
-            <a href="#">Đọc Truyện Tranh</a>
-            <a href="#">Phát Triển Game</a>
-            <a id="payment-btn">Cổng Thanh Toán</a>
-            <a href="#">Điều Ngẫu Nhiên</a>
-        </div>
-    </main>
+<header>
+    <div class="left">
+        <button class="icon-btn" id="theme-toggle"><i class="fas fa-adjust"></i></button>
+        <button class="icon-btn" id="lang-toggle" title="Đổi ngôn ngữ"><i class="fas fa-language"></i></button>
+    </div>
+    <div class="center-title" data-lang="title">YattaD</div>
+    <div class="right">
+        <a href="https://www.facebook.com/Fb.YattaD/" target="_blank" class="icon-btn"><i class="fab fa-facebook-f"></i></a>
+        <a href="https://www.instagram.com/yattad.art/" target="_blank" class="icon-btn"><i class="fab fa-instagram"></i></a>
+        <button class="icon-btn" onclick="copyToClipboard('YattaD')" title="Copy Discord"><i class="fab fa-discord"></i></button>
+        <button class="icon-btn" onclick="copyToClipboard('Yattadwork@gmail.com')" title="Copy Gmail"><i class="fas fa-envelope"></i></button>
+    </div>
+</header>
 
-    <!-- Modal QR -->
-    <div id="payment-modal" class="modal">
-        <div class="modal-content">
-            <h2>Quét mã dưới đây để thanh toán</h2>
-            <p>(Nhấn vào hình để phóng to)</p>
-            <div class="qr-list">
-                <div class="qr-item">
-                    <p><strong>BIDV</strong></p>
-                    <img src="QR/BIDV.webp" alt="QR BIDV">
-                </div>
-                <div class="qr-item">
-                    <p><strong>MoMo</strong></p>
-                    <img src="QR/MOMO.webp" alt="QR MoMo">
-                </div>
-                <div class="qr-item">
-                    <p><strong>PayPal</strong></p>
-                    <img src="QR/PayPal.webp" alt="QR PayPal">
-                </div>
+<main>
+    <div class="info">
+        <h2 data-lang="infoTitle">Thông tin cá nhân</h2>
+        <p data-lang="infoNote">(Còn cập nhật thêm)</p>
+        <h3><strong data-lang="nameLabel">Họ và Tên:</strong> <span data-lang="nameValue">Ngô Xuân Đạt</span></h3>   
+        <h3><strong data-lang="birthLabel">Năm sinh:</strong> <span data-lang="birthValue">1998</span></h3>
+        <h3><strong data-lang="genderLabel">Giới tính:</strong> <span data-lang="genderValue">Nam</span></h3>
+        <h3><strong data-lang="nationLabel">Quốc tịch:</strong> <span data-lang="nationValue">Việt Nam</span></h3>
+        <h3><strong data-lang="hobbyLabel">Sở thích:</strong> <span data-lang="hobbyValue">Mĩ Thuật, Biên Kịch, Học hỏi điều mới</span></h3>
+        <h3><strong data-lang="jobLabel">Công việc:</strong> <span data-lang="jobValue">Freelancer <strong>Artist</strong></span></h3>
+        <h3><strong data-lang="eduLabel">Học vấn:</strong> <span data-lang="eduValue">Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong></span></h3>
+    </div>
+    <div class="menu">
+        <a href="#" data-lang="menu1">Xưởng Tranh Vẽ</a>
+        <a href="#" data-lang="menu2">Đọc Truyện Tranh</a>
+        <a href="#" data-lang="menu3">Phát Triển Game</a>
+        <a id="payment-btn" data-lang="menu4">Cổng Thanh Toán</a>
+        <a href="#" data-lang="menu5">Điều Ngẫu Nhiên</a>
+    </div>
+</main>
+
+<div id="payment-modal" class="modal">
+    <div class="modal-content">
+        <h2 data-lang="payTitle">Quét mã dưới đây để thanh toán</h2>
+        <p data-lang="payNote">Nhấn vào hình để phóng to mã</p>
+        <div class="qr-list">
+            <div class="qr-item">
+                <p><strong>BIDV</strong></p>
+                <img src="QR/BIDV.webp" alt="QR BIDV">
             </div>
-            <button class="close-btn" id="close-modal">Đóng</button>
+            <div class="qr-item">
+                <p><strong>MoMo</strong></p>
+                <img src="QR/MOMO.webp" alt="QR MoMo">
+            </div>
+            <div class="qr-item">
+                <p><strong>PayPal</strong></p>
+                <img src="QR/PayPal.webp" alt="QR PayPal">
+            </div>
         </div>
+        <button class="close-btn" id="close-modal" data-lang="closeBtn">Đóng</button>
     </div>
+</div>
 
-    <!-- Modal ảnh phóng to -->
-    <div id="image-modal" class="image-modal">
-        <img src="" alt="QR Phóng to" id="large-image">
-    </div>
+<div id="image-modal" class="image-modal">
+    <img src="" alt="QR Phóng to" id="large-image">
+</div>
 
 <script>
-    const toggleBtn = document.getElementById('theme-toggle');
-    toggleBtn.addEventListener('click', () => {
-        document.body.classList.toggle('dark');
+    const translations = {
+        vi: {
+            title: "YattaD",
+            infoTitle: "Thông tin cá nhân",
+            infoNote: "(Còn cập nhật thêm)",
+            nameLabel: "Họ và Tên:",
+            nameValue: "Ngô Xuân Đạt",
+            birthLabel: "Năm sinh:",
+            birthValue: "1998",
+            genderLabel: "Giới tính:",
+            genderValue: "Nam",
+            nationLabel: "Quốc tịch:",
+            nationValue: "Việt Nam",
+            hobbyLabel: "Sở thích:",
+            hobbyValue: "Mĩ Thuật, Biên Kịch, Học hỏi điều mới",
+            jobLabel: "Công việc:",
+            jobValue: "Freelancer <strong>Artist</strong>",
+            eduLabel: "Học vấn:",
+            eduValue: "Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong>",
+            menu1: "Xưởng Tranh Vẽ",
+            menu2: "Đọc Truyện Tranh",
+            menu3: "Phát Triển Game",
+            menu4: "Cổng Thanh Toán",
+            menu5: "Điều Ngẫu Nhiên",
+            payTitle: "Quét mã dưới đây để thanh toán",
+            payNote: "Nhấn vào hình để phóng to mã",
+            closeBtn: "Đóng"
+        },
+        en: {
+            title: "YattaD",
+            infoTitle: "Personal Information",
+            infoNote: "(Updating...)",
+            nameLabel: "Full Name:",
+            nameValue: "Ngo Xuan Dat",
+            birthLabel: "Year of Birth:",
+            birthValue: "1998",
+            genderLabel: "Gender:",
+            genderValue: "Male",
+            nationLabel: "Nationality:",
+            nationValue: "Vietnam",
+            hobbyLabel: "Hobbies:",
+            hobbyValue: "Fine Arts, Screenwriting, Learning new things",
+            jobLabel: "Occupation:",
+            jobValue: "Freelancer <strong>Artist</strong>",
+            eduLabel: "Education:",
+            eduValue: "Graduated in Planning Department at <strong>Hanoi Architectural University</strong>",
+            menu1: "Art Workshop",
+            menu2: "Read Comics",
+            menu3: "Game Development",
+            menu4: "Payment Gateway",
+            menu5: "Random Stuff",
+            payTitle: "Scan the QR codes below to pay",
+            payNote: "Click on an image to enlarge",
+            closeBtn: "Close"
+        }
+    };
+
+    let currentLang = localStorage.getItem("lang") || "vi";
+    let darkMode = localStorage.getItem("theme") === "dark";
+
+    function applyLanguage() {
+        document.querySelectorAll("[data-lang]").forEach(el => {
+            const key = el.getAttribute("data-lang");
+            if (translations[currentLang][key]) {
+                el.innerHTML = translations[currentLang][key];
+            }
+        });
+        localStorage.setItem("lang", currentLang);
+    }
+
+    function applyTheme() {
+        document.body.classList.toggle("dark", darkMode);
+        localStorage.setItem("theme", darkMode ? "dark" : "light");
+    }
+
+    document.getElementById("lang-toggle").addEventListener("click", () => {
+        currentLang = currentLang === "vi" ? "en" : "vi";
+        applyLanguage();
+    });
+
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+        darkMode = !darkMode;
+        applyTheme();
     });
 
     function copyToClipboard(text) {
@@ -251,38 +320,27 @@
         });
     }
 
-    // Modal QR
     const modal = document.getElementById('payment-modal');
     const openBtn = document.getElementById('payment-btn');
     const closeBtn = document.getElementById('close-modal');
+    openBtn.addEventListener('click', () => modal.style.display = 'flex');
+    closeBtn.addEventListener('click', () => modal.style.display = 'none');
+    window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
-    openBtn.addEventListener('click', () => {
-        modal.style.display = 'flex';
-    });
-    closeBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-    window.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
-
-    // Phóng to ảnh QR
     const qrImages = document.querySelectorAll('.qr-item img');
     const imageModal = document.getElementById('image-modal');
     const largeImage = document.getElementById('large-image');
-
     qrImages.forEach(img => {
         img.addEventListener('click', () => {
             largeImage.src = img.src;
             imageModal.style.display = 'flex';
         });
     });
+    imageModal.addEventListener('click', () => imageModal.style.display = 'none');
 
-    imageModal.addEventListener('click', () => {
-        imageModal.style.display = 'none';
-    });
+    // Áp dụng khi load trang
+    applyLanguage();
+    applyTheme();
 </script>
 </body>
 </html>
