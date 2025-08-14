@@ -204,15 +204,22 @@ main {
     margin-top: 15px;
 }
 
+.qr-list {
+    display: flex;
+    flex-wrap: nowrap; /* không xuống hàng */
+    justify-content: center;
+    gap: 20px;
+    margin-top: 15px;
+}
+
 .qr-item {
-    flex: 1 1 200px;
-    max-width: 200px;
+    flex: 1 1 0; /* chia đều không gian cho 3 item */
     text-align: center;
 }
 
 .qr-item img {
     width: 100%;
-    height: auto;
+    max-width: none; /* bỏ giới hạn 200px */
     border: 2px solid var(--text);
     border-radius: 8px;
     cursor: pointer;
