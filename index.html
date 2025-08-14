@@ -68,11 +68,20 @@
         height: calc(100vh - 60px);
     }
     .info {
-        flex: 1;
-        padding: 20px;
-        border-right: 1px solid #ccc;
-        overflow-y: auto;
-    }
+    flex: 1;
+    padding: 20px;
+    padding-left: 40px; /* Cách lề trái 40px cho thoáng */
+    border-right: 1px solid #ccc;
+    overflow-y: auto;
+}
+
+strong {
+    font-weight: 800; /* Đậm hơn bình thường */
+    color: #d9534f;   /* Màu nhấn đỏ nhẹ */
+}
+body.dark strong {
+    color: #ff6666;   /* Màu nhấn đỏ sáng cho nền tối */
+}
     .menu {
         flex: 1;
         padding: 20px;
