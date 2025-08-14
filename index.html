@@ -238,59 +238,64 @@ main {
 /* MOBILE */
 /* Phiên bản Mobile */
 /* Mobile Layout */
+/* Mobile Layout */
 @media (max-width: 768px) {
     body {
         overflow: auto;
+        padding-bottom: 60px; /* chừa chỗ cho menu cố định */
     }
 
+    /* Header giữ chữ ở giữa, icon hai bên */
+    header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+    }
+
+    .center-title {
+        font-size: 1.6rem;
+        text-align: center;
+        flex: 1;
+    }
+
+    .left, .right {
+        flex-direction: row;
+        gap: 8px;
+    }
+
+    /* Info chiếm toàn bộ chiều ngang */
     main {
         flex-direction: column;
         padding: 10px;
         gap: 10px;
-        min-height: auto;
     }
 
-    /* Icon bên trái chạy dọc */
-    .left {
-        position: fixed;
-        top: 70px; /* dưới header */
-        left: 0;
-        flex-direction: column;
-        gap: 12px;
-        background-color: var(--bg);
-        padding: 8px 4px;
-        border-right: 1px solid rgba(0,0,0,0.1);
-        box-shadow: 2px 0 6px rgba(0,0,0,0.05);
-        z-index: 150;
-    }
-
-    /* Info giữa màn hình */
     .info {
-        flex: unset;
         width: 100%;
-        padding: 20px;
-        margin-left: 60px; /* chừa chỗ cho icon bên trái */
+        padding: 16px;
     }
 
-    /* Menu ngang sát đáy */
+    /* Menu ngang luôn hiển thị ở đáy */
     .menu {
-        flex-direction: row;
-        justify-content: space-around;
         position: fixed;
         bottom: 0;
         left: 0;
         width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
         background-color: var(--bg);
-        padding: 8px 0;
+        padding: 6px;
         gap: 5px;
         border-top: 1px solid #ccc;
         box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
         min-height: auto;
+        z-index: 200;
     }
 
     .menu a {
         flex: 1;
-        padding: 10px 0;
+        padding: 8px 0;
         font-size: 0.9rem;
         border-radius: 6px;
     }
@@ -312,7 +317,6 @@ main {
         max-height: 95%;
     }
 }
-
 
 </style>
 </head>
