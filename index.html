@@ -240,10 +240,12 @@ main {
 /* Mobile Layout */
 @media (max-width: 768px) {
     body {
-        overflow: hidden;
+        margin: 0;
+        padding: 0;
         height: 100vh;
         display: flex;
         flex-direction: column;
+        overflow: hidden; /* Chỉ chặn cuộn body, phần info vẫn cuộn được */
     }
 
     header {
@@ -259,7 +261,6 @@ main {
         white-space: nowrap;
     }
 
-    /* Info cuộn được, fit chiều cao màn hình */
     main {
         flex: 1;
         display: flex;
@@ -268,12 +269,14 @@ main {
         overflow: hidden;
     }
 
+    /* Info cuộn được */
     .info {
         position: relative;
         flex: 1;
         padding: 16px;
         overflow-y: auto;
-        max-height: calc(100vh - 60px - 50px); /* trừ header và menu */
+        height: calc(100vh - 60px - 55px); /* trừ header + menu */
+        box-sizing: border-box;
     }
 
     /* Nút đổi chế độ & ngôn ngữ */
@@ -286,45 +289,30 @@ main {
         z-index: 10;
     }
 
-    /* Menu full width không khuất */
+    /* Menu full width và không tràn */
     .menu {
         position: fixed;
         bottom: 0;
         left: 0;
-        width: 100vw;
-        flex-direction: row;
-        justify-content: space-between;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
         background-color: var(--bg);
-        padding: 4px;
+        width: 100%;
+        padding: 4px 0;
         border-top: 1px solid #ccc;
         box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-        min-height: 50px;
-        gap: 4px;
+        min-height: 55px;
     }
 
     .menu a {
         flex: 1;
+        text-align: center;
         padding: 8px 0;
         font-size: 0.85rem;
         border-radius: 6px;
         white-space: nowrap;
-    }
-
-    /* Popup full màn hình */
-    .modal-content {
-        width: 95%;
-        max-width: none;
-        height: 90%;
-        overflow-y: auto;
-    }
-
-    .qr-item img {
-        width: 100px;
-    }
-
-    .image-modal img {
-        max-width: 95%;
-        max-height: 95%;
+        max-width: 100px; /* giới hạn chiều rộng từng nút */
     }
 }
 
