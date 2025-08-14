@@ -7,6 +7,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    max-width: 100%;
+    overflow-x: hidden; /* Chặn cuộn ngang */
+}
+
 body {
     height: 100%;
     margin: 0;
@@ -128,7 +137,7 @@ main {
     justify-content: center; /* căn giữa theo trục dọc */
     animation: slideIn 0.6s ease-out forwards;
     opacity: 0;
-    min-height: calc(100vh - 140px); /* đảm bảo chiều cao full trừ header */
+    min-height: auto;
 }
 .menu a {
     display: block;
@@ -265,6 +274,13 @@ main {
         gap: 8px;
     }
 
+.floating-controls {
+        display: flex;
+        flex-direction: row; /* Xếp ngang */
+        gap: 8px;            /* Khoảng cách giữa 2 nút */
+        margin-bottom: 10px; /* Cách phần nội dung dưới */
+    }
+
     /* Info chiếm toàn bộ chiều ngang */
     main {
         flex-direction: column;
@@ -278,6 +294,7 @@ main {
     }
 
     /* Menu ngang luôn hiển thị ở đáy */
+     @media (max-width: 768px) {
     .menu {
         position: fixed;
         bottom: 0;
@@ -286,20 +303,25 @@ main {
         flex-direction: row;
         justify-content: space-around;
         background-color: var(--bg);
-        padding: 6px;
-        gap: 5px;
+        padding: 6px 4px; /* Giảm padding ngang */
+        gap: 4px;
         border-top: 1px solid #ccc;
         box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-        min-height: auto;
         z-index: 200;
     }
 
     .menu a {
         flex: 1;
-        padding: 8px 0;
-        font-size: 0.9rem;
-        border-radius: 6px;
+        padding: 8px 4px;
+        font-size: 0.95rem;
+        white-space: normal; /* Cho phép xuống hàng */
+        line-height: 1.2;
+        text-align: center;
+        word-break: break-word;
     }
+}
+
+}
 
     /* Popup full màn hình */
     .modal-content {
