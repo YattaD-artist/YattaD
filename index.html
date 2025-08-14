@@ -237,36 +237,10 @@ main {
 
 /* MOBILE */
 /* Phiên bản Mobile */
+/* Mobile Layout */
 @media (max-width: 768px) {
     body {
-        overflow: auto; /* Cho phép cuộn */
-    }
-
-    header {
-        flex-direction: column;
-        align-items: flex-start;
-        padding: 8px;
-    }
-
-    .center-title {
-        order: -1; /* Đưa chữ YattaD lên trên cùng */
-        font-size: 1.8rem;
-        text-align: center;
-        width: 100%;
-        margin-bottom: 10px;
-    }
-
-    .left, .right {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .left {
-        position: fixed;
-        top: 60px;
-        left: 0;
-        flex-direction: column;
-        z-index: 150;
+        overflow: auto;
     }
 
     main {
@@ -276,12 +250,29 @@ main {
         min-height: auto;
     }
 
+    /* Icon bên trái chạy dọc */
+    .left {
+        position: fixed;
+        top: 70px; /* dưới header */
+        left: 0;
+        flex-direction: column;
+        gap: 12px;
+        background-color: var(--bg);
+        padding: 8px 4px;
+        border-right: 1px solid rgba(0,0,0,0.1);
+        box-shadow: 2px 0 6px rgba(0,0,0,0.05);
+        z-index: 150;
+    }
+
+    /* Info giữa màn hình */
     .info {
         flex: unset;
         width: 100%;
         padding: 20px;
+        margin-left: 60px; /* chừa chỗ cho icon bên trái */
     }
 
+    /* Menu ngang sát đáy */
     .menu {
         flex-direction: row;
         justify-content: space-around;
@@ -321,6 +312,7 @@ main {
         max-height: 95%;
     }
 }
+
 
 </style>
 </head>
