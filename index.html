@@ -200,7 +200,9 @@ main {
     justify-content: center;
 }
 .qr-item img {
-    width: 150px;
+    width: 100%;
+    max-width: 350px; /* hoặc tuỳ theo kích thước mong muốn */
+    height: auto;
     border: 2px solid var(--text);
     border-radius: 8px;
     cursor: pointer;
@@ -335,10 +337,6 @@ main {
         width: 100px;
     }
 
-    .image-modal img {
-        max-width: 95%;
-        max-height: 95%;
-    }
 }
 
 </style>
@@ -384,7 +382,6 @@ main {
 <div id="payment-modal" class="modal">
     <div class="modal-content">
         <h2 data-lang="payTitle">Quét mã dưới đây để thanh toán</h2>
-        <p data-lang="payNote">Nhấn vào hình để phóng to mã</p>
         <div class="qr-list">
             <div class="qr-item">
                 <p><strong>BIDV</strong></p>
@@ -399,13 +396,8 @@ main {
                 <img src="QR/PayPal.webp" alt="QR PayPal">
             </div>
         </div>
-        <button class="close-btn" id="close-modal" data-lang="closeBtn">Đóng</button>
-    </div>
 </div>
 
-<div id="image-modal" class="image-modal">
-    <img src="" alt="QR Phóng to" id="large-image">
-</div>
 
 <script>
     const translations = {
