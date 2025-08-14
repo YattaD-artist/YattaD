@@ -196,7 +196,7 @@ main {
 .qr-list {
     display: flex;
     gap: 20px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: center;
 }
 .qr-item img {
@@ -380,6 +380,7 @@ main {
 <div id="payment-modal" class="modal">
     <div class="modal-content">
         <h2 data-lang="payTitle">Quét mã dưới đây để thanh toán</h2>
+        <p data-lang="payNote">Nhấn vào hình để phóng to mã</p>
         <div class="qr-list">
             <div class="qr-item">
                 <p><strong>BIDV</strong></p>
