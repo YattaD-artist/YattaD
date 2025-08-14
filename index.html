@@ -205,6 +205,11 @@
         </div>
     </div>
 
+ <!-- Modal ảnh phóng to -->
+    <div id="image-modal" class="image-modal">
+        <img src="" alt="QR Phóng to" id="large-image">
+    </div>
+
 <script>
     const toggleBtn = document.getElementById('theme-toggle');
     toggleBtn.addEventListener('click', () => {
@@ -217,6 +222,7 @@
         });
     }
 
+    // Modal QR
     const modal = document.getElementById('payment-modal');
     const openBtn = document.getElementById('payment-btn');
     const closeBtn = document.getElementById('close-modal');
@@ -231,6 +237,22 @@
         if (e.target === modal) {
             modal.style.display = 'none';
         }
+    });
+
+    // Phóng to ảnh QR
+    const qrImages = document.querySelectorAll('.qr-item img');
+    const imageModal = document.getElementById('image-modal');
+    const largeImage = document.getElementById('large-image');
+
+    qrImages.forEach(img => {
+        img.addEventListener('click', () => {
+            largeImage.src = img.src;
+            imageModal.style.display = 'flex';
+        });
+    });
+
+    imageModal.addEventListener('click', () => {
+        imageModal.style.display = 'none';
     });
 </script>
 </body>
