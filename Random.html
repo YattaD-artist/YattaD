@@ -1,24 +1,254 @@
+<!-- tieu.html -->
 <!DOCTYPE html>
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tiêu Chọn Chuẩn</title>
-  <link rel="stylesheet" href="Random.css" />
+  <title>Tiêu Chuẩn</title>
+<style>
+    /* ==== Overlay chung tái sử dụng ==== */
+.overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: none;            /* ẩn ban đầu, JS sẽ set thành flex */
+  justify-content: center;  /* canh giữa ngang */
+  align-items: center;      /* canh giữa dọc */
+  z-index: 9999;            /* đảm bảo nằm trên cùng */
+}
+.overlay .overlay-box {
+  position: relative;            /* để nút đóng absolute bên trong */
+  background: #fff;
+  padding: 30px 40px;
+  border-radius: 10px;
+  min-width: 300px;
+  max-width: 600px;
+  text-align: center;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+}
+.overlay .close-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  position: absolute;
+  top: 8px; right: 12px;
+  font-size: 20px;
+  cursor: pointer;
+  color: #888;
+  transition: color 0.2s ease;
+}
+.overlay .close-btn:hover {
+  color: #000;
+}
+
+/* ==== Phần chung giao diện ==== */
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; padding: 0;
+  height: 100%;
+  font-family: sans-serif;
+  background: #efeacf;
+  overflow: hidden;
+}
+.menu {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; display: flex;
+  justify-content: center; gap: 20px;
+  background-color: rgba(255,253,234,0.95);
+  padding: 12px 0;
+  z-index: 1000;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.menu-btn {
+  padding: 10px 20px;
+  margin-right: 10px;
+  font-size: 15px; font-weight: bold;
+  border: none; border-radius: 8px;
+  background-color: #ffd966;
+  color: #2e2e2e;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+.menu-btn:hover {
+  background-color: #ffc107;
+  transform: scale(1.1);
+}
+
+/* Layout bánh và input */
+.layout { display: flex; height: 100%; width: 100%; }
+.left {
+  flex: 1; display: flex;
+  justify-content: center; align-items: center;
+  position: relative; padding: 20px;
+}
+#wheelCanvas {
+  max-width: 100%; max-height: 100%;
+  background: #fff; border-radius: 50%;
+  border: 10px solid #2ecc71;
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  z-index: 1;
+}
+#centerImage {
+  position: absolute; top:50%; left:50%;
+  width:150px; height:150px;
+  transform: translate(-50%,-50%);
+  background: url('Tieu.webp') center/contain no-repeat;
+  z-index: 2; pointer-events: none;
+}
+.right {
+  flex: 1;
+  display: block;
+  padding: 40px 20px 20px;
+  flex-direction: column;
+  padding: 20px;
+}
+.right label { margin-top: 30px; font-weight: bold; }
+.right h2 { margin-top: 50px; color: #7c5013; }
+
+/* Textarea & image */
+.input-wrap {
+  display: flex; align-items: center; gap: 15px;
+}
+textarea {
+  width: 100%; padding: 10px;
+  font-size: 16px; line-height: 1.5;
+  resize: none; overflow-y: auto;
+  min-height: calc(1.5em*10);
+  max-height: calc(1.5em*15);
+  border: 2px solid #91cb3f;
+  border-radius: 6px; background: #fffbe0;
+}
+#mainImage {
+  max-height: calc(1.5em*15);
+  object-fit: contain;
+  height: 60%;
+}
+
+/* Buttons repeat & speed */
+.repeat-btn,
+.speed-btn {
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  background-color: #91cb3f;
+  color: #1a1a1a;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.repeat-btn:hover,
+.speed-btn:hover {
+  transform: scale(1.2);
+}
+
+.repeat-btn.active {
+  background-color: #00a79b;
+  color: #fff;
+  font-weight: bold;
+}
+
+.speed-btn.active {
+  background-color: #fcca5c;
+  color: #000;
+  font-weight: bold;
+}
+
+#spinButton {
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  background-color: #e7a81e;
+  color: #1a1a1a;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  margin-top: 20px;
+}
+
+#spinButton:hover {
+  transform: scale(1.1);
+  background-color: #fcca5c;
+}
+
+
+/* Vietlott */
+
+.vietlott-numbers {
+  display: flex; flex-wrap: wrap; justify-content: center; gap:10px;
+  margin-top:20px;
+}
+.vietlott-ball {
+  width:40px; height:40px; border-radius:50%;
+  background:#91cb3f; color:#fff;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:bold; font-size:16px;
+  box-shadow:0 0 5px rgba(0,0,0,0.3);
+}
+
+/* Kết quả bánh */
+#resultBox h3 { font-size:24px; line-height: 1.5; margin:0; color:#7c5013; }
+
+/* ABCD input & result */
+input#questionCount {
+  font-size:25px; padding:12px 16px;
+  width:120px; text-align:center;
+  border:2px solid #91cb3f; border-radius:6px;
+}
+
+#startAbcd {
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  background-color: #91cb3f;
+  color: #1a1a1a;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  margin-top: 10px;
+}
+
+#startAbcd:hover {
+  transform: scale(1.1);
+  background-color: #fcca5c;
+}
+
+.result-area { margin-top:20px; }
+#abcdResult {
+  display: grid;
+  grid-template-columns: repeat(var(--cols,5),1fr);
+  gap:10px; margin-top:20px;
+}
+#abcdResult .abcd-cell {
+  background:#fff; border:1px solid #91cb3f; border-radius:4px;
+  padding:8px; font-size:18px; text-align:center;
+  box-shadow:0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Responsive nhỏ hơn 768px */
+@media (max-width:768px) {
+  .vietlott-menu { flex-direction:column; align-items:center; }
+  .layout { flex-direction:column; align-items:center; padding-top:80px; }
+  .left, .right { width:95%; }
+  canvas { width:100%!important; height:auto!important; }
+  #inputNames { width:100%; height:120px; }
+  #repeatButtons, #speedButtons { justify-content:center; }
+  #spinButton { width:100%; padding:15px; font-size:1.1rem; }
+  .overlay-box { width:90%!important; }
+}
+  </style>
 </head>
 <body>
 
-  <!-- Thanh bar trên cùng -->
-  <div class="top-bar">
-    <a href="index.html" class="back-icon">
-      <img src="assets/back-icon.png" alt="Back" />
-    </a>
-    <h1>Tiêu Chọn</h1>
-    <div class="menu-right">
-      <button class="menu-btn" data-type="mega">Vietlott Mega</button>
-      <button class="menu-btn" data-type="power">Vietlott Power</button>
-      <button class="menu-btn" id="abcdBtn">ABCD</button>
+  <!-- Thanh menu chính -->
+  <div class="menu">
+    <div class="vietlott-menu">
+      <button class="menu-btn vietlott-btn" data-type="mega">Tiêu chọn: Vietlott Mega</button>
+      <button class="menu-btn vietlott-btn" data-type="power">Tiêu chọn: Vietlott Power</button>
     </div>
+    <button class="menu-btn abcd-btn" id="abcdBtn">Tiêu chọn: ABCD</button>
   </div>
 
   <div class="layout">
@@ -36,7 +266,7 @@ Thì
 Chỉ
 Có
 Chuẩn</textarea>
-        <img src="assets/Tieuchuan/Main.webp" alt="Main Image" id="mainImage" />
+        <img src="Main.webp" alt="Main Image" id="mainImage" />
       </div>
       <label>Số lần lặp danh sách:</label>
       <div id="repeatButtons">
@@ -91,6 +321,203 @@ Chuẩn</textarea>
     </div>
   </div>
 
-  <script src="Random.js"></script>
+<script>
+ // Âm thanh
+const popSound  = new Audio('Pop.mp3');
+const menuSound = new Audio('Menu.mp3');
+const goSound   = new Audio('GO.mp3');
+const noteSound = new Audio('Note.mp3');
+
+// Biến toàn cục
+let names = [], angle = 0, isSpinning = false;
+let repeatCount = 1, spinSpeed = 1;
+
+const canvas = document.getElementById("wheelCanvas");
+const ctx    = canvas.getContext("2d");
+const radius = canvas.width / 2;
+const colors = ["#d5c3c7","#ced6bd","#f7eae4","#f1dcca","#e6ede3","#f7e19a","#cddae5"];
+
+// CẬP NHẬT danh sách từ textarea
+function updateNameList() {
+  const raw = document.getElementById("inputNames").value
+                .trim().split("\n").map(s=>s.trim()).filter(s=>s);
+  names = [];
+  for (let i=0; i<repeatCount; i++) names.push(...raw);
+}
+
+// VẼ bánh
+function drawWheel() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if (!names.length) return;
+  const slice = 2*Math.PI / names.length;
+  names.forEach((n,i)=>{
+    const start = i*slice, end = start+slice;
+    ctx.beginPath();
+    ctx.moveTo(radius,radius);
+    ctx.arc(radius,radius,radius,start,end);
+    ctx.fillStyle = colors[i%colors.length];
+    ctx.fill();
+    // text
+    ctx.save();
+    ctx.translate(radius,radius);
+    ctx.rotate(start + slice/2);
+    ctx.textAlign="right";
+    ctx.fillStyle="#260b03";
+    ctx.font="16px sans-serif";
+    ctx.fillText(n, radius-10,5);
+    ctx.restore();
+  });
+}
+
+// VẼ khi quay
+function drawSpinningWheel(rot) {
+  ctx.save();
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.translate(radius,radius);
+  ctx.rotate(rot);
+  ctx.translate(-radius,-radius);
+  drawWheel();
+  ctx.restore();
+}
+
+// BẮT ĐẦU quay
+document.getElementById("spinButton").onclick = () => {
+  if (isSpinning) return;
+  goSound.currentTime=0; goSound.play();
+  isSpinning = true;
+  document.getElementById("resultOverlay").style.display='none';
+  updateNameList();
+  if (names.length<2) {
+    alert("Cần ít nhất 2 lựa chọn."); isSpinning=false; return;
+  }
+  drawWheel();
+  const spinTime  = 3000 + (spinSpeed-1)*1000;
+  const spinAngle = (10 + Math.random()*10) * 2*Math.PI;
+  const start = performance.now();
+  function animate(now) {
+    const t = Math.min((now-start)/spinTime,1);
+    const ease = 1 - Math.pow(1-t,3);
+    angle = ease * spinAngle;
+    drawSpinningWheel(angle);
+    if (t<1) requestAnimationFrame(animate);
+    else { isSpinning=false; showResult(angle); }
+  }
+  requestAnimationFrame(animate);
+};
+
+// HIỂN THỊ kết quả bánh
+function showResult(finalAngle) {
+  const slice = 2*Math.PI / names.length;
+  const adj   = finalAngle % (2*Math.PI);
+  const idx   = Math.floor((2*Math.PI - adj)/slice) % names.length;
+  const win   = names[idx];
+  document.getElementById("resultText").textContent = `🎯 Tiêu suy đi tính lại vài lần đã chọn được: ${win}`;
+  document.getElementById("resultOverlay").style.display='flex';
+  noteSound.currentTime=0; noteSound.play();
+}
+
+// Khởi tạo & sự kiện textarea
+document.addEventListener('DOMContentLoaded',()=>{
+  updateNameList();
+  drawWheel();
+});
+document.getElementById("inputNames")
+  .addEventListener("input",()=>{ updateNameList(); drawWheel(); });
+
+// Nút lặp danh sách
+document.querySelectorAll('.repeat-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.repeat-btn')
+      .forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    repeatCount = parseInt(btn.dataset.repeat);
+    updateNameList(); drawWheel();
+    popSound.currentTime=0; popSound.play();
+  });
+});
+
+// Nút tốc độ
+document.querySelectorAll('.speed-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.speed-btn')
+      .forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    spinSpeed = parseInt(btn.dataset.speed);
+    popSound.currentTime=0; popSound.play();
+  });
+});
+
+// VIETLOTT
+function generateVietlottNumbers(type) {
+  const max = (type==='mega'?45:55);
+  const pool = Array.from({length:max},(_,i)=>i+1);
+  const sel = [];
+  while(sel.length<6) {
+    const idx = Math.floor(Math.random()*pool.length);
+    sel.push(pool.splice(idx,1)[0]);
+  }
+  return sel.sort((a,b)=>a-b);
+}
+document.querySelectorAll('.vietlott-menu .menu-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    menuSound.currentTime=0; menuSound.play();
+    const type = btn.dataset.type;
+    const nums = generateVietlottNumbers(type);
+    const cont = document.getElementById('vietlottNumbers');
+    document.getElementById('vietlottTitle').textContent =
+      `Kết quả: ${type==='mega'?'Mega 6/45':'Power 6/55'}`;
+    cont.innerHTML='';
+    nums.forEach(n=>{
+      const ball = document.createElement('div');
+      ball.className='vietlott-ball'; ball.textContent=n;
+      cont.appendChild(ball);
+    });
+    document.getElementById('vietlottOverlay').style.display='flex';
+    noteSound.currentTime=0; noteSound.play();
+  });
+});
+document.getElementById('vietlottClose').onclick = ()=>{
+  document.getElementById('vietlottOverlay').style.display='none';
+};
+
+// ABCD
+const abcdBtn       = document.getElementById('abcdBtn');
+const abcdOverlay   = document.getElementById('abcdOverlay');
+const closeAbcd     = document.getElementById('closeAbcd');
+const startAbcd     = document.getElementById('startAbcd');
+const questionInput = document.getElementById('questionCount');
+const abcdResult    = document.getElementById('abcdResult');
+
+abcdBtn.onclick = ()=>{
+  abcdOverlay.style.display='flex';
+  noteSound.currentTime=0; noteSound.play();
+};
+closeAbcd.onclick = ()=>{
+  abcdOverlay.style.display='none';
+  abcdResult.innerHTML=''; questionInput.value='';
+};
+startAbcd.onclick = ()=>{
+  const c = parseInt(questionInput.value);
+  if (isNaN(c)||c<1||c>50) {
+    alert("Vui lòng nhập số từ 1 đến 50."); return;
+  }
+  abcdResult.innerHTML='';
+  const cols = Math.min(Math.max(c,5),10);
+  abcdResult.style.setProperty('--cols', cols);
+  const opts = ['A','B','C','D'];
+  for (let i=1; i<=c; i++){
+    const cell = document.createElement('div');
+    cell.className='abcd-cell';
+    cell.textContent = `${i}: ${opts[Math.floor(Math.random()*4)]}`;
+    abcdResult.appendChild(cell);
+  }
+};
+
+// Đóng kết quả bánh
+document.getElementById("closeResult").onclick = ()=>{
+  document.getElementById("resultOverlay").style.display='none';
+};
+</script>
+
 </body>
 </html>
