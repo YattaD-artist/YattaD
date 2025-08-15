@@ -183,19 +183,23 @@ if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark')
 const langBtn = document.getElementById('lang-toggle');
 let currentLang = localStorage.getItem('lang') || 'vi';
 const translations = {
-    vi: { title: "YattaD", introTitle: "Lời Nói Đầu",
-          introP1: "Chào mừng bạn đến với bộ sưu tập nghệ thuật của tôi! Tại đây bạn có thể khám phá các tác phẩm minh họa, thiết kế nhân vật, commissions và fanart.",
-          introP2: "Mỗi tác phẩm đều được tôi thực hiện cẩn thận, hy vọng bạn sẽ tìm thấy những khoảnh khắc thú vị và cảm xúc khi thưởng thức.",
-          menu1: "Minh họa", menu2: "Thiết kế nhân vật", menu3: "Commissions", menu4: "Fanart" },
-          noTitle: "Không có tiêu đề",
-          noDesc: "Chưa có mô tả cho tác phẩm này.",
-    
-    en: { title: "YattaD", introTitle: "Introduction",
-          introP1: "Welcome to my art collection! Here you can explore illustrations, character designs, commissions, and fanart.",
-          introP2: "Each work is carefully crafted, I hope you will find interesting moments and emotions while enjoying.",
-          menu1: "Illustration", menu2: "Character Design", menu3: "Commissions", menu4: "Fanart" }
-         noTitle: "No title",
-         noDesc: "No description available for this artwork.",
+    const translations = {
+    vi: { 
+        title: "YattaD", introTitle: "Lời Nói Đầu",
+        introP1: "Chào mừng bạn đến với bộ sưu tập nghệ thuật của tôi! Tại đây bạn có thể khám phá các tác phẩm minh họa, thiết kế nhân vật, commissions và fanart.",
+        introP2: "Mỗi tác phẩm đều được tôi thực hiện cẩn thận, hy vọng bạn sẽ tìm thấy những khoảnh khắc thú vị và cảm xúc khi thưởng thức.",
+        menu1: "Minh họa", menu2: "Thiết kế nhân vật", menu3: "Commissions", menu4: "Fanart",
+        noTitle: "Không có tiêu đề",
+        noDesc: "Chưa có mô tả cho tác phẩm này."
+    },
+    en: { 
+        title: "YattaD", introTitle: "Introduction",
+        introP1: "Welcome to my art collection! Here you can explore illustrations, character designs, commissions, and fanart.",
+        introP2: "Each work is carefully crafted, I hope you will find interesting moments and emotions while enjoying.",
+        menu1: "Illustration", menu2: "Character Design", menu3: "Commissions", menu4: "Fanart",
+        noTitle: "No title",
+        noDesc: "No description available for this artwork."
+    }
 };
 function switchLanguage() {
     currentLang = currentLang === 'vi' ? 'en' : 'vi';
@@ -231,8 +235,6 @@ const imageDetails = {
     vi: { title: "Ruby", desc: "Cháu gái của Red, Kiếm sĩ gấu trúc đỏ" },
     en: { title: "Ruby", desc: "Red's niece, red panda swordswoman" }
   }
-};
-
     // Thêm các ảnh khác ở đây
 };
 
@@ -250,6 +252,8 @@ function loadCategory(cat) {
 }
 
 function openFull(path) {
+    const key = path.replace(/\.\w+$/, ""); // bỏ đuôi .webp
+    const detail = imageDetails[key]?.[currentLang] || {};
     fullImage.src = path;
     artTitle.textContent = detail.title || translations[currentLang].noTitle;
     artDesc.textContent = detail.desc || translations[currentLang].noDesc;
