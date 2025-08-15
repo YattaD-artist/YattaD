@@ -172,9 +172,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- Cấu hình số trang cho từng truyện ---
 const storyPages = {
-    "PunkgaMerch": 15, // sửa số lượng trang thực tế
+    "PunkgaMerch": 14, // sửa số lượng trang thực tế
     "Red&Ruby": 0,
-    "BreakthRough": 12,
+    "BreakthRough": 11,
     "TieuTung": 0,
     "Siin": 0,
     "StillComeTrue": 0,
@@ -197,7 +197,16 @@ const storyFolders = {
 let currentStory = "";
 let currentPage = 1;
 let totalPages = 0;
-
+    
+// --- Preload tất cả ảnh ---
+function preloadImages(storyName) {
+    const folder = storyFolders[storyName];
+    const total = storyPages[folder] || 3; // mặc định 3 nếu chưa khai báo
+    for(let i=1; i<=total; i++){
+        const img = new Image();
+        img.src = `comics/${folder}/${String(i).padStart(2,'0')}.webp`;
+    }
+}
 // Lấy overlay và các element
 const overlay = document.getElementById('overlay');
 const deck = document.getElementById('deck');
@@ -240,7 +249,7 @@ function showPage() {
 function openStory(storyName) {
     currentStory = storyName;
     const folder = storyFolders[storyName];
-    totalPages = storyPages[folder] || 5; // mặc định 5 nếu chưa khai báo
+    totalPages = storyPages[folder] || 3; // mặc định 3 nếu chưa khai báo
     currentPage = 1;
     overlay.style.display = 'flex';
     showPage();
