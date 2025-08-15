@@ -117,17 +117,17 @@ const restartBtn = document.getElementById('restartBtn');
 
 // --- Tạo 3-panel layout ---
 const prevImg = document.createElement('img');
-prevImg.style.maxHeight = "40%";
-prevImg.style.opacity = "0.6";
-prevImg.style.marginRight = "10px";
+prevImg.style.maxHeight = "45%";
+prevImg.style.opacity = "0.4";
+prevImg.style.marginRight = "40px";
 
 const currImg = document.createElement('img');
-currImg.style.maxHeight = "80%";
+currImg.style.maxHeight = "90%";
 
 const nextImg = document.createElement('img');
-nextImg.style.maxHeight = "40%";
-nextImg.style.opacity = "0.6";
-nextImg.style.marginLeft = "10px";
+nextImg.style.maxHeight = "45%";
+nextImg.style.opacity = "0.4";
+nextImg.style.marginLeft = "40px";
 
 deck.appendChild(prevImg);
 deck.appendChild(currImg);
