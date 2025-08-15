@@ -56,11 +56,21 @@ const translations = {
 function switchLanguage() {
     currentLang = currentLang === 'vi' ? 'en' : 'vi';
     localStorage.setItem('lang', currentLang);
-    for(const key in translations[currentLang]) {
+
+    for (const key in translations[currentLang]) {
         const el = document.getElementById(key);
-        if(el) el.innerHTML = translations[currentLang][key];
+        if (el) {
+            // Nếu là menu thì chỉ đổi text trong <p>
+            if (key.startsWith('menu')) {
+                const p = el.querySelector('p');
+                if (p) p.textContent = translations[currentLang][key];
+            } else {
+                el.innerHTML = translations[currentLang][key];
+            }
+        }
     }
 }
+
 
 langBtn.addEventListener('click', switchLanguage);
 document.addEventListener('DOMContentLoaded', () => {
