@@ -135,6 +135,7 @@ const translations = {
         menu6: "Vẫn Đúng",
         menu7: "Lê Thận",
         menu8: "Raku"
+        restart: "Quay lại trang đầu"
     },
     en: {
         title: "YattaD",
@@ -148,7 +149,8 @@ const translations = {
         menu5: "Exploration",
         menu6: "Still Right",
         menu7: "Le Than",
-        menu8: "Raku"
+        menu8: "Raku",
+        restart: "restart"
     }
 };
 
@@ -164,6 +166,128 @@ function switchLanguage() {
 langBtn.addEventListener('click', switchLanguage);
 document.addEventListener('DOMContentLoaded', () => {
     if(currentLang === 'en') switchLanguage();
+});
+
+// ComicReader.js - Script đọc truyện cho Comic.html
+// ComicReader.js - Script đọc truyện cho Comic.html
+// ComicReader.js - Script đọc truyện cho Comic.html
+
+
+// --- Cấu hình số trang cho từng truyện ---
+const storyPages = {
+    "PunkgaMerch": 15, // sửa số lượng trang thực tế
+    "Red&Ruby": 0,
+    "TieuTung": 0,
+"BreakthRough": 11,
+    "Siin": 0,
+    "StillComeTrue": 0,
+    "LeThan": 0,
+    "Raku": 0
+};
+
+// --- Mapping menu text sang folder ---
+const storyFolders = {
+    "PunkgaMerch": "PunkgaMerch",
+    "Red và Ruby": "Red&Ruby",
+    "Khai Phá": "BreakthRough",
+    "Tiêu Tùng": "TieuTung",
+    "Sao Băng Mùa Hạ": "Siin",
+    "Vẫn Đúng": "StillComeTrue",
+    "Lê Thận": "LeThan",
+    "Raku": "Raku"
+};
+
+let currentStory = "";
+let currentPage = 1;
+let totalPages = 0;
+
+// Lấy overlay và các element
+const overlay = document.getElementById('overlay');
+const deck = document.getElementById('deck');
+const caption = document.getElementById('caption');
+const closeBtn = document.getElementById('closeBtn');
+const restartBtn = document.getElementById('restartBtn');
+
+// --- Tạo 3-panel layout ---
+const prevImg = document.createElement('img');
+prevImg.style.maxHeight = "40%";
+prevImg.style.opacity = "0.6";
+prevImg.style.marginRight = "10px";
+
+const currImg = document.createElement('img');
+currImg.style.maxHeight = "80%";
+
+const nextImg = document.createElement('img');
+nextImg.style.maxHeight = "40%";
+nextImg.style.opacity = "0.6";
+nextImg.style.marginLeft = "10px";
+
+deck.appendChild(prevImg);
+deck.appendChild(currImg);
+deck.appendChild(nextImg);
+
+// --- Hàm hiển thị trang ---
+function showPage() {
+    const folder = storyFolders[currentStory];
+    prevImg.src = currentPage > 1 ? 
+        `comics/${folder}/${String(currentPage-1).padStart(2,'0')}.webp` : 
+        `comics/${folder}/00.webp`;
+    currImg.src = `comics/${folder}/${String(currentPage).padStart(2,'0')}.webp`;
+    nextImg.src = currentPage < totalPages ? 
+        `comics/${folder}/${String(currentPage+1).padStart(2,'0')}.webp` : '';
+    restartBtn.style.display = (currentPage === totalPages) ? 'block' : 'none';
+    caption.innerText = `Trang ${currentPage} / ${totalPages}`;
+}
+
+// --- Hàm mở truyện ---
+function openStory(storyName) {
+    currentStory = storyName;
+    const folder = storyFolders[storyName];
+    totalPages = storyPages[folder] || 5; // mặc định 5 nếu chưa khai báo
+    currentPage = 1;
+    overlay.style.display = 'flex';
+    showPage();
+}
+
+// --- Navigation ---
+function nextPage() {
+    if(currentPage < totalPages){
+        currentPage++;
+        showPage();
+    }
+}
+function prevPageFunc() {
+    if(currentPage > 1){
+        currentPage--;
+        showPage();
+    }
+}
+function restart() {
+    currentPage = 1;
+    showPage();
+}
+
+// --- Sự kiện nút ---
+closeBtn.addEventListener('click', ()=> overlay.style.display='none');
+restartBtn.addEventListener('click', id="restart":'restart');
+
+// --- Click menu ---
+document.querySelectorAll('.menuItem').forEach(item => {
+    item.addEventListener('click', () => openStory(item.innerText));
+});
+
+// --- Click qua ảnh mini ---
+prevImg.addEventListener('click', prevPageFunc);
+nextImg.addEventListener('click', nextPage);
+currImg.addEventListener('click', nextPage); // click vào ảnh lớn cũng next
+
+// --- Key navigation ---
+document.addEventListener('keydown', e => {
+    if(overlay.style.display === 'flex'){
+        if(e.key === "ArrowRight") nextPage();
+        if(e.key === "ArrowLeft") prevPageFunc();
+        if(e.key === "Escape") overlay.style.display='none';
+    }
 });
 
 </script>
