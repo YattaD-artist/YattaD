@@ -244,7 +244,7 @@ function openStory(storyName) {
     currentStory = storyName;
     const folder = storyFolders[storyName];
     totalPages = storyPages[folder] || 5; // mặc định 5 nếu chưa khai báo
-    currentPage = 1;
+    currentPage = 0;
     overlay.style.display = 'flex';
     showPage();
 }
