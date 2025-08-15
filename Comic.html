@@ -166,50 +166,58 @@ document.addEventListener('DOMContentLoaded', () => {
     if(currentLang === 'en') switchLanguage();
 });
 
-(function setupGalleries() {
+(function setupMenuGalleries() {
   const overlay = document.getElementById('overlay');
   const deck = document.getElementById('deck');
   const caption = document.getElementById('caption');
   const closeBtn = document.getElementById('closeBtn');
   const restartBtn = document.getElementById('restartBtn');
 
-  let images = [], caps = [], sounds = [], index = 0, transitioning = false;
+  let images = [];
+  let index = 0;
+  let transitioning = false;
   let touchStartX = 0;
+  let caps = [];
+  let sounds = [];
 
-  function initGallery(menuId, folder, total, captions = []) {
-    const link = document.getElementById(menuId);
+  function initGallery(folder, total, captions) {
+    deck.innerHTML = '';
+    images = [];
+    caps = captions.length === total ? captions : Array.from({length: total}, (_, i)=>`Trang ${i}`);
+    sounds = Array.from({length: 4}, (_, i)=>`assets/sfx/Pictures/Paper${i+1}.mp3`);
+    index = 0;
+    transitioning = false;
 
-    // Reset deck
-    link.addEventListener('click', () => {
-      deck.innerHTML = '';
-      images = [];
-      caps = captions.length === total ? captions : Array.from({length: total}, (_, i) => `Page ${i+1}`);
-      sounds = Array.from({length:4}, (_, i)=>`assets/sfx/Pictures/Paper${i+1}.mp3`);
-      index = 0; transitioning = false;
-
-      for (let i = 0; i < total; i++) {
-        const img = document.createElement('img');
-        img.src = `${folder}/${String(i).padStart(2,'0')}.webp`;
-        img.style.position = 'absolute';
-        img.style.top = '0'; img.style.left = '0'; img.style.width='100%'; img.style.height='100%';
-        img.style.objectFit='contain'; img.style.transition='transform 0.4s ease, opacity 0.4s ease';
-        if(i>2) img.loading='lazy';
-        deck.appendChild(img);
-        images.push(img);
-      }
-      overlay.style.display = 'flex';
-      update();
-    });
+    for (let i = 0; i < total; i++) {
+      const img = document.createElement('img');
+      img.src = `${folder}/${String(i).padStart(2,'0')}.webp`;
+      if(i > 2) img.loading = 'lazy';
+      deck.appendChild(img);
+      images.push(img);
+      img.addEventListener('transitionend', () => {
+        if(img.classList.contains('active')) transitioning = false;
+      });
+    }
+    show();
   }
 
   function update() {
     images.forEach((img, i) => {
-      img.style.transform = '';
-      img.style.opacity = '0';
-      if(i === index) img.style.opacity='1';
+      img.className = '';
+      img.style.zIndex = '';
+      if(i === index){
+        img.classList.add('active');
+        img.style.zIndex = '30';
+      } else if(i < index){
+        img.classList.add('left');
+        img.style.zIndex = String(5 + i);
+      } else {
+        img.classList.add('right');
+        img.style.zIndex = String(5 - (i - index));
+      }
     });
     caption.textContent = caps[index];
-    restartBtn.style.display = index === images.length-1 ? 'block':'none';
+    restartBtn.style.display = index === images.length-1 ? 'block' : 'none';
   }
 
   function playSound() {
@@ -218,31 +226,28 @@ document.addEventListener('DOMContentLoaded', () => {
     audio.play().catch(()=>{});
   }
 
-  function next() { if(!transitioning && index<images.length-1){ playSound(); transitioning=true; index++; update(); transitioning=false;} }
-  function prev() { if(!transitioning && index>0){ playSound(); transitioning=true; index--; update(); transitioning=false;} }
-  function restart() { index=0; update(); }
-
+  function show() { overlay.style.display='flex'; update(); }
   function hide() { overlay.style.display='none'; transitioning=false; }
+  function next() { if(!transitioning && index<images.length-1){ playSound(); transitioning=true; index++; update(); } }
+  function prev() { if(!transitioning && index>0){ playSound(); transitioning=true; index--; update(); } }
+  function restart() { if(!transitioning){ index=0; update(); } }
 
   closeBtn.addEventListener('click', hide);
   restartBtn.addEventListener('click', restart);
 
   overlay.addEventListener('click', (e)=>{
-    if(e.target===overlay) hide();
-    else {
-      const rect=overlay.getBoundingClientRect();
-      if(e.clientX>rect.left+rect.width/2+50) next();
-      else if(e.clientX<rect.left+rect.width/2-50) prev();
-    }
+    const rect = overlay.getBoundingClientRect();
+    if(e.clientX > rect.left+rect.width/2+50) next();
+    else if(e.clientX < rect.left+rect.width/2-50) prev();
   });
 
-  overlay.addEventListener('touchstart', (e)=>{ touchStartX=e.touches[0].clientX; });
-  overlay.addEventListener('touchend', (e)=>{
-    const diff = e.changedTouches[0].clientX - touchStartX;
+  overlay.addEventListener('touchstart', e=>{ touchStartX=e.touches[0].clientX; });
+  overlay.addEventListener('touchend', e=>{
+    const diff = e.changedTouches[0].clientX-touchStartX;
     if(Math.abs(diff)>50) diff<0?next():prev();
   });
 
-  window.addEventListener('keydown', (e)=>{
+  window.addEventListener('keydown', e=>{
     if(overlay.style.display==='flex' && !transitioning){
       if(e.key==='ArrowRight') next();
       if(e.key==='ArrowLeft') prev();
@@ -250,10 +255,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // --- Khởi tạo cho từng menu ---
-  initGallery('menu1','comics/PunkgaMerch',15,['Trang Bìa','Trang 1','Trang 2','Trang 3','Trang 4','Trang 5','Trang 6','Trang 7','Trang 8','Trang 9','Trang 10','Trang 11','Trang 12','Trang 13','Trang 14']);
-  // Tương tự các menu còn lại
+  // --- Gán menu ---
+  const menus = [
+    {id:'menu1', folder:'comics/PunkgaMerch', total:15, captions:['Trang Bìa','Trang 1','Trang 2','Trang 3','Trang 4','Trang 5','Trang 6','Trang 7','Trang 8','Trang 9','Trang 10','Trang 11','Trang 12','Trang 13','Trang 14']},
+    {id:'menu2', folder:'comics/RedRuby', total:20, captions:[]},
+    {id:'menu3', folder:'comics/TieuTung', total:10, captions:[]},
+    {id:'menu4', folder:'comics/SaoBangMuaHa', total:12, captions:[]},
+    {id:'menu5', folder:'comics/KhaiPha', total:10, captions:[]},
+    {id:'menu6', folder:'comics/VanDung', total:10, captions:[]},
+    {id:'menu7', folder:'comics/LeThan', total:10, captions:[]},
+    {id:'menu8', folder:'comics/Raku', total:10, captions:[]}
+  ];
+
+  menus.forEach(m=>{
+    const el = document.getElementById(m.id);
+    el.addEventListener('click', ()=>initGallery(m.folder, m.total, m.captions));
+  });
+
 })();
+
 </script>
 </body>
 </html>
