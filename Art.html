@@ -17,7 +17,6 @@ body {
 }
 body.dark { --bg: #1b1b1b; --text: #f5f5f5; --accent: #1cd9cf; }
 
-/* Header */
 header {
     display: flex; align-items: center; justify-content: space-between;
     padding: 12px 24px; border-bottom: 1px solid #ccc; background-color: var(--bg);
@@ -25,7 +24,8 @@ header {
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
-.center-title { flex: 1; text-align: center; font-weight: 800; font-size: 2rem; color: var(--accent); }
+
+.center-title { flex: 1; text-align: center; font-weight: 800; font-size: 2.5rem; color: var(--accent); }
 .left, .right { display: flex; align-items: center; gap: 16px; }
 .icon-btn {
     background: none; border: none; cursor: pointer; font-size: 1.3rem;
@@ -35,23 +35,24 @@ header {
 }
 .icon-btn:hover { transform: scale(1.15); color: var(--accent); background-color: rgba(0,0,0,0.05); }
 
-/* Lời nói đầu */
+main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
+
+/* --- Intro full width --- */
 .info {
-    width: 100%; padding: 24px; background-color: var(--bg);
+    width: 100%; padding: 32px; background-color: var(--bg);
     border-radius: 12px; border: 1px solid rgba(0,0,0,0.1);
     box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
     transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
-    margin: 20px auto;
-    max-width: 1000px;
 }
 .info h2 { font-size: 2rem; margin-bottom: 16px; font-weight: 700; color: var(--accent);
           border-bottom: 3px solid var(--accent); display: inline-block; padding-bottom: 5px; }
 .info p { margin-bottom: 12px; line-height: 1.6; }
 
-/* Menu gallery */
+/* --- Menu grid --- */
 .menu {
-    display: flex; gap: 10px; flex-wrap: wrap;
-    justify-content: center; margin: 15px 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 18px;
 }
 .menu button {
     padding: 10px 16px; 
