@@ -22,7 +22,6 @@ header {
     padding: 12px 24px; border-bottom: 1px solid #ccc; background-color: var(--bg);
     position: sticky; top: 0; z-index: 100;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
 
 .center-title { flex: 1; text-align: center; font-weight: 800; font-size: 2.5rem; color: var(--accent); }
@@ -37,26 +36,23 @@ header {
 
 main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 
-/* --- Intro full width --- */
+/* Intro */
 .info {
     width: 100%; padding: 32px; background-color: var(--bg);
     border-radius: 12px; border: 1px solid rgba(0,0,0,0.1);
     box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
-    transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
 }
 .info h2 { font-size: 2rem; margin-bottom: 16px; font-weight: 700; color: var(--accent);
           border-bottom: 3px solid var(--accent); display: inline-block; padding-bottom: 5px; }
 .info p { margin-bottom: 12px; line-height: 1.6; }
 
-/* --- Menu grid --- */
-/* --- Menu grid --- */
+/* Menu grid */
 .menu {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 18px;
-    margin: 15px 20px; /* Khoảng cách toàn bộ menu với lề trái/phải */
+    margin: 15px 20px;
 }
-
 .menu button {
     padding: 10px 16px; 
     border: 2px solid var(--text); 
@@ -64,11 +60,10 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
     background: none; 
     cursor: pointer; 
     font-weight: bold;
-    font-size: 1.1rem; /* Khôi phục size chữ gốc */
-    color: var(--text); /* Màu chữ theo theme */
+    font-size: 1.1rem;
+    color: var(--text);
     transition: all 0.2s ease;
 }
-
 .menu button:hover {
     background: var(--accent); 
     color: var(--bg); 
@@ -102,39 +97,33 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
     align-items: center;
     padding: 20px;
 }
-
 .overlay-content {
     display: flex;
     gap: 20px;
     max-width: 90%;
     max-height: 90%;
 }
-
-#overlay img {
+#fullImage {
     max-width: 70%;
     max-height: 100%;
     border-radius: 6px;
     object-fit: contain;
 }
-
 #imageInfo {
     color: white;
     max-width: 30%;
     overflow-y: auto;
 }
-
 #imageInfo h2 {
     margin-top: 0;
     margin-bottom: 10px;
     font-size: 1.5rem;
     color: var(--accent);
 }
-
 #imageInfo p {
     line-height: 1.4;
     font-size: 1rem;
 }
-
 #overlay button {
     position: absolute; top: 20px; right: 20px;
     font-size: 1.5rem; background: none; border: none; color: white;
@@ -194,20 +183,14 @@ if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark')
 const langBtn = document.getElementById('lang-toggle');
 let currentLang = localStorage.getItem('lang') || 'vi';
 const translations = {
-    vi: { 
-        title: "YattaD",
-        introTitle: "Lời Nói Đầu",
-        introP1: "Chào mừng bạn đến với bộ sưu tập nghệ thuật của tôi! Tại đây bạn có thể khám phá các tác phẩm minh họa, thiết kế nhân vật, commissions và fanart.",
-        introP2: "Mỗi tác phẩm đều được tôi thực hiện cẩn thận, hy vọng bạn sẽ tìm thấy những khoảnh khắc thú vị và cảm xúc khi thưởng thức.",
-        menu1: "Minh họa", menu2: "Thiết kế nhân vật", menu3: "Commissions", menu4: "Fanart"
-    },
-    en: { 
-        title: "YattaD",
-        introTitle: "Introduction",
-        introP1: "Welcome to my art collection! Here you can explore illustrations, character designs, commissions, and fanart.",
-        introP2: "Each work is carefully crafted, I hope you will find interesting moments and emotions while enjoying.",
-        menu1: "Illustration", menu2: "Character Design", menu3: "Commissions", menu4: "Fanart"
-    }
+    vi: { title: "YattaD", introTitle: "Lời Nói Đầu",
+          introP1: "Chào mừng bạn đến với bộ sưu tập nghệ thuật của tôi! Tại đây bạn có thể khám phá các tác phẩm minh họa, thiết kế nhân vật, commissions và fanart.",
+          introP2: "Mỗi tác phẩm đều được tôi thực hiện cẩn thận, hy vọng bạn sẽ tìm thấy những khoảnh khắc thú vị và cảm xúc khi thưởng thức.",
+          menu1: "Minh họa", menu2: "Thiết kế nhân vật", menu3: "Commissions", menu4: "Fanart" },
+    en: { title: "YattaD", introTitle: "Introduction",
+          introP1: "Welcome to my art collection! Here you can explore illustrations, character designs, commissions, and fanart.",
+          introP2: "Each work is carefully crafted, I hope you will find interesting moments and emotions while enjoying.",
+          menu1: "Illustration", menu2: "Character Design", menu3: "Commissions", menu4: "Fanart" }
 };
 function switchLanguage() {
     currentLang = currentLang === 'vi' ? 'en' : 'vi';
@@ -218,14 +201,14 @@ function switchLanguage() {
     }
 }
 langBtn.addEventListener('click', switchLanguage);
-document.addEventListener('DOMContentLoaded', () => {
-    if(currentLang === 'en') switchLanguage();
-});
+document.addEventListener('DOMContentLoaded', () => { if(currentLang === 'en') switchLanguage(); });
 
-// Gallery logic
+// Gallery data
 const gallery = document.getElementById('gallery');
 const overlay = document.getElementById('overlay');
 const fullImage = document.getElementById('fullImage');
+const artTitle = document.getElementById('artTitle');
+const artDesc = document.getElementById('artDesc');
 const closeBtn = document.getElementById('closeBtn');
 
 const categoryImages = {
@@ -234,35 +217,34 @@ const categoryImages = {
     "Comm": 5,
     "Fan": 5
 };
-
-    const imageDetails = {
-    "arts/MinhHoa/01": { title: "Red", desc: "Thợ rèn gấu trúc đỏ" },
-    "arts/MinhHoa/02": { title: "Ruby", desc: "Cháu gái của Red, Kiếm sĩ gấu trúc đỏ" },
-    // ... các ảnh khác
+const imageDetails = {
+    "arts/MinhHoa/01.webp": { title: "Red", desc: "Thợ rèn gấu trúc đỏ" },
+    "arts/MinhHoa/02.webp": { title: "Ruby", desc: "Cháu gái của Red, Kiếm sĩ gấu trúc đỏ" }
+    // Thêm các ảnh khác ở đây
 };
-    
-function loadCategory(cat) {
-  gallery.innerHTML = "";
-  const total = categoryImages[cat] || 0;
 
-  for (let i = 1; i <= total; i++) {
-    const img = document.createElement('img');
-    img.src = `arts/${cat}/${String(i).padStart(2, '0')}.webp`; // ✅ backticks chuẩn
-    img.className = "thumb";
-    img.onclick = () => openFull(img.src);
-    gallery.appendChild(img);
-  }
+function loadCategory(cat) {
+    gallery.innerHTML = "";
+    const total = categoryImages[cat] || 0;
+    for (let i = 1; i <= total; i++) {
+        const path = `arts/${cat}/${String(i).padStart(2, '0')}.webp`;
+        const img = document.createElement('img');
+        img.src = path;
+        img.className = "thumb";
+        img.onclick = () => openFull(path);
+        gallery.appendChild(img);
+    }
 }
 
-function openFull(src) {
-    fullImage.src = src;
-    artTitle.textContent = imageDetails[key]?.title || "Không có tiêu đề";
-    artDesc.textContent = imageDetails[key]?.desc || "Chưa có mô tả cho tác phẩm này.";
+function openFull(path) {
+    fullImage.src = path;
+    artTitle.textContent = imageDetails[path]?.title || "Không có tiêu đề";
+    artDesc.textContent = imageDetails[path]?.desc || "Chưa có mô tả cho tác phẩm này.";
     overlay.style.display = "flex";
 }
 closeBtn.onclick = () => overlay.style.display = "none";
 
-// Load mặc định Minh họa
+// Load mặc định
 loadCategory('MinhHoa');
 </script>
 
