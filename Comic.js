@@ -58,8 +58,11 @@ function switchLanguage() {
     localStorage.setItem('lang', currentLang);
     for(const key in translations[currentLang]) {
         const el = document.getElementById(key);
-        if(el) el.innerHTML = translations[currentLang][key];
-    }
+if (el) {
+    const p = el.querySelector('p');
+    if (p) p.textContent = translations[currentLang][key];
+}
+
 }
 
 langBtn.addEventListener('click', switchLanguage);
