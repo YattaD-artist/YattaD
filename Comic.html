@@ -7,7 +7,7 @@
 
     <!-- Google Fonts & Icons -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Noto+Sans+JP&family=Patrick+Hand&family=Big+Shoulders+Stencil+Text&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap"
       rel="stylesheet"
     />
     <link
@@ -35,7 +35,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Noto Sans JP', sans-serif;
+  font-family: 'Saira', sans-serif;
   background-color: #1a1414;
   color: #f5efe6;
 }
@@ -46,9 +46,9 @@ body {
 /* ===== Tiêu đề ===== */
 h1 {
   position: relative;
-  font-family: 'Big Shoulders Stencil Text', sans-serif;
-  font-weight: 400;
-  font-size: clamp(4rem, 9vw, 5.5rem);
+  font-family: 'Saira', sans-serif;
+  font-weight: 700;
+  font-size: clamp(2.5rem, 6vw, 3.5rem);
   color: #b19777;
   text-align: center;
   margin: 0.5rem 0 1.5rem;
@@ -56,109 +56,47 @@ h1 {
   text-transform: uppercase;
   letter-spacing: 0.35px;
   z-index: 10;
-  text-shadow: 0 0 4px #40202099;
+  text-shadow: 0 0 2px #40202099;
 }
 
 /* ===== MENU CHÍNH ===== */
 .menu {
-  position: relative;
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-evenly;
-  gap: 4rem;
-  margin-top: 4rem;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
   padding: 0 5vw;
-  z-index: 10;
 }
 
 /* ========== ITEM MENU ========== */
 .menu a {
   position: relative;
-  overflow: hidden;
-  width: 120px;
-  height: 120px;
-  transform: rotate(45deg); /* Hình vuông nghiêng */
+  width: 140px;
+  height: 50px;
   background-color: #442a2a;
   border: 2px solid #7e4b4b;
-  box-shadow: inset 0 0 6px #1e0e0e, 0 0 4px #00000022;
-  transition: all 0.3s ease;
+  box-shadow: 0 0 4px #00000022;
+  transition: background 0.3s, border-color 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  backdrop-filter: blur(1px);
-  opacity: 0.95;
-}
-
-/* ========== TEXT BÊN TRONG ITEM ========== */
-.menu a span {
-  transform: rotate(-45deg); /* Chữ đứng thẳng */
-  font-family: 'Amatic SC', cursive;
-  font-size: 2rem;
-  text-align: center;
-  padding: 0 0.5rem;
+  font-family: 'Saira', sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
   color: inherit;
-  z-index: 1;
-  position: relative;
+  border-radius: 7px;
+  text-decoration: none;
+  opacity: 0.95;
+  margin: 0;
 }
 
 /* ========== HOVER ========== */
 .menu a:hover {
   background-color: #e9282c;
   border-color: #ff5252;
-  box-shadow: 0 0 12px #e9282caa;
-}
-
-/* ========== FLOATING ANIMATION KEYFRAMES ========== */
-@keyframes floatY0 {
-  0%, 100% { transform: translateY(0) rotate(45deg); }
-  50% { transform: translateY(-6px) rotate(45deg); }
-}
-@keyframes floatY1 {
-  0%, 100% { transform: translateX(0) rotate(45deg); }
-  50% { transform: translateX(6px) rotate(45deg); }
-}
-@keyframes floatY2 {
-  0%, 100% { transform: translate(0, 0) rotate(45deg); }
-  50% { transform: translate(-4px, -4px) rotate(45deg); }
-}
-@keyframes floatY3 {
-  0%, 100% { transform: rotate(45deg) scale(1); }
-  50% { transform: rotate(45deg) scale(1.05); }
-}
-@keyframes floatY4 {
-  0%, 100% { transform: translateY(0) rotate(45deg); }
-  50% { transform: translateY(8px) rotate(45deg); }
-}
-@keyframes floatY5 {
-  0%, 100% { transform: rotate(45deg) translateY(0); }
-  50% { transform: rotate(45deg) translateY(-8px) scale(1.03); }
-}
-
-/* ========== GÁN ANIMATION THEO SHARD ========== */
-a[data-shard="0"] {
-  animation: floatY0 4s ease-in-out infinite;
-  animation-delay: calc(var(--i) * 0.3s);
-}
-a[data-shard="1"] {
-  animation: floatY1 5s ease-in-out infinite;
-  animation-delay: calc(var(--i) * 0.2s);
-}
-a[data-shard="2"] {
-  animation: floatY2 6s ease-in-out infinite;
-  animation-delay: calc(var(--i) * 0.25s);
-}
-a[data-shard="3"] {
-  animation: floatY3 4.5s ease-in-out infinite;
-  animation-delay: calc(var(--i) * 0.35s);
-}
-a[data-shard="4"] {
-  animation: floatY4 3.8s ease-in-out infinite;
-  animation-delay: calc(var(--i) * 0.2s);
-}
-a[data-shard="5"] {
-  animation: floatY5 5.2s ease-in-out infinite;
-  animation-delay: calc(var(--i) * 0.15s);
+  color: #fff;
 }
 
 /* ===== Layout chung ===== */
@@ -167,7 +105,7 @@ a[data-shard="5"] {
   justify-content: center;
   align-items: flex-start;
   width: 100%;
-  padding-top: clamp(8vh, 12vh, 16vh);
+  padding-top: 8vh;
 }
 .panel-inner {
   width: 100%;
@@ -175,13 +113,13 @@ a[data-shard="5"] {
   padding: 0 1rem;
 }
 .back-link {
-  position: relative;
   display: block;
   text-align: center;
   font-size: 1rem;
-  margin-top: 3rem;
+  margin-top: 2rem;
   padding-top: 1rem;
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Saira', sans-serif;
+  font-weight: 400;
   text-decoration: none;
   color: #a19386;
   transition: color 0.2s;
@@ -189,33 +127,6 @@ a[data-shard="5"] {
 }
 .back-link:hover {
   color: #e9282c;
-}
-
-/* ===== Hình vuông trôi nền ===== */
-.floating-pattern {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  overflow: hidden;
-}
-.square {
-  position: absolute;
-  background-color: #2e1a1a;
-  border: 2px solid #5d3b3b;
-  box-shadow: inset 0 0 6px #00000055, 0 0 4px #00000033;
-  transform: rotate(45deg);
-  animation: floatSquare linear infinite;
-  opacity: 0.8;
-}
-@keyframes floatSquare {
-  0% { transform: translateY(0) rotate(45deg); opacity: 0.6; }
-  50% { transform: translateY(-50vh) translateX(10px) rotate(45deg); }
-  100% { transform: translateY(-100vh) translateX(-10px) rotate(45deg); opacity: 0; }
-}
-@keyframes floatY {
-  0%, 100% { transform: rotate(45deg) translateY(0); }
-  50% { transform: rotate(45deg) translateY(-10px); }
 }
 
 /* ===== Nút đổi theme ===== */
@@ -244,19 +155,12 @@ body.light-mode h1 {
 body.light-mode .menu a {
   background-color: #c9b2ae;
   border: 2px solid #a07575;
-  box-shadow: inset 0 0 4px #ffffffaa, 0 0 4px #00000022;
-  backdrop-filter: blur(1px);
+  box-shadow: 0 0 4px #00000022;
 }
 body.light-mode .menu a:hover {
   background-color: #e9282c;
   border-color: #ff5c5c;
-  box-shadow: 0 0 10px #e9282c99;
-}
-body.light-mode .square {
-  background-color: #dac0ba;
-  border: 2px solid #9b6d6d;
-  box-shadow: inset 0 0 5px #ffffffaa, 0 0 3px #00000033;
-  opacity: 0.7;
+  color: #fff;
 }
 body.light-mode .caption,
 body.light-mode .close-btn,
@@ -302,7 +206,8 @@ body.light-mode .restart-btn {
   transform: translate(calc(50% + 30px), -50%) scale(0.6) rotate(5deg);
 }
 .caption, .close-btn, .restart-btn {
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Saira', sans-serif;
+  font-weight: 400;
   z-index: 20;
 }
 .caption {
@@ -346,9 +251,6 @@ body.light-mode .restart-btn {
   </head>
 
   <body>
-    <!-- Hiệu ứng nền hình vuông -->
-    <div class="floating-pattern" id="floating-pattern"></div>
-
     <!-- Nút chuyển chế độ sáng/tối -->
     <button class="theme-toggle" id="themeToggle" title="Đổi chế độ sáng / tối">
       <i class="fa-solid fa-eye"></i>
@@ -359,12 +261,12 @@ body.light-mode .restart-btn {
       <div class="panel-inner">
         <h1>TRUYỆN TRANH</h1>
         <nav class="menu">
-<a id="punkga-link" class="shard" data-shard="0" style="--i: 0"><span>PunkgaMerch</span></a>
-<a data-story="RedRuby" class="story-link unavailable shard" data-shard="1" style="--i: 1"><span>Red & Ruby</span></a>
-<a data-story="StillTrue" class="story-link unavailable shard" data-shard="2" style="--i: 2"><span>Still become true</span></a>
-<a data-story="LeThan" class="story-link unavailable shard" data-shard="3" style="--i: 3"><span>Lê Thận</span></a>
-<a data-story="Raku" class="story-link unavailable shard" data-shard="4" style="--i: 4"><span>Raku</span></a>
-<a data-story="Breakthrough" class="story-link unavailable shard" data-shard="5" style="--i: 5"><span>Breakthrough</span></a>
+          <a id="punkga-link"><span>PunkgaMerch</span></a>
+          <a class="story-link unavailable"><span>Red & Ruby</span></a>
+          <a class="story-link unavailable"><span>Still become true</span></a>
+          <a class="story-link unavailable"><span>Lê Thận</span></a>
+          <a class="story-link unavailable"><span>Raku</span></a>
+          <a class="story-link unavailable"><span>Breakthrough</span></a>
         </nav>
         <a href="index.html" class="back-link">← Quay lại trang chủ</a>
       </div>
@@ -380,62 +282,9 @@ body.light-mode .restart-btn {
 
     <!-- JavaScript -->
 <script>
-// ========== 1. Hiệu ứng nền hình vuông trôi ==========
-(function createFloatingSquares() {
-  const container = document.getElementById('floating-pattern');
-  const count = 60;
-  const used = new Set();
-
-  for (let i = 0; i < count; i++) {
-    const sq = document.createElement('div');
-    sq.classList.add('square');
-
-    let left, bottom, key;
-    do {
-      left = Math.floor(Math.random() * 95);
-      bottom = Math.floor(Math.random() * 60);
-      key = `${left}-${bottom}`;
-    } while (used.has(key));
-
-    used.add(key);
-    const size = 20 + Math.random() * 20;
-    sq.style.left = `${left}vw`;
-    sq.style.bottom = `${bottom}vh`;
-    sq.style.width = `${size}px`;
-    sq.style.height = `${size}px`;
-    sq.style.animationDuration = `${12 + Math.random() * 10}s`;
-    container.appendChild(sq);
-  }
-})();
-
 // ========== 2. Hiệu ứng menu ==========
 (function setupMenuInteraction() {
-  const items = Array.from(document.querySelectorAll('.menu a'));
-  const menu = document.querySelector('.menu');
-  const threshold = 60;
-
-  // Random offset
-  items.forEach((el) => {
-    el.style.marginLeft = `${Math.random() * 40 - 20}px`;
-    el.style.marginTop = `${Math.random() * 30 - 15}px`;
-  });
-
-  // Hover tạm dừng
-  menu.addEventListener('mousemove', (e) => {
-    items.forEach((el) => {
-      const r = el.getBoundingClientRect();
-      const d = Math.hypot(
-        e.clientX - (r.left + r.width / 2),
-        e.clientY - (r.top + r.height / 2)
-      );
-      el.style.animationPlayState = d < threshold ? 'paused' : 'running';
-    });
-  });
-  menu.addEventListener('mouseleave', () => {
-    items.forEach((el) => {
-      el.style.animationPlayState = 'running';
-    });
-  });
+  // Giao diện cơ bản: không hiệu ứng
 })();
 
 // ========== 3. Đổi chế độ sáng/tối ==========
