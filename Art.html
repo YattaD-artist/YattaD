@@ -249,9 +249,8 @@ function loadCategory(cat) {
     }
 }
 
-function openFull(src) {
-    const key = src.replace(/\.\w+$/, "");
-    const detail = imageDetails[key]?.[currentLang] || {};
+function openFull(path) {
+    fullImage.src = path;
     artTitle.textContent = detail.title || translations[currentLang].noTitle;
     artDesc.textContent = detail.desc || translations[currentLang].noDesc;
     overlay.style.display = "flex";
