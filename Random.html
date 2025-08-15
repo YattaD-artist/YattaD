@@ -2,8 +2,10 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tiêu Chuẩn</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tiêu Chọn Chuẩn</title>
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
     /* ==== Overlay chung tái sử dụng ==== */
 .overlay {
@@ -240,8 +242,12 @@ input#questionCount {
   </style>
 </head>
 <body>
-
-  <!-- Thanh menu chính -->
+<header>
+      <div class="left">
+        <button class="icon-btn" id="theme-toggle" title="Về trang chủ"><i class="fa-solid fa-house"></i></button>
+        <button class="icon-btn" id="lang-toggle" title="Đổi ngôn ngữ"><i class="fa-solid fa-language"></i></button>
+    </div>
+  <!-- Thanh menu chính -->    <div class="center-title" data-lang="title">YattaD</div>
   <div class="menu">
     <div class="vietlott-menu">
       <button class="menu-btn vietlott-btn" data-type="mega">Tiêu chọn: Vietlott Mega</button>
@@ -249,7 +255,8 @@ input#questionCount {
     </div>
     <button class="menu-btn abcd-btn" id="abcdBtn">Tiêu chọn: ABCD</button>
   </div>
-
+</header>
+  
   <div class="layout">
     <div class="left">
       <canvas id="wheelCanvas" width="500" height="500"></canvas>
@@ -321,11 +328,6 @@ Chuẩn</textarea>
   </div>
 
 <script>
- // Âm thanh
-const popSound  = new Audio('Pop.mp3');
-const menuSound = new Audio('Menu.mp3');
-const goSound   = new Audio('GO.mp3');
-const noteSound = new Audio('Note.mp3');
 
 // Biến toàn cục
 let names = [], angle = 0, isSpinning = false;
@@ -382,7 +384,6 @@ function drawSpinningWheel(rot) {
 // BẮT ĐẦU quay
 document.getElementById("spinButton").onclick = () => {
   if (isSpinning) return;
-  goSound.currentTime=0; goSound.play();
   isSpinning = true;
   document.getElementById("resultOverlay").style.display='none';
   updateNameList();
@@ -412,7 +413,6 @@ function showResult(finalAngle) {
   const win   = names[idx];
   document.getElementById("resultText").textContent = `🎯 Tiêu suy đi tính lại vài lần đã chọn được: ${win}`;
   document.getElementById("resultOverlay").style.display='flex';
-  noteSound.currentTime=0; noteSound.play();
 }
 
 // Khởi tạo & sự kiện textarea
@@ -431,7 +431,6 @@ document.querySelectorAll('.repeat-btn').forEach(btn=>{
     btn.classList.add('active');
     repeatCount = parseInt(btn.dataset.repeat);
     updateNameList(); drawWheel();
-    popSound.currentTime=0; popSound.play();
   });
 });
 
@@ -442,7 +441,6 @@ document.querySelectorAll('.speed-btn').forEach(btn=>{
       .forEach(b=>b.classList.remove('active'));
     btn.classList.add('active');
     spinSpeed = parseInt(btn.dataset.speed);
-    popSound.currentTime=0; popSound.play();
   });
 });
 
@@ -459,7 +457,6 @@ function generateVietlottNumbers(type) {
 }
 document.querySelectorAll('.vietlott-menu .menu-btn').forEach(btn=>{
   btn.addEventListener('click',()=>{
-    menuSound.currentTime=0; menuSound.play();
     const type = btn.dataset.type;
     const nums = generateVietlottNumbers(type);
     const cont = document.getElementById('vietlottNumbers');
@@ -472,7 +469,6 @@ document.querySelectorAll('.vietlott-menu .menu-btn').forEach(btn=>{
       cont.appendChild(ball);
     });
     document.getElementById('vietlottOverlay').style.display='flex';
-    noteSound.currentTime=0; noteSound.play();
   });
 });
 document.getElementById('vietlottClose').onclick = ()=>{
@@ -489,7 +485,6 @@ const abcdResult    = document.getElementById('abcdResult');
 
 abcdBtn.onclick = ()=>{
   abcdOverlay.style.display='flex';
-  noteSound.currentTime=0; noteSound.play();
 };
 closeAbcd.onclick = ()=>{
   abcdOverlay.style.display='none';
