@@ -367,6 +367,18 @@ main {
     <a id="" data-lang="comic4">Khai&Phá</a>
     <a href="" data-lang="comic5">Sao Băng Mùa Hạ</a>
 </div>
+
+    <div id="overlay" class="modal" style="display:none;">
+  <div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;">
+    <div id="deck" style="position:relative;width:100%;max-width:460px;height:75vh;overflow:hidden;display:flex;align-items:center;justify-content:center;"></div>
+    <div style="margin-top:12px;">
+      <span id="caption" style="font-weight:bold;"></span>
+    </div>
+    <button id="closeBtn" class="close-btn" style="margin-top:18px;">Đóng</button>
+    <button id="restartBtn" class="close-btn" style="display:none;margin-top:8px;">Xem lại</button>
+  </div>
+</div>
+    
 </main>
 
 <script>
@@ -432,6 +444,189 @@ imageModal.addEventListener('click', () => {
     // Áp dụng khi load trang
     applyTheme();
     applyLanguage();
+    
+//TRUYÊN TRANH
+//TRUYÊN TRANH    
+//TRUYÊN TRANH
+const galleryConfig = {
+  punkga: { 
+    total: 15,
+    folder: "PunkgaMerch",
+    captions: (i) => i === 0 ? 'Trang Bìa' : `Trang ${i}`,
+  },
+  redruby: { 
+    total: 18, 
+    folder: "RedRuby",
+    captions: (i) => i === 0 ? 'Trang Bìa' : `Trang ${i}`,
+  },
+  tieutung: {
+    total: 14,
+    folder: "TieuTung",
+    captions: (i) => i === 0 ? 'Trang Bìa' : `Trang ${i}`,
+  },
+  khaipha: {
+    total: 12,
+    folder: "KhaiPha",
+    captions: (i) => i === 0 ? 'Trang Bìa' : `Trang ${i}`,
+  },
+  saobang: {
+    total: 12,
+    folder: "SaoBangMuaHa",
+    captions: (i) => i === 0 ? 'Trang Bìa' : `Trang ${i}`,
+  }
+};
+
+function setupGallery(triggerId, configKey) {
+  const overlay = document.getElementById('overlay');
+  const deck = document.getElementById('deck');
+  const caption = document.getElementById('caption');
+  const closeBtn = document.getElementById('closeBtn');
+  const restartBtn = document.getElementById('restartBtn');
+  const { total, folder, captions } = galleryConfig[configKey];
+  const sounds = Array.from({ length: 4 }, (_, i) => `assets/sfx/Pictures/Paper${i + 1}.mp3`);
+
+  let images = [];
+  let index = 0;
+  let transitioning = false;
+  let touchStartX = 0;
+
+  function clearGallery() {
+    deck.innerHTML = '';
+    images = [];
+  }
+
+  function loadImages() {
+    clearGallery();
+    for (let i = 0; i < total; i++) {
+      const img = document.createElement('img');
+      img.src = `comics/${folder}/${String(i).padStart(2, '0')}.webp`;
+      img.style.position = 'absolute';
+      img.style.top = 0;
+      img.style.left = 0;
+      img.style.width = '100%';
+      img.style.height = '100%';
+      img.style.objectFit = 'contain';
+      img.style.transition = 'opacity 0.25s, transform 0.5s';
+      img.style.opacity = 0;
+      img.style.pointerEvents = 'none';
+      if (i > 2) img.loading = 'lazy';
+      deck.appendChild(img);
+      images.push(img);
+
+      img.addEventListener('transitionend', () => {
+        if (img.classList.contains('active')) transitioning = false;
+      });
+    }
+  }
+
+  function update() {
+    images.forEach((img, i) => {
+      img.className = '';
+      img.style.zIndex = '';
+      img.style.opacity = (i === index) ? 1 : 0;
+      img.style.transform = '';
+      if (i === index) {
+        img.classList.add('active');
+        img.style.zIndex = '30';
+        img.style.pointerEvents = 'auto';
+        img.style.transform = 'scale(1)';
+      } else if (i < index) {
+        img.classList.add('left');
+        img.style.zIndex = String(5 + i);
+        img.style.transform = 'translateX(-35%) scale(0.95)';
+      } else {
+        img.classList.add('right');
+        img.style.zIndex = String(5 - (i - index));
+        img.style.transform = 'translateX(35%) scale(0.95)';
+      }
+    });
+    caption.textContent = captions(index);
+    restartBtn.style.display = index === total - 1 ? 'block' : 'none';
+  }
+
+  function playSound() {
+    const audio = new Audio(sounds[Math.floor(Math.random() * sounds.length)]);
+    audio.playbackRate = 1.5;
+    audio.play().catch(() => {});
+  }
+
+  function show() {
+    index = 0;
+    transitioning = false;
+    overlay.style.display = 'flex';
+    loadImages();
+    update();
+  }
+
+  function hide() {
+    overlay.style.display = 'none';
+    transitioning = false;
+  }
+
+  function next() {
+    if (!transitioning && index < total - 1) {
+      playSound();
+      transitioning = true;
+      index++;
+      update();
+    }
+  }
+
+  function prev() {
+    if (!transitioning && index > 0) {
+      playSound();
+      transitioning = true;
+      index--;
+      update();
+    }
+  }
+
+  function restart() {
+    if (!transitioning) {
+      index = 0;
+      update();
+    }
+  }
+
+  // Sự kiện
+  document.getElementById(triggerId).addEventListener('click', function(e){
+    e.preventDefault();
+    show();
+  });
+  closeBtn.onclick = hide;
+  restartBtn.onclick = restart;
+  overlay.onclick = function(e) {
+    const rect = overlay.getBoundingClientRect();
+    if (e.target === overlay) {
+      // Chỉ khi click vào overlay, không phải con
+      hide();
+    } else if (e.clientX > rect.left + rect.width / 2 + 50) next();
+    else if (e.clientX < rect.left + rect.width / 2 - 50) prev();
+  };
+  overlay.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+  overlay.addEventListener('touchend', (e) => {
+    const diff = e.changedTouches[0].clientX - touchStartX;
+    if (Math.abs(diff) > 50) {
+      diff < 0 ? next() : prev();
+    }
+  });
+  window.addEventListener('keydown', (e) => {
+    if (overlay.style.display === 'flex' && !transitioning) {
+      if (e.key === 'ArrowRight') next();
+      if (e.key === 'ArrowLeft') prev();
+      if (e.key === 'Escape') hide();
+    }
+  });
+}
+
+// Áp dụng cho các menu
+setupGallery('punkga-link', 'punkga');
+setupGallery('redruby-link', 'redruby');
+setupGallery('tieutung-link', 'tieutung');
+setupGallery('khaipha-link', 'khaipha');
+setupGallery('saobang-link', 'saobang');
 
 </script>
 </body>
