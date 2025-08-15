@@ -1,27 +1,3 @@
-// --- Cấu hình số trang cho từng truyện ---
-const storyPages = {
-    "PunkgaMerch": 14, // sửa số lượng trang thực tế
-    "Red&Ruby": 0,
-    "BreakthRough": 11,
-    "TieuTung": 0,
-    "Siin": 0,
-    "StillComeTrue": 0,
-    "LeThan": 0,
-    "Raku": 0
-};
-
-// --- Mapping menu text sang folder ---
-const storyFolders = {
-    "PunkgaMerch": "PunkgaMerch",
-    "Red và Ruby": "Red&Ruby",
-    "Khai Phá": "BreakthRough",
-    "Tiêu Tùng": "TieuTung",
-    "Sao Băng Mùa Hạ": "Siin",
-    "Vẫn Đúng": "StillComeTrue",
-    "Lê Thận": "LeThan",
-    "Raku": "Raku"
-};
-
 // --- Preload ảnh 00.webp của tất cả menu ---
 function preloadFirstPageImages() {
     for (const storyName in storyFolders) {
@@ -31,6 +7,9 @@ function preloadFirstPageImages() {
     }
 }
 
+// Gọi hàm preload khi DOM load xong
+document.addEventListener('DOMContentLoaded', preloadFirstPageImages);
+    
 // --- Theme Toggle ---
 const themeBtn = document.getElementById('theme-toggle');
 themeBtn.addEventListener('click', () => {
@@ -66,9 +45,9 @@ const translations = {
         menu1: "PunkgaMerch",
         menu2: "Red & Ruby",
         menu3: "Tieu Tung",
-        menu4: "Summer Meteor",
-        menu5: "Exploration",
-        menu6: "Still Right",
+        menu4: "Summer Shooting Star",
+        menu5: "Break thRough",
+        menu6: "Still Come True",
         menu7: "Le Than",
         menu8: "Raku"
     }
@@ -84,19 +63,43 @@ function switchLanguage() {
 }
 
 langBtn.addEventListener('click', switchLanguage);
-
-// đảm bảo preload + ngôn ngữ (nếu cần) khi DOM sẵn sàng
 document.addEventListener('DOMContentLoaded', () => {
-    preloadFirstPageImages();
     if(currentLang === 'en') switchLanguage();
 });
 
-// --- Comic reader logic --- 
+// ComicReader.js - Script đọc truyện cho Comic.html
+// ComicReader.js - Script đọc truyện cho Comic.html
+// ComicReader.js - Script đọc truyện cho Comic.html
+
+// --- Cấu hình số trang cho từng truyện ---
+const storyPages = {
+    "PunkgaMerch": 14, // sửa số lượng trang thực tế
+    "Red&Ruby": 0,
+    "BreakthRough": 11,
+    "TieuTung": 8,
+    "Siin": 5,
+    "StillComeTrue": 0,
+    "LeThan": 0,
+    "Raku": 0
+};
+
+// --- Mapping menu text sang folder ---
+const storyFolders = {
+    "PunkgaMerch": "PunkgaMerch",
+    "Red và Ruby": "Red&Ruby",
+    "Khai Phá": "BreakthRough",
+    "Tiêu Tùng": "TieuTung",
+    "Sao Băng Mùa Hạ": "Siin",
+    "Vẫn Đúng": "StillComeTrue",
+    "Lê Thận": "LeThan",
+    "Raku": "Raku"
+};
+
 let currentStory = "";
 let currentPage = 1;
 let totalPages = 0;
-
-// --- Preload tất cả ảnh của một truyện ---
+    
+// --- Preload tất cả ảnh ---
 function preloadImages(storyName) {
     const folder = storyFolders[storyName];
     const total = storyPages[folder] || 3; // mặc định 3 nếu chưa khai báo
@@ -105,7 +108,6 @@ function preloadImages(storyName) {
         img.src = `comics/${folder}/${String(i).padStart(2,'0')}.webp`;
     }
 }
-
 // Lấy overlay và các element
 const overlay = document.getElementById('overlay');
 const deck = document.getElementById('deck');
@@ -115,11 +117,16 @@ const restartBtn = document.getElementById('restartBtn');
 
 // --- Tạo 3-panel layout ---
 const prevImg = document.createElement('img');
+prevImg.style.maxHeight = "40%";
+prevImg.style.opacity = "0.6";
 prevImg.style.marginRight = "10px";
 
 const currImg = document.createElement('img');
+currImg.style.maxHeight = "80%";
 
 const nextImg = document.createElement('img');
+nextImg.style.maxHeight = "40%";
+nextImg.style.opacity = "0.6";
 nextImg.style.marginLeft = "10px";
 
 deck.appendChild(prevImg);
@@ -146,7 +153,6 @@ function openStory(storyName) {
     totalPages = storyPages[folder] || 3; // mặc định 3 nếu chưa khai báo
     currentPage = 1;
     overlay.style.display = 'flex';
-    preloadImages(storyName);
     showPage();
 }
 
@@ -172,26 +178,21 @@ function restart() {
 closeBtn.addEventListener('click', ()=> overlay.style.display='none');
 restartBtn.addEventListener('click', restart);
 
-// --- Click các phần ảnh trong reader ---
+// --- Click menu ---
+document.querySelectorAll('.menuItem').forEach(item => {
+    item.addEventListener('click', () => openStory(item.innerText));
+});
+
+// --- Click qua ảnh mini ---
 prevImg.addEventListener('click', prevPageFunc);
 nextImg.addEventListener('click', nextPage);
 currImg.addEventListener('click', nextPage); // click vào ảnh lớn cũng next
 
 // --- Key navigation ---
 document.addEventListener('keydown', e => {
-    if(getComputedStyle(overlay).display === 'flex'){
+    if(overlay.style.display === 'flex'){
         if(e.key === "ArrowRight") nextPage();
         if(e.key === "ArrowLeft") prevPageFunc();
         if(e.key === "Escape") overlay.style.display='none';
     }
-});
-
-// (Tùy chọn) nếu muốn: click vào menuItem mở truyện theo innerText
-document.querySelectorAll('.menuItem').forEach(item => {
-    item.addEventListener('click', () => {
-        // nếu onclick inline đã gọi openStory thì đây là dự phòng
-        // sử dụng text nội dung trong <p> để mở
-        const name = item.querySelector('p') ? item.querySelector('p').innerText.trim() : item.innerText.trim();
-        openStory(name);
-    });
 });
