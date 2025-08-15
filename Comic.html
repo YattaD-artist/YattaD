@@ -1,1 +1,434 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>YattaD</title>
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+* {
+    box-sizing: border-box;
+}
 
+html, body {
+    max-width: 100%;
+    overflow-x: hidden; /* Chặn cuộn ngang */
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Saira', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    --bg: #ede9eb;
+    --text: #1a2129;
+    --accent: #e32630;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+body.dark {
+    --bg: #1b1b1b;
+    --text: #f5f5f5;
+    --accent: #1cd9cf;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    border-bottom: 1px solid #ccc;
+    background-color: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.center-title {
+    flex: 1;
+    text-align: center;
+    font-weight: 800;
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+    color: var(--accent);
+}
+
+.left, .right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    transition: transform 0.25s ease, color 0.25s ease, background-color 0.25s ease;
+}
+.icon-btn:hover {
+    transform: scale(1.15);
+    color: var(--accent);
+    background-color: rgba(0,0,0,0.05);
+}
+
+a {
+    text-decoration: none;
+}
+
+a:hover,
+a:focus {
+    text-decoration: none;
+}
+
+main {
+    display: flex;
+    flex: 1;
+    min-height: calc(100vh - 70px);
+    gap: 30px;
+    padding: 30px;
+}
+
+.info {
+    flex: 2;
+    padding: 32px;
+    background-color: var(--bg);
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    overflow-y: auto;
+    transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+.info h2 {
+    font-size: 2rem;
+    margin-bottom: 16px;
+    font-weight: 700;
+    color: var(--accent);
+    border-bottom: 3px solid var(--accent);
+    display: inline-block;
+    padding-bottom: 5px;
+}
+.info h3 {
+    font-size: 1.15rem;
+    margin: 10px 0;
+    line-height: 1.5;
+}
+.info strong {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.menu {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    margin-top: 48px;
+    animation: slideIn 0.6s ease-out forwards;
+    opacity: 0;
+    min-height: auto;
+}
+.menu a {
+    display: block;
+    padding: 14px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    text-decoration: none;
+    color: var(--text);
+    background-color: var(--bg);
+    border: 2px solid var(--text);
+    border-radius: 12px;
+    transition: all 0.25s ease;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.menu a:hover {
+    background-color: var(--accent);
+    color: var(--bg);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(40px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 200;
+    left: 0; top: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(53, 63, 69, 0.7);
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    background-color: var(--bg);
+    padding: 15px;
+    border-radius: 12px;
+    max-width: 380px;   /* Giới hạn chiều rộng tối đa nhỏ hơn */
+    max-height: 50vh;
+    width: 90%;
+    text-align: center;
+    color: var(--text);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.qr-list {
+    display: flex;
+    gap: 20px;
+    flex-wrap: nowrap;
+    justify-content: center;
+}
+.qr-item img {
+    width: 150px;
+    border: 2px solid var(--text);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.qr-item img:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+}
+
+.close-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    background-color: var(--accent);
+    color: var(--bg);
+    cursor: pointer;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background-color 0.25s ease, transform 0.25s ease;
+}
+.close-btn:hover {
+    transform: translateY(-1px);
+    background-color: #14b0ab;
+}
+
+.image-modal {
+    display: none;
+    position: fixed;
+    z-index: 300;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(53, 63, 69, 0.8);
+    justify-content: center;
+    align-items: center;
+}
+.image-modal img {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(53, 63, 69, 0.5);
+}
+
+/* MOBILE */
+/* Phiên bản Mobile */
+/* Mobile Layout */
+/* Mobile Layout */
+/* Mobile Layout */
+@media (max-width: 768px) {
+    body {
+        overflow: auto;
+        padding-bottom: 60px; /* chừa chỗ cho menu cố định */
+    }
+
+    /* Header giữ chữ ở giữa, icon hai bên */
+    header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 8px 12px;
+    }
+
+    .center-title {
+        font-size: 1.6rem;
+        text-align: center;
+        flex: 1;
+    }
+
+    .left, .right {
+        flex-direction: row;
+        gap: 8px;
+    }
+
+.floating-controls {
+        display: flex;
+        flex-direction: row; /* Xếp ngang */
+        gap: 8px;            /* Khoảng cách giữa 2 nút */
+        margin-bottom: 10px; /* Cách phần nội dung dưới */
+    }
+
+    /* Info chiếm toàn bộ chiều ngang */
+    main {
+        flex-direction: column;
+        padding: 10px;
+        gap: 10px;
+    }
+
+    .info {
+        width: 100%;
+        padding: 16px;
+        padding-bottom: 32px;
+    }
+
+    /* Menu ngang luôn hiển thị ở đáy */
+     @media (max-width: 768px) {
+    .menu {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-around;
+        background-color: var(--bg);
+        padding: 6px 4px; /* Giảm padding ngang */
+        gap: 4px;
+        border-top: 1px solid #ccc;
+        box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+        z-index: 200;
+    }
+
+    .menu a {
+        flex: 1;
+        padding: 8px 4px;
+        font-size: 0.95rem;
+        white-space: normal; /* Cho phép xuống hàng */
+        line-height: 1.2;
+        text-align: center;
+        word-break: break-word;
+    }
+}
+
+}
+
+    /* Popup full màn hình */
+    .modal-content {
+        width: 95%;
+        max-width: none;
+        height: 100%;
+        overflow-y: auto;
+        padding-top: 0px;
+    }
+
+    .qr-item img {
+        width: 100px;
+    }
+
+}
+
+</style>
+</head>
+<body>
+<header>
+    <div class="left">
+        <button class="icon-btn" id="theme-toggle" title="Đổi chế đố"><i class="fas fa-adjust"></i></button>
+        <button class="icon-btn" id="lang-toggle" title="Đổi ngôn ngữ"><i class="fa-solid fa-language"></i></button>
+    </div>
+    <div class="center-title" data-lang="title">Truyện Tranh</div>
+</header>
+
+<main>
+    <div class="info">
+        <h2 data-lang="infoTitle">Lời Nói Đầu</h2>
+   
+    </div>
+    <div class="menu">
+    <a href="" data-lang="comic1">PunkgaMerch</a>
+    <a href="" data-lang="comic2">Red&Ruby</a>
+    <a href="" data-lang="comic3">Tiêu&Tùng</a>
+    <a id="" data-lang="comic4">Khai&Phá</a>
+    <a href="" data-lang="comic5">Sao Băng Mùa Hạ</a>
+</div>
+</main>
+
+<script>
+    const translations = {
+        vi: {
+            title: "Lời Nói Đầu",
+          
+            comic1: "Bộ Áo Mới Của Nhà Vua",
+            comic2: "Red và Ruby",
+            comic3: "Tiêu Tùng",
+            comic4: "Khai Phá",
+            comic5: "Sao Băng Mùa Hạ",
+
+            closeBtn: "Đóng"
+        },
+        en: {
+            title: "Foreword",
+          
+            comic1: "PunkGa&shy;Merch",
+            comic2: "Red&shy;&&shy;Ruby",
+            comic3: "Tieu&shy;Tung",
+            comic4: "Break&shy;th&shy;Rough",
+            comic5: "Summershy;Shootshy;tingshy;Star",
+
+            closeBtn: "Close"
+        }
+    };
+
+    let currentLang = localStorage.getItem("lang") || "vi";
+    let darkMode = localStorage.getItem("theme") === "dark";
+
+    function applyLanguage() {
+        document.querySelectorAll("[data-lang]").forEach(el => {
+            const key = el.getAttribute("data-lang");
+            if (translations[currentLang][key]) {
+                el.innerHTML = translations[currentLang][key];
+            }
+        });
+        localStorage.setItem("lang", currentLang);
+    }
+
+    function applyTheme() {
+        document.body.classList.toggle("dark", darkMode);
+        localStorage.setItem("theme", darkMode ? "dark" : "light");
+    }
+
+    document.getElementById("lang-toggle").addEventListener("click", () => {
+        currentLang = currentLang === "vi" ? "en" : "vi";
+        applyLanguage();
+    });
+
+    document.getElementById('theme-toggle').addEventListener('click', () => {
+        darkMode = !darkMode;
+        applyTheme();
+    });
+});
+
+imageModal.addEventListener('click', () => {
+    imageModal.style.display = 'none';
+    largeImage.src = '';
+});
+
+    // Áp dụng khi load trang
+    applyTheme();
+    applyLanguage();
+
+</script>
+</body>
+</html>
