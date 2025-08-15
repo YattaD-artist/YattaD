@@ -247,10 +247,44 @@ document.getElementById('closeAbcd').onclick = ()=> abcdModal.style.display='non
 // Vòng quay
 const wheelCanvas = document.getElementById('wheelCanvas');
 const ctx = wheelCanvas.getContext('2d');
-let names = document.getElementById('inputNames').value.split('\n').filter(n=>n.trim()!=='');
-let angle = 0;
 
+let names = [];
+let angle = 0;
+let repeat = 1; // số lần lặp danh sách
+let speedFactor = 1; // tốc độ
+
+// Cập nhật số lần lặp
+document.querySelectorAll('.repeat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.repeat-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        repeat = parseInt(btn.dataset.repeat);
+        updateNames(); // tự động cập nhật vòng quay
+        drawWheel();
+    });
+});
+
+// Cập nhật tốc độ
+document.querySelectorAll('.speed-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.speed-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        speedFactor = parseFloat(btn.dataset.speed);
+    });
+});
+
+// Cập nhật tên từ textarea và lặp theo repeat
+function updateNames(){
+    const input = document.getElementById('inputNames').value.split('\n').filter(n=>n.trim()!=='');
+    names = [];
+    for(let i=0;i<repeat;i++){
+        names = names.concat(input);
+    }
+}
+
+// Vẽ bánh xe
 function drawWheel() {
+    if(names.length===0) return;
     const n = names.length;
     const radius = 180;
     ctx.clearRect(0,0,400,400);
@@ -272,16 +306,23 @@ function drawWheel() {
         ctx.restore();
     }
 }
-drawWheel();
 
+// Khi người dùng thay đổi danh sách tên, cập nhật luôn
+document.getElementById('inputNames').addEventListener('input', () => {
+    updateNames();
+    drawWheel();
+});
+
+// Bắt đầu quay
 document.getElementById('spinButton').onclick = ()=>{
-    names = document.getElementById('inputNames').value.split('\n').filter(n=>n.trim()!=='');
+    updateNames(); // dùng dữ liệu mới nhất
     if(names.length===0) return alert('Nhập ít nhất 1 tên');
     let speed = 0.3 + Math.random()*0.5;
     let spins = 200 + Math.random()*200;
     let currentSpin=0;
+
     const anim = setInterval(()=>{
-        angle += speed;
+        angle += speed*speedFactor;
         currentSpin++;
         drawWheel();
         ctx.save();
@@ -297,6 +338,9 @@ document.getElementById('spinButton').onclick = ()=>{
     }, 10);
 };
 
+// Khởi tạo ban đầu
+updateNames();
+drawWheel();
 // Vietlott generator
 function generateVietlott(type){
     let count = type==='mega'?6:5;
