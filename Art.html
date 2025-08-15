@@ -1,1 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YattaD - Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+* { box-sizing: border-box; }
+body {
+    margin: 0; font-family: 'Saira', sans-serif;
+    background-color: #ede9eb; color: #1a2129;
+}
+header {
+    display: flex; justify-content: center; align-items: center;
+    padding: 12px; background: #fff; border-bottom: 1px solid #ccc;
+    position: sticky; top: 0; z-index: 10;
+}
+.menu {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    justify-content: center; margin: 15px 0;
+}
+.menu button {
+    padding: 10px 16px; border: 2px solid #1a2129; border-radius: 8px;
+    background: none; cursor: pointer; font-weight: bold;
+    transition: all 0.2s ease;
+}
+.menu button:hover {
+    background: #e32630; color: white; border-color: #e32630;
+}
+#gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 10px; padding: 10px;
+}
+.thumb {
+    width: 100%; aspect-ratio: 1/1; object-fit: cover;
+    cursor: pointer; border-radius: 6px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.thumb:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+#overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.95); z-index: 999;
+    justify-content: center; align-items: center; flex-direction: column;
+}
+#overlay img {
+    max-width: 90%; max-height: 90%; border-radius: 6px;
+}
+#overlay button {
+    position: absolute; top: 20px; right: 20px;
+    font-size: 1.5rem; background: none; border: none; color: white;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
 
+<header>
+    <h1>YattaD - Gallery</h1>
+</header>
+
+<div class="menu">
+    <button onclick="loadCategory('MinhHoa')">Minh họa</button>
+    <button onclick="loadCategory('Concepts')">Thiết kế nhân vật</button>
+    <button onclick="loadCategory('Comm')">Commissions</button>
+    <button onclick="loadCategory('Fan')">Fanart</button>
+</div>
+
+<div id="gallery"></div>
+
+<div id="overlay">
+    <button id="closeBtn">✖</button>
+    <img id="fullImage" src="" alt="">
+</div>
+
+<script>
+const gallery = document.getElementById('gallery');
+const overlay = document.getElementById('overlay');
+const fullImage = document.getElementById('fullImage');
+const closeBtn = document.getElementById('closeBtn');
+
+// Giả sử số ảnh mỗi mục là cố định (có thể chỉnh)
+const categoryImages = {
+    "MinhHoa": 8,
+    "Concepts": 6,
+    "Comm": 10,
+    "Fan": 5
+};
+
+function loadCategory(cat) {
+    gallery.innerHTML = "";
+    let total = categoryImages[cat] || 0;
+    for (let i = 1; i <= total; i++) {
+        let img = document.createElement('img');
+        img.src = `arts/${cat}/${String(i).padStart(2,'0')}.webp`;
+        img.className = "thumb";
+        img.onclick = () => openFull(img.src);
+        gallery.appendChild(img);
+    }
+}
+
+function openFull(src) {
+    fullImage.src = src;
+    overlay.style.display = "flex";
+}
+
+closeBtn.onclick = () => {
+    overlay.style.display = "none";
+};
+
+// Mặc định load Minh họa
+loadCategory('MinhHoa');
+</script>
+
+</body>
+</html>
