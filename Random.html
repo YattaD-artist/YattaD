@@ -1,1 +1,93 @@
+<!-- tieu.html -->
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tiêu Chuẩn</title>
+  <link rel="stylesheet" href="Random.css" />
+</head>
+<body>
 
+  <!-- Thanh menu chính -->
+  <div class="menu">
+    <div class="vietlott-menu">
+      <button class="menu-btn vietlott-btn" data-type="mega">Tiêu chọn: Vietlott Mega</button>
+      <button class="menu-btn vietlott-btn" data-type="power">Tiêu chọn: Vietlott Power</button>
+    </div>
+    <button class="menu-btn abcd-btn" id="abcdBtn">Tiêu chọn: ABCD</button>
+  </div>
+
+  <div class="layout">
+    <div class="left">
+      <canvas id="wheelCanvas" width="500" height="500"></canvas>
+      <div id="centerImage"></div>
+    </div>
+    <div class="right">
+      <h2>Viết danh sách đi, Tiêu chọn cho:</h2>
+      <div class="input-wrap">
+        <textarea id="inputNames">Tiêu
+Mà
+Chọn
+Thì
+Chỉ
+Có
+Chuẩn</textarea>
+        <img src="Main.webp" alt="Main Image" id="mainImage" />
+      </div>
+      <label>Số lần lặp danh sách:</label>
+      <div id="repeatButtons">
+        <button data-repeat="1" class="repeat-btn active">1</button>
+        <button data-repeat="2" class="repeat-btn">2</button>
+        <button data-repeat="3" class="repeat-btn">3</button>
+        <button data-repeat="4" class="repeat-btn">4</button>
+        <button data-repeat="5" class="repeat-btn">5</button>
+      </div>
+      <label>Thời gian suy nghĩ:</label>
+      <div id="speedButtons">
+        <button data-speed="1" class="speed-btn active">1</button>
+        <button data-speed="10" class="speed-btn">2</button>
+        <button data-speed="10" class="speed-btn">3</button>
+        <button data-speed="10" class="speed-btn">4</button>
+        <button data-speed="10" class="speed-btn">5</button>
+        <button data-speed="10" class="speed-btn">6</button>
+        <button data-speed="10" class="speed-btn">7</button>
+        <button data-speed="10" class="speed-btn">8</button>
+        <button data-speed="10" class="speed-btn">9</button>
+        <button data-speed="10" class="speed-btn">10</button>
+      </div>
+      <button id="spinButton">BẮT ĐẦU NÀO!</button>
+    </div>
+  </div>
+
+  <!-- Overlay kết quả vòng quay -->
+  <div id="resultOverlay" class="overlay">
+    <div class="overlay-box" id="resultBox">
+      <button class="close-btn" id="closeResult">✖</button>
+      <h3 id="resultText">Tiêu suy đi tính lại vài lần đã chọn được: ...</h3>
+    </div>
+  </div>
+
+  <!-- Overlay kết quả Vietlott -->
+  <div id="vietlottOverlay" class="overlay">
+    <div class="overlay-box" id="vietlottBox">
+      <button class="close-btn" id="vietlottClose">✖</button>
+      <h3 id="vietlottTitle">Kết quả</h3>
+      <div class="vietlott-numbers" id="vietlottNumbers"></div>
+    </div>
+  </div>
+
+  <!-- Overlay nhập số lượng câu hỏi ABCD -->
+  <div id="abcdOverlay" class="overlay">
+    <div class="overlay-box">
+      <button class="close-btn" id="closeAbcd">✕</button>
+      <h2>Nhập số lượng câu hỏi (tối đa 50):</h2>
+      <input type="number" id="questionCount" min="1" max="50" />
+      <button id="startAbcd">Bắt đầu</button>
+      <div id="abcdResult" class="result-area"></div>
+    </div>
+  </div>
+
+  <script src="Random.js"></script>
+</body>
+</html>
