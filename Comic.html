@@ -135,7 +135,6 @@ const translations = {
         menu6: "Vẫn Đúng",
         menu7: "Lê Thận",
         menu8: "Raku"
-        restart: "Quay lại trang đầu"
     },
     en: {
         title: "YattaD",
@@ -149,8 +148,7 @@ const translations = {
         menu5: "Exploration",
         menu6: "Still Right",
         menu7: "Le Than",
-        menu8: "Raku",
-        restart: "restart"
+        menu8: "Raku"
     }
 };
 
@@ -172,13 +170,13 @@ document.addEventListener('DOMContentLoaded', () => {
 // ComicReader.js - Script đọc truyện cho Comic.html
 // ComicReader.js - Script đọc truyện cho Comic.html
 
-
+    <script>
 // --- Cấu hình số trang cho từng truyện ---
 const storyPages = {
     "PunkgaMerch": 15, // sửa số lượng trang thực tế
     "Red&Ruby": 0,
+    "BreakthRough": 12,
     "TieuTung": 0,
-"BreakthRough": 11,
     "Siin": 0,
     "StillComeTrue": 0,
     "LeThan": 0,
@@ -269,7 +267,7 @@ function restart() {
 
 // --- Sự kiện nút ---
 closeBtn.addEventListener('click', ()=> overlay.style.display='none');
-restartBtn.addEventListener('click', id="restart":'restart');
+restartBtn.addEventListener('click', restart);
 
 // --- Click menu ---
 document.querySelectorAll('.menuItem').forEach(item => {
@@ -289,6 +287,7 @@ document.addEventListener('keydown', e => {
         if(e.key === "Escape") overlay.style.display='none';
     }
 });
+</script>
 
 </script>
 </body>
