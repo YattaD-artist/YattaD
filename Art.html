@@ -93,13 +93,48 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 
 /* Overlay */
 #overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.95); z-index: 999;
-    justify-content: center; align-items: center; flex-direction: column;
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
 }
+
+.overlay-content {
+    display: flex;
+    gap: 20px;
+    max-width: 90%;
+    max-height: 90%;
+}
+
 #overlay img {
-    max-width: 90%; max-height: 90%; border-radius: 6px;
+    max-width: 70%;
+    max-height: 100%;
+    border-radius: 6px;
+    object-fit: contain;
 }
+
+#imageInfo {
+    color: white;
+    max-width: 30%;
+    overflow-y: auto;
+}
+
+#imageInfo h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+    color: var(--accent);
+}
+
+#imageInfo p {
+    line-height: 1.4;
+    font-size: 1rem;
+}
+
 #overlay button {
     position: absolute; top: 20px; right: 20px;
     font-size: 1.5rem; background: none; border: none; color: white;
@@ -137,7 +172,13 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 
 <div id="overlay">
     <button id="closeBtn">✖</button>
-    <img id="fullImage" src="" alt="">
+    <div class="overlay-content">
+        <img id="fullImage" src="" alt="">
+        <div id="imageInfo">
+            <h2 id="artTitle"></h2>
+            <p id="artDesc"></p>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -194,6 +235,12 @@ const categoryImages = {
     "Fan": 5
 };
 
+    const imageDetails = {
+    "arts/MinhHoa/01": { title: "Red", desc: "Thợ rèn gấu trúc đỏ" },
+    "arts/MinhHoa/02": { title: "Ruby", desc: "Cháu gái của Red, Kiếm sĩ gấu trúc đỏ" },
+    // ... các ảnh khác
+};
+    
 function loadCategory(cat) {
     gallery.innerHTML = "";
     let total = categoryImages[cat] || 0;
