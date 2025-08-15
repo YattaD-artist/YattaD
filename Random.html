@@ -1,270 +1,157 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Tiêu Chọn Chuẩn</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tiêu Chuẩn</title>
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-    /* ==== Overlay chung tái sử dụng ==== */
-.overlay {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: none;            /* ẩn ban đầu, JS sẽ set thành flex */
-  justify-content: center;  /* canh giữa ngang */
-  align-items: center;      /* canh giữa dọc */
-  z-index: 9999;            /* đảm bảo nằm trên cùng */
-}
-.overlay .overlay-box {
-  position: relative;            /* để nút đóng absolute bên trong */
-  background: #fff;
-  padding: 30px 40px;
-  border-radius: 10px;
-  min-width: 300px;
-  max-width: 600px;
-  text-align: center;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-}
-.overlay .close-btn {
-  background: none;
-  border: none;
-  padding: 0;
-  position: absolute;
-  top: 8px; right: 12px;
-  font-size: 20px;
-  cursor: pointer;
-  color: #888;
-  transition: color 0.2s ease;
-}
-.overlay .close-btn:hover {
-  color: #000;
-}
-
-/* ==== Phần chung giao diện ==== */
 * { box-sizing: border-box; }
-html, body {
-  margin: 0; padding: 0;
-  height: 100%;
-  font-family: sans-serif;
-  background: #efeacf;
-  overflow: hidden;
+html, body { max-width: 100%; overflow-x: hidden; }
+body {
+    margin: 0;
+    font-family: 'Saira', sans-serif;
+    background-color: #ede9eb;
+    color: #1a2129;
+    overflow: hidden;
+    --bg: #ede9eb;
+    --text: #1a2129;
+    --accent: #e32630;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
-.menu {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; display: flex;
-  justify-content: center; gap: 20px;
-  background-color: rgba(255,253,234,0.95);
-  padding: 12px 0;
-  z-index: 1000;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-.menu-btn {
-  padding: 10px 20px;
-  margin-right: 10px;
-  font-size: 15px; font-weight: bold;
-  border: none; border-radius: 8px;
-  background-color: #ffd966;
-  color: #2e2e2e;
-  cursor: pointer;
-  transition: transform 0.2s, background-color 0.2s;
-}
-.menu-btn:hover {
-  background-color: #ffc107;
-  transform: scale(1.1);
+body.dark {
+    --bg: #1b1b1b;
+    --text: #f5f5f5;
+    --accent: #1cd9cf;
 }
 
-/* Layout bánh và input */
-.layout { display: flex; height: 100%; width: 100%; }
-.left {
-  flex: 1; display: flex;
-  justify-content: center; align-items: center;
-  position: relative; padding: 20px;
-}
-#wheelCanvas {
-  max-width: 100%; max-height: 100%;
-  background: #fff; border-radius: 50%;
-  border: 10px solid #2ecc71;
-  box-shadow: 0 0 15px rgba(0,0,0,0.2);
-  z-index: 1;
-}
-#centerImage {
-  position: absolute; top:50%; left:50%;
-  width:150px; height:150px;
-  transform: translate(-50%,-50%);
-  background: url('Tieu.webp') center/contain no-repeat;
-  z-index: 2; pointer-events: none;
-}
-.right {
-  flex: 1;
-  display: block;
-  padding: 40px 20px 20px;
-  flex-direction: column;
-  padding: 20px;
-}
-.right label { margin-top: 30px; font-weight: bold; }
-.right h2 { margin-top: 50px; color: #7c5013; }
-
-/* Textarea & image */
-.input-wrap {
-  display: flex; align-items: center; gap: 15px;
-}
-textarea {
-  width: 100%; padding: 10px;
-  font-size: 16px; line-height: 1.5;
-  resize: none; overflow-y: auto;
-  min-height: calc(1.5em*10);
-  max-height: calc(1.5em*15);
-  border: 2px solid #91cb3f;
-  border-radius: 6px; background: #fffbe0;
-}
-#mainImage {
-  max-height: calc(1.5em*15);
-  object-fit: contain;
-  height: 60%;
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    border-bottom: 1px solid #ccc;
+    background-color: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
 }
 
-/* Buttons repeat & speed */
-.repeat-btn,
-.speed-btn {
-  padding: 10px 15px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-  border-radius: 6px;
-  background-color: #91cb3f;
-  color: #1a1a1a;
-  transition: background-color 0.2s ease, transform 0.2s ease;
+.center-title {
+    flex: 1;
+    text-align: center;
+    font-weight: 800;
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+    color: var(--accent);
 }
 
-.repeat-btn:hover,
-.speed-btn:hover {
-  transform: scale(1.2);
+.left, .right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
-.repeat-btn.active {
-  background-color: #00a79b;
-  color: #fff;
-  font-weight: bold;
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    transition: transform 0.25s ease, color 0.25s ease, background-color 0.25s ease;
+}
+.icon-btn:hover { transform: scale(1.15); color: var(--accent); background-color: rgba(0,0,0,0.05); }
+
+.top-menu {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.top-menu a,
+.top-menu button {
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    text-decoration: none;
+    background: transparent;
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+.top-menu a:hover,
+.top-menu button:hover {
+    background-color: var(--accent);
+    color: var(--bg);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.12);
 }
 
-.speed-btn.active {
-  background-color: #fcca5c;
-  color: #000;
-  font-weight: bold;
+main {
+    display: flex;
+    flex: 1;
+    min-height: calc(100vh - 70px);
+    gap: 30px;
+    padding: 30px;
 }
 
-#spinButton {
-  padding: 10px 15px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-  border-radius: 6px;
-  background-color: #e7a81e;
-  color: #1a1a1a;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  margin-top: 20px;
+.left-canvas {
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.right-content {
+    flex: 1;
 }
 
-#spinButton:hover {
-  transform: scale(1.1);
-  background-color: #fcca5c;
-}
+textarea { width: 100%; height: 200px; margin-bottom: 10px; }
+#spinButton, .repeat-btn, .speed-btn { padding: 8px 12px; margin: 3px; cursor: pointer; }
 
+.modal, .image-modal { display: none; position: fixed; z-index: 200; left:0; top:0; width:100%; height:100%; background-color: rgba(0,0,0,0.6); justify-content:center; align-items:center; }
+.modal-content { background-color: var(--bg); padding:20px; border-radius:12px; max-width:400px; width:90%; text-align:center; color: var(--text); }
+.close-btn { margin-top:15px; padding:8px 16px; cursor:pointer; background-color: var(--accent); border:none; color: var(--bg); border-radius:6px; }
 
-/* Vietlott */
+.menu { display:flex; flex-direction: column; gap:10px; }
+.menu a { padding:10px; background: var(--bg); border:2px solid var(--text); border-radius:12px; text-align:center; text-decoration:none; color:var(--text);}
+.menu a:hover { background-color: var(--accent); color: var(--bg); transform: translateY(-2px); }
 
-.vietlott-numbers {
-  display: flex; flex-wrap: wrap; justify-content: center; gap:10px;
-  margin-top:20px;
+@media(max-width:768px) {
+    main { flex-direction: column; padding:10px; gap:10px; }
 }
-.vietlott-ball {
-  width:40px; height:40px; border-radius:50%;
-  background:#91cb3f; color:#fff;
-  display:flex; align-items:center; justify-content:center;
-  font-weight:bold; font-size:16px;
-  box-shadow:0 0 5px rgba(0,0,0,0.3);
-}
-
-/* Kết quả bánh */
-#resultBox h3 { font-size:24px; line-height: 1.5; margin:0; color:#7c5013; }
-
-/* ABCD input & result */
-input#questionCount {
-  font-size:25px; padding:12px 16px;
-  width:120px; text-align:center;
-  border:2px solid #91cb3f; border-radius:6px;
-}
-
-#startAbcd {
-  padding: 10px 15px;
-  font-size: 16px;
-  cursor: pointer;
-  border: none;
-  border-radius: 6px;
-  background-color: #91cb3f;
-  color: #1a1a1a;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-  margin-top: 10px;
-}
-
-#startAbcd:hover {
-  transform: scale(1.1);
-  background-color: #fcca5c;
-}
-
-.result-area { margin-top:20px; }
-#abcdResult {
-  display: grid;
-  grid-template-columns: repeat(var(--cols,5),1fr);
-  gap:10px; margin-top:20px;
-}
-#abcdResult .abcd-cell {
-  background:#fff; border:1px solid #91cb3f; border-radius:4px;
-  padding:8px; font-size:18px; text-align:center;
-  box-shadow:0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Responsive nhỏ hơn 768px */
-@media (max-width:768px) {
-  .vietlott-menu { flex-direction:column; align-items:center; }
-  .layout { flex-direction:column; align-items:center; padding-top:80px; }
-  .left, .right { width:95%; }
-  canvas { width:100%!important; height:auto!important; }
-  #inputNames { width:100%; height:120px; }
-  #repeatButtons, #speedButtons { justify-content:center; }
-  #spinButton { width:100%; padding:15px; font-size:1.1rem; }
-  .overlay-box { width:90%!important; }
-}
-  </style>
+</style>
 </head>
 <body>
+
 <header>
-      <div class="left">
-        <button class="icon-btn" id="theme-toggle" title="Về trang chủ"><i class="fa-solid fa-house"></i></button>
+    <div class="left">
+        <button class="icon-btn" id="home-btn" title="Trang chủ"><i class="fa-solid fa-house"></i></button>
         <button class="icon-btn" id="lang-toggle" title="Đổi ngôn ngữ"><i class="fa-solid fa-language"></i></button>
     </div>
-  <!-- Thanh menu chính -->    <div class="center-title" data-lang="title">YattaD</div>
-  <div class="menu">
-    <div class="vietlott-menu">
-      <button class="menu-btn vietlott-btn" data-type="mega">Tiêu chọn: Vietlott Mega</button>
-      <button class="menu-btn vietlott-btn" data-type="power">Tiêu chọn: Vietlott Power</button>
+    <div class="center-title">YattaD</div>
+    <div class="right top-menu">
+        <button class="menu-btn" data-type="mega">Vietlott Mega</button>
+        <button class="menu-btn" data-type="power">Vietlott Power</button>
+        <button class="menu-btn" data-type="abcd">ABCD</button>
     </div>
-    <button class="menu-btn abcd-btn" id="abcdBtn">Tiêu chọn: ABCD</button>
-  </div>
 </header>
-  
-  <div class="layout">
-    <div class="left">
-      <canvas id="wheelCanvas" width="500" height="500"></canvas>
-      <div id="centerImage"></div>
+
+<main>
+    <div class="left-canvas">
+        <canvas id="wheelCanvas" width="400" height="400"></canvas>
     </div>
-    <div class="right">
-      <h2>Viết danh sách đi, Tiêu chọn cho:</h2>
-      <div class="input-wrap">
+    <div class="right-content">
+        <h2>Nhập danh sách tên:</h2>
         <textarea id="inputNames">Tiêu
 Mà
 Chọn
@@ -272,245 +159,154 @@ Thì
 Chỉ
 Có
 Chuẩn</textarea>
-        <img src="Main.webp" alt="Main Image" id="mainImage" />
-      </div>
-      <label>Số lần lặp danh sách:</label>
-      <div id="repeatButtons">
-        <button data-repeat="1" class="repeat-btn active">1</button>
-        <button data-repeat="2" class="repeat-btn">2</button>
-        <button data-repeat="3" class="repeat-btn">3</button>
-        <button data-repeat="4" class="repeat-btn">4</button>
-        <button data-repeat="5" class="repeat-btn">5</button>
-      </div>
-      <label>Thời gian suy nghĩ:</label>
-      <div id="speedButtons">
-        <button data-speed="1" class="speed-btn active">1</button>
-        <button data-speed="10" class="speed-btn">2</button>
-        <button data-speed="10" class="speed-btn">3</button>
-        <button data-speed="10" class="speed-btn">4</button>
-        <button data-speed="10" class="speed-btn">5</button>
-        <button data-speed="10" class="speed-btn">6</button>
-        <button data-speed="10" class="speed-btn">7</button>
-        <button data-speed="10" class="speed-btn">8</button>
-        <button data-speed="10" class="speed-btn">9</button>
-        <button data-speed="10" class="speed-btn">10</button>
-      </div>
-      <button id="spinButton">BẮT ĐẦU NÀO!</button>
+        <div>
+            <label>Số lần lặp danh sách:</label>
+            <div id="repeatButtons">
+                <button data-repeat="1" class="repeat-btn active">1</button>
+                <button data-repeat="2" class="repeat-btn">2</button>
+                <button data-repeat="3" class="repeat-btn">3</button>
+            </div>
+            <label>Thời gian suy nghĩ:</label>
+            <div id="speedButtons">
+                <button data-speed="1" class="speed-btn active">1</button>
+                <button data-speed="2" class="speed-btn">2</button>
+            </div>
+        </div>
+        <button id="spinButton">BẮT ĐẦU!</button>
     </div>
-  </div>
+</main>
 
-  <!-- Overlay kết quả vòng quay -->
-  <div id="resultOverlay" class="overlay">
-    <div class="overlay-box" id="resultBox">
-      <button class="close-btn" id="closeResult">✖</button>
-      <h3 id="resultText">Tiêu suy đi tính lại vài lần đã chọn được: ...</h3>
+<!-- Modal Vòng quay -->
+<div id="resultModal" class="modal">
+    <div class="modal-content">
+        <h2 id="resultText">...</h2>
+        <p>Hãy tự tin với kết quả này nhé!</p>
+        <button class="close-btn" id="closeResult">Đóng</button>
     </div>
-  </div>
+</div>
 
-  <!-- Overlay kết quả Vietlott -->
-  <div id="vietlottOverlay" class="overlay">
-    <div class="overlay-box" id="vietlottBox">
-      <button class="close-btn" id="vietlottClose">✖</button>
-      <h3 id="vietlottTitle">Kết quả</h3>
-      <div class="vietlott-numbers" id="vietlottNumbers"></div>
+<!-- Modal Vietlott -->
+<div id="vietlottModal" class="modal">
+    <div class="modal-content">
+        <h2>Kết quả Vietlott</h2>
+        <div id="vietlottNumbers"></div>
+        <button class="close-btn" id="closeVietlott">Đóng</button>
     </div>
-  </div>
+</div>
 
-  <!-- Overlay nhập số lượng câu hỏi ABCD -->
-  <div id="abcdOverlay" class="overlay">
-    <div class="overlay-box">
-      <button class="close-btn" id="closeAbcd">✕</button>
-      <h2>Nhập số lượng câu hỏi (tối đa 50):</h2>
-      <input type="number" id="questionCount" min="1" max="50" />
-      <button id="startAbcd">Bắt đầu</button>
-      <div id="abcdResult" class="result-area"></div>
+<!-- Modal ABCD -->
+<div id="abcdModal" class="modal">
+    <div class="modal-content">
+        <h2>Nhập số câu hỏi (1-50)</h2>
+        <input type="number" id="questionCount" min="1" max="50">
+        <button id="startAbcd">Bắt đầu</button>
+        <div id="abcdResult"></div>
+        <button class="close-btn" id="closeAbcd">Đóng</button>
     </div>
-  </div>
+</div>
 
 <script>
-
-// Biến toàn cục
-let names = [], angle = 0, isSpinning = false;
-let repeatCount = 1, spinSpeed = 1;
-
-const canvas = document.getElementById("wheelCanvas");
-const ctx    = canvas.getContext("2d");
-const radius = canvas.width / 2;
-const colors = ["#d5c3c7","#ced6bd","#f7eae4","#f1dcca","#e6ede3","#f7e19a","#cddae5"];
-
-// CẬP NHẬT danh sách từ textarea
-function updateNameList() {
-  const raw = document.getElementById("inputNames").value
-                .trim().split("\n").map(s=>s.trim()).filter(s=>s);
-  names = [];
-  for (let i=0; i<repeatCount; i++) names.push(...raw);
-}
-
-// VẼ bánh
-function drawWheel() {
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  if (!names.length) return;
-  const slice = 2*Math.PI / names.length;
-  names.forEach((n,i)=>{
-    const start = i*slice, end = start+slice;
-    ctx.beginPath();
-    ctx.moveTo(radius,radius);
-    ctx.arc(radius,radius,radius,start,end);
-    ctx.fillStyle = colors[i%colors.length];
-    ctx.fill();
-    // text
-    ctx.save();
-    ctx.translate(radius,radius);
-    ctx.rotate(start + slice/2);
-    ctx.textAlign="right";
-    ctx.fillStyle="#260b03";
-    ctx.font="16px sans-serif";
-    ctx.fillText(n, radius-10,5);
-    ctx.restore();
-  });
-}
-
-// VẼ khi quay
-function drawSpinningWheel(rot) {
-  ctx.save();
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-  ctx.translate(radius,radius);
-  ctx.rotate(rot);
-  ctx.translate(-radius,-radius);
-  drawWheel();
-  ctx.restore();
-}
-
-// BẮT ĐẦU quay
-document.getElementById("spinButton").onclick = () => {
-  if (isSpinning) return;
-  isSpinning = true;
-  document.getElementById("resultOverlay").style.display='none';
-  updateNameList();
-  if (names.length<2) {
-    alert("Cần ít nhất 2 lựa chọn."); isSpinning=false; return;
-  }
-  drawWheel();
-  const spinTime  = 3000 + (spinSpeed-1)*1000;
-  const spinAngle = (10 + Math.random()*10) * 2*Math.PI;
-  const start = performance.now();
-  function animate(now) {
-    const t = Math.min((now-start)/spinTime,1);
-    const ease = 1 - Math.pow(1-t,3);
-    angle = ease * spinAngle;
-    drawSpinningWheel(angle);
-    if (t<1) requestAnimationFrame(animate);
-    else { isSpinning=false; showResult(angle); }
-  }
-  requestAnimationFrame(animate);
-};
-
-// HIỂN THỊ kết quả bánh
-function showResult(finalAngle) {
-  const slice = 2*Math.PI / names.length;
-  const adj   = finalAngle % (2*Math.PI);
-  const idx   = Math.floor((2*Math.PI - adj)/slice) % names.length;
-  const win   = names[idx];
-  document.getElementById("resultText").textContent = `🎯 Tiêu suy đi tính lại vài lần đã chọn được: ${win}`;
-  document.getElementById("resultOverlay").style.display='flex';
-}
-
-// Khởi tạo & sự kiện textarea
-document.addEventListener('DOMContentLoaded',()=>{
-  updateNameList();
-  drawWheel();
-});
-document.getElementById("inputNames")
-  .addEventListener("input",()=>{ updateNameList(); drawWheel(); });
-
-// Nút lặp danh sách
-document.querySelectorAll('.repeat-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.repeat-btn')
-      .forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    repeatCount = parseInt(btn.dataset.repeat);
-    updateNameList(); drawWheel();
-  });
+// Toggle language (ví dụ)
+const langBtn = document.getElementById('lang-toggle');
+langBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
 });
 
-// Nút tốc độ
-document.querySelectorAll('.speed-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.speed-btn')
-      .forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    spinSpeed = parseInt(btn.dataset.speed);
-  });
-});
+// Show/Hide modals
+const resultModal = document.getElementById('resultModal');
+const vietlottModal = document.getElementById('vietlottModal');
+const abcdModal = document.getElementById('abcdModal');
 
-// VIETLOTT
-function generateVietlottNumbers(type) {
-  const max = (type==='mega'?45:55);
-  const pool = Array.from({length:max},(_,i)=>i+1);
-  const sel = [];
-  while(sel.length<6) {
-    const idx = Math.floor(Math.random()*pool.length);
-    sel.push(pool.splice(idx,1)[0]);
-  }
-  return sel.sort((a,b)=>a-b);
-}
-document.querySelectorAll('.vietlott-menu .menu-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    const type = btn.dataset.type;
-    const nums = generateVietlottNumbers(type);
-    const cont = document.getElementById('vietlottNumbers');
-    document.getElementById('vietlottTitle').textContent =
-      `Kết quả: ${type==='mega'?'Mega 6/45':'Power 6/55'}`;
-    cont.innerHTML='';
-    nums.forEach(n=>{
-      const ball = document.createElement('div');
-      ball.className='vietlott-ball'; ball.textContent=n;
-      cont.appendChild(ball);
+document.querySelectorAll('.menu-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+        if(btn.dataset.type==='mega' || btn.dataset.type==='power'){
+            vietlottModal.style.display='flex';
+            generateVietlott(btn.dataset.type);
+        } else if(btn.dataset.type==='abcd'){
+            abcdModal.style.display='flex';
+        }
     });
-    document.getElementById('vietlottOverlay').style.display='flex';
-  });
 });
-document.getElementById('vietlottClose').onclick = ()=>{
-  document.getElementById('vietlottOverlay').style.display='none';
+
+document.getElementById('closeResult').onclick = ()=> resultModal.style.display='none';
+document.getElementById('closeVietlott').onclick = ()=> vietlottModal.style.display='none';
+document.getElementById('closeAbcd').onclick = ()=> abcdModal.style.display='none';
+
+// Vòng quay
+const wheelCanvas = document.getElementById('wheelCanvas');
+const ctx = wheelCanvas.getContext('2d');
+let names = document.getElementById('inputNames').value.split('\n').filter(n=>n.trim()!=='');
+let angle = 0;
+
+function drawWheel() {
+    const n = names.length;
+    const radius = 180;
+    ctx.clearRect(0,0,400,400);
+    for(let i=0;i<n;i++){
+        const start = (2*Math.PI/n)*i;
+        const end = start + 2*Math.PI/n;
+        ctx.beginPath();
+        ctx.moveTo(200,200);
+        ctx.arc(200,200,radius,start,end);
+        ctx.fillStyle = i%2===0?'#fdd':'#dfd';
+        ctx.fill();
+        ctx.save();
+        ctx.translate(200,200);
+        ctx.rotate(start + (end-start)/2);
+        ctx.fillStyle = '#000';
+        ctx.textAlign='right';
+        ctx.font='14px Arial';
+        ctx.fillText(names[i], radius-10,5);
+        ctx.restore();
+    }
+}
+drawWheel();
+
+document.getElementById('spinButton').onclick = ()=>{
+    names = document.getElementById('inputNames').value.split('\n').filter(n=>n.trim()!=='');
+    if(names.length===0) return alert('Nhập ít nhất 1 tên');
+    let speed = 0.3 + Math.random()*0.5;
+    let spins = 200 + Math.random()*200;
+    let currentSpin=0;
+    const anim = setInterval(()=>{
+        angle += speed;
+        currentSpin++;
+        drawWheel();
+        ctx.save();
+        ctx.translate(200,200);
+        ctx.rotate(angle);
+        ctx.restore();
+        if(currentSpin>spins){
+            clearInterval(anim);
+            const idx = Math.floor(names.length - (angle/(2*Math.PI)*names.length)%names.length);
+            document.getElementById('resultText').innerText = names[idx % names.length];
+            resultModal.style.display='flex';
+        }
+    }, 10);
 };
 
-// ABCD
-const abcdBtn       = document.getElementById('abcdBtn');
-const abcdOverlay   = document.getElementById('abcdOverlay');
-const closeAbcd     = document.getElementById('closeAbcd');
-const startAbcd     = document.getElementById('startAbcd');
-const questionInput = document.getElementById('questionCount');
-const abcdResult    = document.getElementById('abcdResult');
+// Vietlott generator
+function generateVietlott(type){
+    let count = type==='mega'?6:5;
+    let max = type==='mega'?45:55;
+    let numbers = [];
+    while(numbers.length<count){
+        let n = Math.floor(Math.random()*max)+1;
+        if(!numbers.includes(n)) numbers.push(n);
+    }
+    document.getElementById('vietlottNumbers').innerText = numbers.join(' - ');
+}
 
-abcdBtn.onclick = ()=>{
-  abcdOverlay.style.display='flex';
-};
-closeAbcd.onclick = ()=>{
-  abcdOverlay.style.display='none';
-  abcdResult.innerHTML=''; questionInput.value='';
-};
-startAbcd.onclick = ()=>{
-  const c = parseInt(questionInput.value);
-  if (isNaN(c)||c<1||c>50) {
-    alert("Vui lòng nhập số từ 1 đến 50."); return;
-  }
-  abcdResult.innerHTML='';
-  const cols = Math.min(Math.max(c,5),10);
-  abcdResult.style.setProperty('--cols', cols);
-  const opts = ['A','B','C','D'];
-  for (let i=1; i<=c; i++){
-    const cell = document.createElement('div');
-    cell.className='abcd-cell';
-    cell.textContent = `${i}: ${opts[Math.floor(Math.random()*4)]}`;
-    abcdResult.appendChild(cell);
-  }
-};
-
-// Đóng kết quả bánh
-document.getElementById("closeResult").onclick = ()=>{
-  document.getElementById("resultOverlay").style.display='none';
-};
+// ABCD generator
+document.getElementById('startAbcd').onclick = ()=>{
+    const cnt = parseInt(document.getElementById('questionCount').value)||1;
+    const arr = [];
+    for(let i=0;i<cnt;i++){
+        const choices = ['A','B','C','D'];
+        arr.push(choices[Math.floor(Math.random()*4)]);
+    }
+    document.getElementById('abcdResult').innerText = arr.join(' ');
+}
 </script>
 
 </body>
