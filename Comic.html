@@ -61,6 +61,25 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
     transition: all 0.25s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 .menu a:hover { background-color: var(--accent); color: var(--bg); transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+.menuItem {
+  cursor: pointer;
+  text-align: center;
+  border: 2px solid var(--text);
+  border-radius: 12px;
+  padding: 8px;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.menuItem img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+.menuItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  border-color: var(--accent);
+}
 
 /* --- Mobile --- */
 @media (max-width: 768px) {
@@ -89,16 +108,41 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
         <p id="introP1">Chào mừng bạn đến với trang đọc truyện tranh của tôi! Tại đây bạn có thể khám phá các bộ truyện độc đáo và hấp dẫn.</p>
         <p id="introP2">Mỗi câu chuyện đều được lựa chọn kỹ lưỡng, hy vọng bạn sẽ tìm thấy những khoảnh khắc thú vị và cảm xúc khi thưởng thức.</p>
     </div>
-    <div class="menu">
-    <a id="menu1" class="menuItem" style="cursor:pointer;">PunkgaMerch</a>
-    <a id="menu2" class="menuItem" style="cursor:pointer;">Red và Ruby</a>
-    <a id="menu3" class="menuItem" style="cursor:pointer;">Tiêu Tùng</a>
-    <a id="menu4" class="menuItem" style="cursor:pointer;">Sao Băng Mùa Hạ</a>
-    <a id="menu5" class="menuItem" style="cursor:pointer;">Khai Phá</a>
-    <a id="menu6" class="menuItem" style="cursor:pointer;">Vẫn Đúng</a>
-    <a id="menu7" class="menuItem" style="cursor:pointer;">Lê Thận</a>
-    <a id="menu8" class="menuItem" style="cursor:pointer;">Raku</a>
-    </div>
+   <div class="menu">
+  <div class="menuItem" onclick="openStory('PunkgaMerch')">
+    <img src="comics/PunkgaMerch/00.webp" alt="PunkgaMerch">
+    <p>PunkgaMerch</p>
+  </div>
+  <div class="menuItem" onclick="openStory('Red và Ruby')">
+    <img src="comics/Red&Ruby/00.webp" alt="Red và Ruby">
+    <p>Red và Ruby</p>
+  </div>
+  <div class="menuItem" onclick="openStory('Tiêu Tùng')">
+    <img src="comics/TieuTung/00.webp" alt="Tiêu Tùng">
+    <p>Tiêu Tùng</p>
+  </div>
+  <div class="menuItem" onclick="openStory('Sao Băng Mùa Hạ')">
+    <img src="comics/Siin/00.webp" alt="Sao Băng Mùa Hạ">
+    <p>Sao Băng Mùa Hạ</p>
+  </div>
+  <div class="menuItem" onclick="openStory('Khai Phá')">
+    <img src="comics/BreakthRough/00.webp" alt="Khai Phá">
+    <p>Khai Phá</p>
+  </div>
+  <div class="menuItem" onclick="openStory('Vẫn Đúng')">
+    <img src="comics/StillComeTrue/00.webp" alt="Vẫn Đúng">
+    <p>Vẫn Đúng</p>
+  </div>
+  <div class="menuItem" onclick="openStory('Lê Thận')">
+    <img src="comics/LeThan/00.webp" alt="Lê Thận">
+    <p>Lê Thận</p>
+  </div>
+  <div class="menuItem" onclick="openStory('Raku')">
+    <img src="comics/Raku/00.webp" alt="Raku">
+    <p>Raku</p>
+  </div>
+</div>
+
 </main>
 
 <div id="overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); justify-content:center; align-items:center; z-index:9999; flex-direction:column;">
