@@ -53,26 +53,51 @@ const translations = {
     }
 };
 
-function applyLanguage(lang) {
-    for (const key in translations[lang]) {
-        const el = document.getElementById(key);
-        if (el) el.innerHTML = translations[lang][key];
-    }
-}
-
 function switchLanguage() {
     currentLang = currentLang === 'vi' ? 'en' : 'vi';
     localStorage.setItem('lang', currentLang);
-    applyLanguage(currentLang);
+    for(const key in translations[currentLang]) {
+        const el = document.getElementById(key);
+        if(el) el.innerHTML = translations[currentLang][key];
+    }
 }
 
 langBtn.addEventListener('click', switchLanguage);
-
-// Khi load trang, áp dụng ngôn ngữ đang lưu
 document.addEventListener('DOMContentLoaded', () => {
-    applyLanguage(currentLang);
+    if(currentLang === 'en') switchLanguage();
 });
 
+// ComicReader.js - Script đọc truyện cho Comic.html
+// ComicReader.js - Script đọc truyện cho Comic.html
+// ComicReader.js - Script đọc truyện cho Comic.html
+
+// --- Cấu hình số trang cho từng truyện ---
+const storyPages = {
+    "PunkgaMerch": 14, // sửa số lượng trang thực tế
+    "Red&Ruby": 0,
+    "BreakthRough": 11,
+    "TieuTung": 8,
+    "Siin": 5,
+    "StillComeTrue": 0,
+    "LeThan": 0,
+    "Raku": 0
+};
+
+// --- Mapping menu text sang folder ---
+const storyFolders = {
+    "PunkgaMerch": "PunkgaMerch",
+    "Red và Ruby": "Red&Ruby",
+    "Khai Phá": "BreakthRough",
+    "Tiêu Tùng": "TieuTung",
+    "Sao Băng Mùa Hạ": "Siin",
+    "Vẫn Đúng": "StillComeTrue",
+    "Lê Thận": "LeThan",
+    "Raku": "Raku"
+};
+
+let currentStory = "";
+let currentPage = 1;
+let totalPages = 0;
     
 // --- Preload tất cả ảnh ---
 function preloadImages(storyName) {
