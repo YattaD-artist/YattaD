@@ -242,19 +242,16 @@ const categoryImages = {
 };
     
 function loadCategory(cat) {
-    gallery.innerHTML = "";
-    let total = categoryImages[cat] || 0;
-    for (let i = 1; i <= total; i++) {
-        let num = String(i).padStart(2,'0');
-        let img = document.createElement('img');
-        img.src = `arts/${cat}/${num}.min.webp`; // thumbnail
-        img.dataset.full = `arts/${cat}/${num}.webp`;
-        img.dataset.key = `${cat}/${num}`; // dùng để tìm mô tả
-        img.className = "thumb";
-        img.loading = "lazy";
-        img.onclick = () => openFull(img.dataset.full, img.dataset.key);
-        gallery.appendChild(img);
-    }
+  gallery.innerHTML = "";
+  const total = categoryImages[cat] || 0;
+
+  for (let i = 1; i <= total; i++) {
+    const img = document.createElement('img');
+    img.src = `arts/${cat}/${String(i).padStart(2, '0')}.webp`; // ✅ backticks chuẩn
+    img.className = "thumb";
+    img.onclick = () => openFull(img.src);
+    gallery.appendChild(img);
+  }
 }
 
 function openFull(src) {
