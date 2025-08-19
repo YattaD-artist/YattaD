@@ -75,69 +75,54 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
   border-color: var(--accent);
 }
 
-/* --- Animation cho overlay reader --- */
+/* --- Animation cho overlay reader (THÊM) --- */
 #deck {
   position: relative;
-  width: 100%;
-  max-width: 1000px;
-  height: 100%;
-  display: block;
-  margin: 0 auto;
-  overflow: visible !important;
+  width: 100%;   /* full chiều ngang */
+  max-width: 1000px; /* có thể giới hạn tối đa nếu muốn */
+  height: 100%;  /* choáng hết overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  /* BỎ overflow:hidden */
 }
-
 /* Overlay & deck: không cắt ảnh */
 #overlay { padding: 16px; }
+#deck { overflow: visible !important; }
 
 /* Ảnh luôn fit vào khung, không cắt nội dung */
 #deck img {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
   max-width: 100%;
   max-height: 90vh;
   object-fit: contain;
   cursor: pointer;
-  transition: transform 0.52s cubic-bezier(.2,.8,.2,1), opacity 0.44s ease;
-  will-change: transform, opacity;
-  user-select: none;
 }
 
-/* map các class từ code mẫu sang styles "lá bài" */
-.active {
-  transform: translate(-50%, -50%) translateX(0) scale(1) rotate(0deg);
-  z-index: 30;
+/* Chia tỷ lệ để 3 ảnh đều nhìn thấy trên màn hình */
+.curr-active { max-width: 60vw; max-height: 90vh; z-index: 3; }
+.prev-side, .next-side { max-width: 16vw; max-height: 65vh; }
+
+    
+/* class trạng thái 3 ảnh */
+.curr-active {
   opacity: 1;
-  max-width: 60vw;
-  max-height: 90vh;
+  transform: scale(1) rotate(0deg);
+  z-index: 2;
 }
-.left {
-  transform: translate(-50%, -50%) translateX(-36vw) rotate(-15deg) scale(0.82);
-  z-index: 20;
-  opacity: 0.95;
-  max-width: 18vw;
-  max-height: 60vh;
+.prev-side {
+  opacity: 0.4;
+  transform: rotate(-15deg) translateX(-40px) scale(0.88);
+  z-index: 1;
 }
-.right {
-  transform: translate(-50%, -50%) translateX(36vw) rotate(15deg) scale(0.82);
-  z-index: 20;
-  opacity: 0.95;
-  max-width: 18vw;
-  max-height: 60vh;
+.next-side {
+  opacity: 0.4;
+  transform: rotate(15deg) translateX(40px) scale(0.88);
+  z-index: 1;
 }
 
-/* Ẩn ảnh nếu không có src */
-.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* Mobile: giảm khoảng cách translate */
+/* Mobile */
 @media (max-width: 768px) {
-  .left { transform: translate(-50%, -50%) translateX(-28vw) rotate(-12deg) scale(0.78); max-width: 24vw; }
-  .right { transform: translate(-50%, -50%) translateX(28vw) rotate(12deg) scale(0.78); max-width: 24vw; }
-  .active { max-width: 86vw; }
   main { padding: 10px; gap: 12px; }
   .info { padding: 16px; }
   .menu { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
@@ -201,14 +186,14 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 
 <!-- Overlay Reader -->
 <div id="overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); justify-content:center; align-items:center; z-index:9999; flex-direction:column;">
-  <div id="deck" style="position:relative; width:min(96vw,1200px); height:min(92vh,1000px); overflow:visible; display:block; align-items:center; justify-content:center; gap:20px;"></div>
+  <div id="deck" style="position:relative; width:min(96vw,1200px); height:min(92vh,1000px); overflow:visible; display:flex; align-items:center; justify-content:center; gap:20px;"></div>
   <div id="caption" style="color:#fff; margin-top:12px; font-size:1.1rem; text-align:center;"></div>
   <button id="closeBtn" style="position:absolute; top:20px; right:20px; font-size:1.5rem; background:none; color:#fff; border:none; cursor:pointer;">✖</button>
   <button id="restartBtn" style="position:absolute; bottom:20px; right:20px; font-size:1rem; display:none; padding:6px 12px; cursor:pointer;">Restart</button>
 </div>
 
 <script>
-// ==== giữ cấu hình trang giống trước ====
+// --- Config số trang mỗi truyện ---
 const storyPages = {
   "PunkgaMerch": 14,
   "Red&Ruby": 0,
@@ -220,7 +205,16 @@ const storyPages = {
   "Raku": 0
 };
 
-// Theme toggle
+// --- Preload ảnh trang 00 cho tất cả ---
+function preloadFirstPages() {
+  for (const folder in storyPages) {
+    const img = new Image();
+    img.src = `comics/${folder}/00.webp`;
+  }
+}
+document.addEventListener("DOMContentLoaded", preloadFirstPages);
+
+// --- Theme toggle ---
 const themeBtn = document.getElementById("theme-toggle");
 themeBtn.addEventListener("click", () => {
   document.body.classList.toggle("dark");
@@ -228,7 +222,7 @@ themeBtn.addEventListener("click", () => {
 });
 if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
 
-// Language toggle (giữ nguyên)
+// --- Language toggle ---
 const langBtn = document.getElementById("lang-toggle");
 let currentLang = localStorage.getItem("lang") || "vi";
 
@@ -277,184 +271,161 @@ document.addEventListener("DOMContentLoaded", () => {
   if (currentLang === "en") switchLanguage();
 });
 
-// ================= gallery theo mẫu bạn cho ================
-(function setupGallery() {
-  const deck = document.getElementById('deck');
-  const overlay = document.getElementById('overlay');
-  const caption = document.getElementById('caption');
-  const closeBtn = document.getElementById('closeBtn');
-  const restartBtn = document.getElementById('restartBtn');
+// --- Overlay Reader ---
+let currentStory = "";
+let currentPage = 1;
+let totalPages = 0;
 
-  let images = [];      // image elements for current story
-  let index = 0;
-  let total = 0;
-  let transitioning = false;
-  let touchStartX = 0;
-  let currentStory = "";
+const overlay = document.getElementById("overlay");
+const deck = document.getElementById("deck");
+const caption = document.getElementById("caption");
+const closeBtn = document.getElementById("closeBtn");
+const restartBtn = document.getElementById("restartBtn");
 
-  // helper build src
-  function buildSrc(folder, page) {
-    return `comics/${folder}/${String(page).padStart(2, "0")}.webp`;
-  }
+const prevImg = document.createElement("img");
+prevImg.style.maxHeight = "60%";
+prevImg.style.opacity = "0.4";
+prevImg.style.marginRight = "40px";
+prevImg.style.transform = "rotate(-15deg)";  // nghiêng trái
 
-  // tạo image elements cho một truyện, xóa deck cũ
-  function prepareImages(folder) {
-    // reset
-    images = [];
-    index = 0;
-    currentStory = folder;
-    total = storyPages[folder] || 1; // nếu 0 thì coi là 1 trang (bìa)
+const currImg = document.createElement("img");
+currImg.style.maxHeight = "90%";
 
-    // clear deck
-    while (deck.firstChild) deck.removeChild(deck.firstChild);
+const nextImg = document.createElement("img");
+nextImg.style.maxHeight = "60%";
+nextImg.style.opacity = "0.4";
+nextImg.style.marginLeft = "40px";
+nextImg.style.transform = "rotate(15deg)";   // nghiêng phải
 
-    // tạo các <img>
-    for (let i = 0; i < total; i++) {
-      const img = document.createElement('img');
-      img.draggable = false;
-      img.src = buildSrc(folder, i);
-      // lazy load nếu trang lớn
-      if (i > 2) img.loading = 'lazy';
+deck.appendChild(prevImg);
+deck.appendChild(currImg);
+deck.appendChild(nextImg);
 
-      // khi transition kết thúc, nếu element đang active thì tắt transitioning
-      img.addEventListener('transitionend', (ev) => {
-        // chỉ reset flag khi đang chuyển và phần tử vừa trở thành active (anima xong)
-        if (ev.propertyName.includes('transform') && img.classList.contains('active')) {
-          transitioning = false;
+// --- Helper animation slide cho ảnh ---
+function animatePageChange(imgEl, newSrc, isCenter = false, direction = "right") {
+  // slide out
+  imgEl.style.transition = "transform 0.4s ease, opacity 0.4s ease";
+  imgEl.style.transform = direction === "right" ? "translateX(-100%)" : "translateX(100%)";
+  imgEl.style.opacity = "0";
+
+  setTimeout(() => {
+    if (!newSrc) {
+      imgEl.removeAttribute("src");
+      return;
+    }
+    imgEl.src = newSrc;
+
+    imgEl.onload = () => {
+      // reset vị trí bên ngoài trước khi vào
+      imgEl.style.transition = "none";
+      imgEl.style.transform = direction === "right" ? "translateX(100%)" : "translateX(-100%)";
+      imgEl.style.opacity = "0";
+
+      requestAnimationFrame(() => {
+        imgEl.style.transition = "transform 0.5s ease, opacity 0.5s ease";
+        imgEl.style.transform = "translateX(0)";
+        imgEl.style.opacity = "1";
+
+        if (isCenter) {
+          imgEl.style.transform += " scale(1.02)";
+          setTimeout(() => {
+            imgEl.style.transform = "translateX(0) scale(1)";
+          }, 300);
         }
       });
+    };
+  }, 200);
+}
 
-      deck.appendChild(img);
-      images.push(img);
+function buildSrc(folder, page) {
+  return `comics/${folder}/${String(page).padStart(2, "0")}.webp`;
+}
+
+// --- Hiển thị trang (có animation) ---
+function showPage(direction = "right") {
+  const prevSrc = currentPage > 1 ? buildSrc(currentStory, currentPage - 1) : `comics/${currentStory}/00.webp`;
+  const currSrc = buildSrc(currentStory, currentPage);
+  const nextSrc = currentPage < totalPages ? buildSrc(currentStory, currentPage + 1) : "";
+
+  prevImg.className = "prev-side";
+  currImg.className = "curr-active";
+  nextImg.className = "next-side";
+
+  animatePageChange(prevImg, prevSrc, false, direction);
+  animatePageChange(currImg, currSrc, true, direction);
+  animatePageChange(nextImg, nextSrc, false, direction);
+
+  restartBtn.style.display = (currentPage === totalPages) ? "block" : "none";
+  caption.innerText = `Trang ${currentPage} / ${totalPages}`;
+}
+
+function openStory(folder) {
+  currentStory = folder;
+  totalPages = storyPages[folder] || 1;
+  currentPage = 1;
+  overlay.style.display = "flex";
+  showPage("right");
+}
+
+// --- Navigation ---
+function nextPage() { 
+  if (currentPage < totalPages) { 
+    currentPage++; 
+    showPage("right"); 
+  } 
+}
+function prevPageFunc() { 
+  if (currentPage > 1) { 
+    currentPage--; 
+    showPage("left"); 
+  } 
+}
+function restart() { currentPage = 1; showPage("right"); }
+
+// --- Events ---
+closeBtn.addEventListener("click", () => overlay.style.display = "none");
+restartBtn.addEventListener("click", restart);
+
+document.querySelectorAll(".menuItem").forEach(item => {
+  item.addEventListener("click", () => openStory(item.dataset.folder));
+});
+
+prevImg.addEventListener("click", prevPageFunc);
+nextImg.addEventListener("click", nextPage);
+currImg.addEventListener("click", nextPage);
+
+document.addEventListener("keydown", e => {
+  if (overlay.style.display === "flex") {
+    if (e.key === "ArrowRight") nextPage();
+    if (e.key === "ArrowLeft") prevPageFunc();
+    if (e.key === "Escape") overlay.style.display = "none";
+    if (e.key.toLowerCase() === "r") restart();
+  }
+});
+
+// --- Swipe detection ---
+let touchStartX = 0;
+let touchEndX = 0;
+
+function handleGesture() {
+  const diff = touchEndX - touchStartX;
+  if (Math.abs(diff) > 50) { 
+    if (diff > 0) {
+      prevPageFunc(); // vuốt phải -> lùi trang
+    } else {
+      nextPage();     // vuốt trái -> tới trang
     }
   }
+}
 
-  // cập nhật class cho từng ảnh theo index
-  function updateClasses() {
-    images.forEach((img, i) => {
-      img.classList.remove('left', 'active', 'right', 'hidden');
-      img.style.zIndex = '';
-      if (i < index - 6) { // quá xa bên trái -> ẩn để giảm DOM events
-        img.classList.add('hidden');
-      } else if (i > index + 6) { // quá xa bên phải -> ẩn
-        img.classList.add('hidden');
-      } else if (i < index) {
-        img.classList.add('left');
-        img.style.zIndex = String(10 + i);
-      } else if (i === index) {
-        img.classList.add('active');
-        img.style.zIndex = '30';
-      } else { // i > index
-        img.classList.add('right');
-        // đặt zIndex sao cho trang gần hơn có z-index cao hơn
-        img.style.zIndex = String(20 - (i - index));
-      }
-    });
+deck.addEventListener("touchstart", e => {
+  touchStartX = e.changedTouches[0].screenX;
+});
 
-    caption.textContent = index === 0 ? 'Trang Bìa' : `Trang ${index}`;
-    restartBtn.style.display = (index === total - 1) ? 'block' : 'none';
-  }
-
-  // mở overlay và chuẩn bị ảnh
-  function openStory(folder) {
-    prepareImages(folder);
-    overlay.style.display = 'flex';
-    // allow browser render, rồi set classes
-    requestAnimationFrame(() => updateClasses());
-  }
-
-  // đóng overlay
-  function closeStory() {
-    overlay.style.display = 'none';
-    transitioning = false;
-  }
-
-  // chuyển trang tiếp theo
-  function next() {
-    if (transitioning) return;
-    if (index >= total - 1) return;
-    transitioning = true;
-    index++;
-    updateClasses();
-  }
-
-  // chuyển trang trước
-  function prev() {
-    if (transitioning) return;
-    if (index <= 0) return;
-    transitioning = true;
-    index--;
-    updateClasses();
-  }
-
-  function restart() {
-    if (transitioning) return;
-    index = 0;
-    updateClasses();
-  }
-
-  // gắn sự kiện cho menuItem: click sẽ mở truyện tương ứng
-  document.querySelectorAll('.menuItem').forEach(item => {
-    item.addEventListener('click', () => {
-      const folder = item.dataset.folder;
-      // nếu folder không hợp lệ, bỏ qua
-      if (!folder) return;
-      openStory(folder);
-    });
-  });
-
-  // click overlay: click phải -> next, click trái -> prev, click giữa ít hơn margin không làm gì
-  overlay.addEventListener('click', (e) => {
-    // ignore clicks on control buttons
-    const ignoreIds = ['closeBtn', 'restartBtn'];
-    if (ignoreIds.includes(e.target.id)) return;
-
-    // xác định điểm click so với overlay vùng
-    const rect = overlay.getBoundingClientRect();
-    // dùng rect trung tâm của màn hình, để tránh click trên các ảnh làm loạn
-    const centerX = rect.left + rect.width / 2;
-    const delta = e.clientX - centerX;
-    const deadZone = 40; // vùng giữa không đổi
-    if (delta > deadZone) next();
-    else if (delta < -deadZone) prev();
-  });
-
-  // click trực tiếp lên deck images: nếu click vào left -> prev, active/ right -> next
-  deck.addEventListener('click', (e) => {
-    const t = e.target;
-    if (!t || t.tagName !== 'IMG') return;
-    if (t.classList.contains('left')) prev();
-    else next(); // active hoặc right đều next
-  });
-
-  // touch swipe
-  overlay.addEventListener('touchstart', (e) => {
-    touchStartX = e.touches[0].clientX;
-  }, {passive:true});
-  overlay.addEventListener('touchend', (e) => {
-    const diff = e.changedTouches[0].clientX - touchStartX;
-    if (Math.abs(diff) > 50) diff < 0 ? next() : prev();
-  });
-
-  // keyboard
-  window.addEventListener('keydown', (e) => {
-    if (overlay.style.display !== 'flex') return;
-    if (transitioning) return;
-    if (e.key === 'ArrowRight') next();
-    if (e.key === 'ArrowLeft') prev();
-    if (e.key === 'Escape') closeStory();
-    if (e.key.toLowerCase() === 'r') restart();
-  });
-
-  // buttons
-  closeBtn.addEventListener('click', closeStory);
-  restartBtn.addEventListener('click', restart);
-
-  // expose open/close for console debugging if cần
-  window.openStory = openStory;
-  window.closeStory = closeStory;
-
-})(); // end setupGallery
+deck.addEventListener("touchend", e => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleGesture();
+});
 </script>
 
 </body>
