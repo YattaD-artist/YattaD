@@ -81,6 +81,16 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
   box-shadow: 0 6px 12px rgba(0,0,0,0.15);
   border-color: var(--accent);
 }
+.deck-img {
+  position: absolute;
+  max-height: 90%;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  cursor: pointer;
+}
+
+#prevImg { opacity: 0.4; transform: translateX(-150%); }
+#currImg { opacity: 1; transform: translateX(0); }
+#nextImg { opacity: 0.4; transform: translateX(150%); }
 
 /* --- Mobile --- */
 @media (max-width: 768px) {
@@ -324,17 +334,57 @@ function openStory(storyName) {
 
 // --- Navigation ---
 function nextPage() {
-    if(currentPage < totalPages){
-        currentPage++;
-        showPage();
-    }
+  if(currentPage >= totalPages) return;
+
+  currentPage++;
+  
+  // Trượt ảnh
+  prevImg.style.transform = "translateX(-300%)";   // biến mất trái
+  prevImg.style.opacity = "0";
+  
+  currImg.style.transform = "translateX(-150%)";   // current → prev
+  currImg.style.opacity = "0.4";
+
+  nextImg.style.transform = "translateX(0)";       // next → current
+  nextImg.style.opacity = "1";
+
+  // swap các biến sau animation xong
+  setTimeout(() => {
+    const tmp = prevImg;
+    prevImg = currImg;
+    currImg = nextImg;
+    nextImg = tmp;
+
+    showPage(); // load trang next mới vào nextImg
+  }, 400); // khớp với transition duration
 }
-function prevPageFunc() {
-    if(currentPage > 1){
-        currentPage--;
-        showPage();
-    }
+
+function nextPage() {
+  if(currentPage >= totalPages) return;
+
+  currentPage++;
+  
+  // Trượt ảnh
+  prevImg.style.transform = "translateX(-300%)";   // biến mất trái
+  prevImg.style.opacity = "0";
+  
+  currImg.style.transform = "translateX(150%)";   // current → prev
+  currImg.style.opacity = "0.4";
+
+  nextImg.style.transform = "translateX(0)";       // next → current
+  nextImg.style.opacity = "1";
+
+  // swap các biến sau animation xong
+  setTimeout(() => {
+    const tmp = prevImg;
+    prevImg = currImg;
+    currImg = nextImg;
+    nextImg = tmp;
+
+    showPage(); // load trang next mới vào nextImg
+  }, 400); // khớp với transition duration
 }
+
 function restart() {
     currentPage = 1;
     showPage();
