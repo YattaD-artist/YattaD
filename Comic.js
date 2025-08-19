@@ -1,4 +1,4 @@
-// --- Preload ảnh 00.webp của tất cả menu ---
+   // --- Preload ảnh 00.webp của tất cả menu ---
 function preloadFirstPageImages() {
     for (const storyName in storyFolders) {
         const folder = storyFolders[storyName];
@@ -109,15 +109,6 @@ let currentStory = "";
 let currentPage = 1;
 let totalPages = 0;
     
-// --- Preload tất cả ảnh ---
-function preloadImages(storyName) {
-    const folder = storyFolders[storyName];
-    const total = storyPages[folder] || 3; // mặc định 3 nếu chưa khai báo
-    for(let i=1; i<=total; i++){
-        const img = new Image();
-        img.src = `comics/${folder}/${String(i).padStart(2,'0')}.webp`;
-    }
-}
 // Lấy overlay và các element
 const overlay = document.getElementById('overlay');
 const deck = document.getElementById('deck');
@@ -146,12 +137,21 @@ deck.appendChild(nextImg);
 // --- Hàm hiển thị trang ---
 function showPage() {
     const folder = storyFolders[currentStory];
+
     prevImg.src = currentPage > 1 ? 
         `comics/${folder}/${String(currentPage-1).padStart(2,'0')}.webp` : 
         `comics/${folder}/00.webp`;
+
     currImg.src = `comics/${folder}/${String(currentPage).padStart(2,'0')}.webp`;
+
     nextImg.src = currentPage < totalPages ? 
         `comics/${folder}/${String(currentPage+1).padStart(2,'0')}.webp` : '';
+
+    if(currentPage + 1 < totalPages){
+        const img = new Image();
+        img.src = `comics/${folder}/${String(currentPage+2).padStart(2,'0')}.webp`;
+    }
+
     restartBtn.style.display = (currentPage === totalPages) ? 'block' : 'none';
     caption.innerText = `Trang ${currentPage} / ${totalPages}`;
 }
@@ -205,4 +205,22 @@ document.addEventListener('keydown', e => {
         if(e.key === "ArrowLeft") prevPageFunc();
         if(e.key === "Escape") overlay.style.display='none';
     }
+}); 
+// --- MOBILE SWIPE ---
+let touchStartX = 0, touchEndX = 0;
+
+deck.addEventListener("touchstart", (e) => {
+  touchStartX = e.changedTouches[0].screenX;
 });
+deck.addEventListener("touchend", (e) => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
+});
+
+function handleSwipe() {
+  const distance = touchEndX - touchStartX;
+  if(Math.abs(distance) < 50) return;
+  if(distance > 0) prevPageFunc();
+  else nextPage();
+}
+
