@@ -140,26 +140,15 @@ deck.appendChild(nextImg);
 function showPage() {
     const folder = storyFolders[currentStory];
 
-    // Prev image
-    if(currentPage > 1){
-        prevImg.src = `comics/${folder}/${String(currentPage-1).padStart(2,'0')}.webp`;
-        prevImg.classList.remove('hidden');
-    } else {
-        prevImg.classList.add('hidden'); // ẩn nếu không có trang trước
-    }
+    prevImg.src = currentPage > 1 ? 
+        `comics/${folder}/${String(currentPage-1).padStart(2,'0')}.webp` : 
+        `comics/${folder}/00.webp`;
 
-    // Current image luôn hiện
     currImg.src = `comics/${folder}/${String(currentPage).padStart(2,'0')}.webp`;
 
-    // Next image
-    if(currentPage < totalPages){
-        nextImg.src = `comics/${folder}/${String(currentPage+1).padStart(2,'0')}.webp`;
-        nextImg.classList.remove('hidden');
-    } else {
-        nextImg.classList.add('hidden'); // ẩn nếu không có trang sau
-    }
+    nextImg.src = currentPage < totalPages ? 
+        `comics/${folder}/${String(currentPage+1).padStart(2,'0')}.webp` : '';
 
-    // Preload trang kế tiếp
     if(currentPage + 1 < totalPages){
         const img = new Image();
         img.src = `comics/${folder}/${String(currentPage+2).padStart(2,'0')}.webp`;
