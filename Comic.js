@@ -35,7 +35,8 @@ const translations = {
         menu5: "Khai Phá",
         menu6: "Vẫn Đúng",
         menu7: "Lê Thận",
-        menu8: "Raku"
+        menu8: "Raku",
+       page: "Trang"
     },
     en: {
         title: "YattaD",
@@ -49,7 +50,8 @@ const translations = {
         menu5: "Break thRough",
         menu6: "Still Come True",
         menu7: "Le Than",
-        menu8: "Raku"
+        menu8: "Raku",
+        page: "Page"
     }
 };
 
@@ -153,7 +155,7 @@ function showPage() {
     }
 
     restartBtn.style.display = (currentPage === totalPages) ? 'block' : 'none';
-    caption.innerText = `Trang ${currentPage} / ${totalPages}`;
+    caption.innerText = `${translations[currentLang].page} ${currentPage} / ${totalPages}`;
 }
 
 // --- Hàm mở truyện ---
