@@ -301,37 +301,40 @@ deck.appendChild(prevImg);
 deck.appendChild(currImg);
 deck.appendChild(nextImg);
 
-// --- Helper animation fade + zoom nhẹ cho ảnh chính (THÊM) ---
-function animatePageChange(imgEl, newSrc, isCenter = false) {
-  // fade out
+// --- Helper animation slide cho ảnh ---
+function animatePageChange(imgEl, newSrc, isCenter = false, direction = "right") {
+  // slide out
+  imgEl.style.transition = "transform 0.4s ease, opacity 0.4s ease";
+  imgEl.style.transform = direction === "right" ? "translateX(-100%)" : "translateX(100%)";
   imgEl.style.opacity = "0";
-  // sau 180ms đổi src rồi fade in
+
   setTimeout(() => {
     if (!newSrc) {
       imgEl.removeAttribute("src");
-      imgEl.style.opacity = "0";
       return;
     }
     imgEl.src = newSrc;
+
     imgEl.onload = () => {
-      // reset transform class trước khi vào
-      if (isCenter) {
-        // tạo hiệu ứng zoom nhẹ rồi trả về 1
-        imgEl.style.transformOrigin = "center center";
-        imgEl.style.transition = "opacity 0.45s ease, transform 0.6s ease";
-        imgEl.style.transform = "scale(1.04)";
-        requestAnimationFrame(() => {
-          // buộc browser tính layout
-          setTimeout(() => {
-            imgEl.style.opacity = "1";
-            imgEl.style.transform = "scale(1)";
-          }, 16);
-        });
-      } else {
+      // reset vị trí bên ngoài trước khi vào
+      imgEl.style.transition = "none";
+      imgEl.style.transform = direction === "right" ? "translateX(100%)" : "translateX(-100%)";
+      imgEl.style.opacity = "0";
+
+      requestAnimationFrame(() => {
+        imgEl.style.transition = "transform 0.5s ease, opacity 0.5s ease";
+        imgEl.style.transform = "translateX(0)";
         imgEl.style.opacity = "1";
-      }
+
+        if (isCenter) {
+          imgEl.style.transform += " scale(1.02)";
+          setTimeout(() => {
+            imgEl.style.transform = "translateX(0) scale(1)";
+          }, 300);
+        }
+      });
     };
-  }, 180);
+  }, 200);
 }
 
 function buildSrc(folder, page) {
@@ -339,20 +342,18 @@ function buildSrc(folder, page) {
 }
 
 // --- Hiển thị trang (có animation) ---
-function showPage() {
+function showPage(direction = "right") {
   const prevSrc = currentPage > 1 ? buildSrc(currentStory, currentPage - 1) : `comics/${currentStory}/00.webp`;
   const currSrc = buildSrc(currentStory, currentPage);
   const nextSrc = currentPage < totalPages ? buildSrc(currentStory, currentPage + 1) : "";
 
-  // Gán class trạng thái để đảm bảo nghiêng 15° cho ảnh phụ
   prevImg.className = "prev-side";
   currImg.className = "curr-active";
   nextImg.className = "next-side";
 
-  // chạy animation fade đổi ảnh
-  animatePageChange(prevImg, prevSrc, false);
-  animatePageChange(currImg, currSrc, true);
-  animatePageChange(nextImg, nextSrc, false);
+  animatePageChange(prevImg, prevSrc, false, direction);
+  animatePageChange(currImg, currSrc, true, direction);
+  animatePageChange(nextImg, nextSrc, false, direction);
 
   restartBtn.style.display = (currentPage === totalPages) ? "block" : "none";
   caption.innerText = `Trang ${currentPage} / ${totalPages}`;
@@ -363,13 +364,23 @@ function openStory(folder) {
   totalPages = storyPages[folder] || 1;
   currentPage = 1;
   overlay.style.display = "flex";
-  showPage();
+  showPage("right");
 }
 
 // --- Navigation ---
-function nextPage() { if (currentPage < totalPages) { currentPage++; showPage(); } }
-function prevPageFunc() { if (currentPage > 1) { currentPage--; showPage(); } }
-function restart() { currentPage = 1; showPage(); }
+function nextPage() { 
+  if (currentPage < totalPages) { 
+    currentPage++; 
+    showPage("right"); 
+  } 
+}
+function prevPageFunc() { 
+  if (currentPage > 1) { 
+    currentPage--; 
+    showPage("left"); 
+  } 
+}
+function restart() { currentPage = 1; showPage("right"); }
 
 // --- Events ---
 closeBtn.addEventListener("click", () => overlay.style.display = "none");
@@ -392,13 +403,13 @@ document.addEventListener("keydown", e => {
   }
 });
 
-  // --- Swipe detection ---
+// --- Swipe detection ---
 let touchStartX = 0;
 let touchEndX = 0;
 
 function handleGesture() {
   const diff = touchEndX - touchStartX;
-  if (Math.abs(diff) > 50) { // ngưỡng tối thiểu 50px
+  if (Math.abs(diff) > 50) { 
     if (diff > 0) {
       prevPageFunc(); // vuốt phải -> lùi trang
     } else {
@@ -415,7 +426,7 @@ deck.addEventListener("touchend", e => {
   touchEndX = e.changedTouches[0].screenX;
   handleGesture();
 });
-
 </script>
+
 </body>
 </html>
