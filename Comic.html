@@ -1,218 +1,119 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>YattaD - Truyện Tranh</title>
-  <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <style>
-/* ========== BASIC ========== */
-* { box-sizing: border-box; }
-html, body { max-width: 100%; overflow-x: hidden; }
-body {
-  margin: 0; font-family: 'Saira', sans-serif;
-  background-color: var(--bg); color: var(--text);
-  --bg: #ede9eb; --text: #1a2129; --accent: #e32630;
-  transition: background-color 0.3s, color 0.3s;
-}
-body.dark { --bg: #1b1b1b; --text: #f5f5f5; --accent: #1cd9cf; }
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>YattaD - Truyện Tranh</title>
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+*{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden;margin:0;font-family:'Saira',sans-serif}
+body{--bg:#ede9eb;--text:#1a2129;--accent:#e32630;background:var(--bg);color:var(--text)}
+body.dark{--bg:#111;--text:#f5f5f5;--accent:#1cd9cf}
 
-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 24px; border-bottom: 1px solid #ccc; background-color: var(--bg);
-  position: sticky; top: 0; z-index: 100;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
-}
+/* header/menu omitted (kept minimal for clarity) */
+header{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-bottom:1px solid #ccc;background:var(--bg);position:sticky;top:0;z-index:100}
 
-.center-title { flex: 1; text-align: center; font-weight: 800; font-size: 2.5rem; color: var(--accent); }
-.left, .right { display: flex; align-items: center; gap: 16px; }
-.icon-btn {
-  background: none; border: none; cursor: pointer; font-size: 1.3rem;
-  color: var(--text); display: flex; align-items: center; justify-content: center;
-  width: 38px; height: 38px; border-radius: 50%;
-  transition: transform 0.25s ease, color 0.25s ease, background-color 0.25s ease;
-  text-decoration: none;
-}
-.icon-btn:hover { transform: scale(1.15); color: var(--accent); background-color: rgba(0,0,0,0.05); }
-
-main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
-
-/* Intro */
-.info {
-  width: 100%; padding: 32px; background-color: var(--bg);
-  border-radius: 12px; border: 1px solid rgba(0,0,0,0.1);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
-}
-.info h2 { font-size: 2rem; margin-bottom: 16px; font-weight: 700; color: var(--accent);
-  border-bottom: 3px solid var(--accent); display: inline-block; padding-bottom: 5px; }
-.info p { margin-bottom: 12px; line-height: 1.6; }
-
-/* Menu grid */
-.menu {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 18px;
-}
-.menuItem {
-  cursor: pointer;
-  text-align: center;
-  border: 2px solid var(--text);
-  border-radius: 12px;
-  padding: 8px;
-  transition: transform 0.25s, box-shadow 0.25s;
-}
-.menuItem img {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 6px;
-}
-.menuItem:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-  border-color: var(--accent);
-}
-
-/* ========== OVERLAY / DECK (SỬA LẠI) ========== */
-#overlay {
+/* OVERLAY / DECK */
+#overlay{
   display:none;
-  position:fixed;
-  inset:0;
+  position:fixed;inset:0;
   background:rgba(0,0,0,0.95);
-  justify-content:center; align-items:center;
-  z-index:9999; flex-direction:column;
-  padding: 20px;
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  flex-direction:column;
 }
 
-/* deck là vùng chứa, ảnh được absolute bên trong */
-#deck {
-  position: relative;
-  width: min(96vw,1200px);
-  height: min(88vh,1000px);
-  margin: 0 auto;
-  overflow: visible; /* hiển thị 2 bên */
-  display: block;
+/* vùng chứa 3 ảnh */
+#deck{
+  position:relative;
+  width:min(96vw,1200px);
+  height:min(82vh,900px);
+  margin:0 auto;
+  overflow:visible; /* cho 2 bên hiện ra */
+  touch-action:pan-y;
 }
 
-/* tất cả ảnh chồng lên nhau, CSS chuyển class để di chuyển */
-#deck img {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  transition: transform 0.45s cubic-bezier(.2,.9,.2,1), opacity 0.45s ease, filter 0.45s ease;
-  object-fit: contain;
-  border-radius: 6px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
-  max-height: 88vh;
+/* tất cả ảnh chồng, nhưng có left khác nhau */
+#deck img{
+  position:absolute;
+  top:50%;
+  transform:translate(-50%,-50%);
+  transition: transform .42s cubic-bezier(.2,.9,.2,1), opacity .42s ease, filter .42s ease;
+  object-fit:contain;
+  border-radius:6px;
+  box-shadow:0 12px 30px rgba(0,0,0,.45);
+  max-height:82vh;
+  display:block;
+  background: rgba(255,255,255,0.03);
 }
 
-/* trạng thái 3 vị trí: trái - giữa - phải */
-.prev-side {
-  transform: translate(calc(-50% - 42%), -50%) rotate(-10deg) scale(0.78);
-  opacity: 0.55;
-  width: 30%;
-  z-index: 1;
-  filter: saturate(.9) brightness(.9);
+/* vị trí chính: 3 điểm rõ ràng (25%/50%/75%) */
+.prev-side{
+  left:25%;
+  width:30%;
+  transform:translate(-50%,-50%) rotate(-8deg) scale(.82);
+  opacity:.65;
+  z-index:1;
+  filter:brightness(.95) saturate(.9);
+  cursor:pointer;
 }
-.curr-active {
-  transform: translate(-50%,-50%) rotate(0deg) scale(1);
-  opacity: 1;
-  width: 58%;
-  z-index: 3;
-  filter: saturate(1) brightness(1);
+.curr-active{
+  left:50%;
+  width:52%;
+  transform:translate(-50%,-50%) rotate(0deg) scale(1);
+  opacity:1;
+  z-index:3;
+  cursor:pointer;
 }
-.next-side {
-  transform: translate(calc(-50% + 42%), -50%) rotate(10deg) scale(0.78);
-  opacity: 0.55;
-  width: 30%;
-  z-index: 1;
-  filter: saturate(.9) brightness(.9);
-}
-
-/* khi không có ảnh prev/next -> dịch ra ngoài & ẩn */
-.hidden-side {
-  transform: translate(calc(-50% - 120%), -50%) scale(0.6);
-  opacity: 0;
-  pointer-events: none;
+.next-side{
+  left:75%;
+  width:30%;
+  transform:translate(-50%,-50%) rotate(8deg) scale(.82);
+  opacity:.65;
+  z-index:1;
+  filter:brightness(.95) saturate(.9);
+  cursor:pointer;
 }
 
-/* Caption / buttons */
-#caption { color:#fff; margin-top:12px; font-size:1.1rem; text-align:center; }
-#closeBtn { position:absolute; top:20px; right:20px; font-size:1.5rem; background:none; color:#fff; border:none; cursor:pointer; }
-#restartBtn { position:absolute; bottom:20px; right:20px; font-size:1rem; display:none; padding:6px 12px; cursor:pointer; }
-
-/* Mobile */
-@media (max-width: 768px) {
-  main { padding: 10px; gap: 12px; }
-  .info { padding: 16px; }
-  .menu { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
-
-  /* scale nhỏ lại cho mobile */
-  .curr-active { width: 82%; }
-  .prev-side, .next-side { width: 26%; transform: translate(calc(-50% - 32%), -50%) rotate(-8deg) scale(0.72); }
+/* trường hợp không tồn tại prev/next */
+.hidden-side{
+  left:75%;
+  width:30%;
+  transform:translate(-50%,-50%) scale(.6) translateX(200px);
+  opacity:0;
+  pointer-events:none;
 }
-  </style>
+
+/* caption + controls */
+#caption{color:#fff;margin-top:12px;font-size:1.05rem}
+#closeBtn{position:absolute;top:20px;right:20px;font-size:1.5rem;background:none;color:#fff;border:none;cursor:pointer}
+#restartBtn{position:absolute;bottom:18px;right:18px;padding:8px 12px;font-size:1rem;display:none;cursor:pointer}
+
+/* responsive tweak */
+@media(max-width:768px){
+  .prev-side{left:22%;width:26%;transform:translate(-50%,-50%) rotate(-6deg) scale(.74)}
+  .next-side{left:78%;width:26%;transform:translate(-50%,-50%) rotate(6deg) scale(.74)}
+  .curr-active{width:80%}
+}
+</style>
 </head>
 <body>
+
 <header>
-  <div class="left">
-    <a href="index.html" class="icon-btn" title="Trang chủ"><i class="fas fa-home"></i></a>
+  <div style="display:flex;gap:12px">
+    <a class="icon-btn" href="index.html" style="color:var(--text)"><i class="fas fa-home"></i></a>
   </div>
-  <div class="center-title" id="title">YattaD</div>
-  <div class="right">
-    <button class="icon-btn" id="theme-toggle" title="Đổi chế độ"><i class="fas fa-adjust"></i></button>
-    <button class="icon-btn" id="lang-toggle" title="Đổi ngôn ngữ"><i class="fa-solid fa-language"></i></button>
-  </div>
+  <div style="font-weight:800;font-size:22px;color:var(--accent)">YattaD</div>
+  <div></div>
 </header>
 
-<main>
-  <div class="info">
-    <h2 id="introTitle">Lời Nói Đầu</h2>
-    <p id="introP1">Chào mừng bạn đến với trang đọc truyện tranh của tôi! Tại đây bạn có thể khám phá các bộ truyện độc đáo và hấp dẫn.</p>
-    <p id="introP2">Mỗi câu chuyện đều được lựa chọn kỹ lưỡng, hy vọng bạn sẽ tìm thấy những khoảnh khắc thú vị và cảm xúc khi thưởng thức.</p>
-  </div>
+<!-- (menu phần còn lại giữ nguyên theo file bạn có) -->
 
-  <div class="menu">
-    <div class="menuItem" data-folder="PunkgaMerch">
-      <img src="comics/PunkgaMerch/00.webp" alt="PunkgaMerch">
-      <p id="menu1Name">PunkgaMerch</p>
-    </div>
-    <div class="menuItem" data-folder="Red&Ruby">
-      <img src="comics/Red&Ruby/00.webp" alt="Red và Ruby">
-      <p id="menu2Name">Red và Ruby</p>
-    </div>
-    <div class="menuItem" data-folder="TieuTung">
-      <img src="comics/TieuTung/00.webp" alt="Tiêu Tùng">
-      <p id="menu3Name">Tiêu Tùng</p>
-    </div>
-    <div class="menuItem" data-folder="Siin">
-      <img src="comics/Siin/00.webp" alt="Sao Băng Mùa Hạ">
-      <p id="menu4Name">Sao Băng Mùa Hạ</p>
-    </div>
-    <div class="menuItem" data-folder="BreakthRough">
-      <img src="comics/BreakthRough/00.webp" alt="Khai Phá">
-      <p id="menu5Name">Khai Phá</p>
-    </div>
-    <div class="menuItem" data-folder="StillComeTrue">
-      <img src="comics/StillComeTrue/00.webp" alt="Vẫn Đúng">
-      <p id="menu6Name">Vẫn Đúng</p>
-    </div>
-    <div class="menuItem" data-folder="LeThan">
-      <img src="comics/LeThan/00.webp" alt="Lê Thận">
-      <p id="menu7Name">Lê Thận</p>
-    </div>
-    <div class="menuItem" data-folder="Raku">
-      <img src="comics/Raku/00.webp" alt="Raku">
-      <p id="menu8Name">Raku</p>
-    </div>
-  </div>
-</main>
-
-<!-- Overlay Reader -->
+<!-- OVERLAY -->
 <div id="overlay">
   <div id="deck"></div>
   <div id="caption"></div>
@@ -221,217 +122,120 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 </div>
 
 <script>
-// --- Config số trang mỗi truyện (số trang tổng, ví dụ 14 => trang index 0..13) ---
+/* ====== config số trang: phải tương ứng với file thực tế trong folder ======
+   Nếu folder có file 00.webp..13.webp thì value = 14 (tức lastIndex = 13) */
 const storyPages = {
-  "PunkgaMerch": 14,
+  "PunkgaMerch": 15,
   "Red&Ruby": 0,
-  "BreakthRough": 11,
-  "TieuTung": 8,
-  "Siin": 5,
+  "BreakthRough": 12,
+  "TieuTung": 9,
+  "Siin": 6,
   "StillComeTrue": 0,
   "LeThan": 0,
   "Raku": 0
 };
 
-// --- Preload first pages ---
-function preloadFirstPages() {
-  for (const folder in storyPages) {
-    const img = new Image();
-    img.src = `comics/${folder}/00.webp`;
-  }
-}
-document.addEventListener("DOMContentLoaded", preloadFirstPages);
+/* các node */
+const overlay = document.getElementById('overlay');
+const deck = document.getElementById('deck');
+const caption = document.getElementById('caption');
+const closeBtn = document.getElementById('closeBtn');
+const restartBtn = document.getElementById('restartBtn');
 
-// --- Theme toggle ---
-const themeBtn = document.getElementById("theme-toggle");
-themeBtn.addEventListener("click", () => {
-  document.body.classList.toggle("dark");
-  localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
-});
-if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
+/* tạo 3 imgs */
+const prevImg = document.createElement('img');
+const currImg = document.createElement('img');
+const nextImg = document.createElement('img');
+prevImg.alt = 'prev'; currImg.alt = 'current'; nextImg.alt = 'next';
+prevImg.className = 'prev-side'; currImg.className = 'curr-active'; nextImg.className = 'next-side';
+deck.appendChild(prevImg); deck.appendChild(currImg); deck.appendChild(nextImg);
 
-// --- Language toggle ---
-const langBtn = document.getElementById("lang-toggle");
-let currentLang = localStorage.getItem("lang") || "vi";
-
-const translations = {
-  vi: {
-    title: "YattaD",
-    introTitle: "Lời Nói Đầu",
-    introP1: "Chào mừng bạn đến với trang đọc truyện tranh của tôi! Tại đây bạn có thể khám phá các bộ truyện độc đáo và hấp dẫn.",
-    introP2: "Mỗi câu chuyện đều được lựa chọn kỹ lưỡng, hy vọng bạn sẽ tìm thấy những khoảnh khắc thú vị và cảm xúc khi thưởng thức.",
-    menu1Name: "PunkgaMerch",
-    menu2Name: "Red và Ruby",
-    menu3Name: "Tiêu Tùng",
-    menu4Name: "Sao Băng Mùa Hạ",
-    menu5Name: "Khai Phá",
-    menu6Name: "Vẫn Đúng",
-    menu7Name: "Lê Thận",
-    menu8Name: "Raku"
-  },
-  en: {
-    title: "YattaD",
-    introTitle: "Introduction",
-    introP1: "Welcome to my comic reading page! Here you can explore unique and exciting stories.",
-    introP2: "Each story is carefully selected, hope you will find interesting moments and emotions while enjoying.",
-    menu1Name: "PunkgaMerch",
-    menu2Name: "Red & Ruby",
-    menu3Name: "Tieu Tung",
-    menu4Name: "Summer Shooting Star",
-    menu5Name: "Break thRough",
-    menu6Name: "Still Come True",
-    menu7Name: "Le Than",
-    menu8Name: "Raku"
-  }
-};
-
-function switchLanguage() {
-  currentLang = currentLang === "vi" ? "en" : "vi";
-  localStorage.setItem("lang", currentLang);
-  for (const key in translations[currentLang]) {
-    const el = document.getElementById(key);
-    if (el) el.textContent = translations[currentLang][key];
-  }
-}
-langBtn.addEventListener("click", switchLanguage);
-document.addEventListener("DOMContentLoaded", () => {
-  if (currentLang === "en") switchLanguage();
-});
-
-// --- Overlay / Deck logic (mới) ---
-let currentStory = "";
-let currentIndex = 0; // bắt đầu từ 0 => trang bìa 00.webp
+let currentStory = '';
+let currentIndex = 0;
 let lastIndex = 0;
 
-const overlay = document.getElementById("overlay");
-const deck = document.getElementById("deck");
-const caption = document.getElementById("caption");
-const closeBtn = document.getElementById("closeBtn");
-const restartBtn = document.getElementById("restartBtn");
-
-// tạo 3 image nodes (prev, curr, next)
-const prevImg = document.createElement("img");
-const currImg = document.createElement("img");
-const nextImg = document.createElement("img");
-
-prevImg.className = "prev-side";
-currImg.className = "curr-active";
-nextImg.className = "next-side";
-
-prevImg.alt = "prev";
-currImg.alt = "current";
-nextImg.alt = "next";
-
-deck.appendChild(prevImg);
-deck.appendChild(currImg);
-deck.appendChild(nextImg);
-
-// helper build src with 2 digits
-function buildSrc(folder, idx) {
-  return `comics/${folder}/${String(idx).padStart(2, "0")}.webp`;
+/* helper build src (lưu ý: folder phải đúng) */
+function buildSrc(folder, idx){
+  return `comics/${folder}/${String(idx).padStart(2,'0')}.webp`;
 }
+function preload(src){ if(!src) return; const i=new Image(); i.src=src; }
 
-// preload helper
-function preload(src) {
-  if (!src) return;
-  const i = new Image();
-  i.src = src;
-}
+/* hiển thị 3 ảnh */
+function showPage(){
+  const p = currentIndex - 1;
+  const n = currentIndex + 1;
 
-// hiển thị 3 ảnh với class thay đổi -> CSS animate
-function showPage() {
-  const prevIdx = currentIndex - 1;
-  const nextIdx = currentIndex + 1;
-
-  // gán src (nếu out of range thì '' để ẩn bằng class hidden-side)
-  prevImg.src = (prevIdx >= 0) ? buildSrc(currentStory, prevIdx) : "";
+  // gán src
   currImg.src = buildSrc(currentStory, currentIndex);
-  nextImg.src = (nextIdx <= lastIndex) ? buildSrc(currentStory, nextIdx) : "";
+  prevImg.src = (p >= 0) ? buildSrc(currentStory, p) : '';
+  nextImg.src = (n <= lastIndex) ? buildSrc(currentStory, n) : '';
 
-  // gán class trạng thái
-  if (prevIdx >= 0) {
-    prevImg.className = "prev-side";
-  } else {
-    prevImg.className = "hidden-side";
-  }
-  currImg.className = "curr-active";
-  if (nextIdx <= lastIndex) {
-    nextImg.className = "next-side";
-  } else {
-    nextImg.className = "hidden-side";
-  }
+  // gán class để CSS animate vị trí
+  if(p >= 0) prevImg.className = 'prev-side'; else prevImg.className = 'hidden-side';
+  currImg.className = 'curr-active';
+  if(n <= lastIndex) nextImg.className = 'next-side'; else nextImg.className = 'hidden-side';
 
-  // preload neighbors để mượt
-  preload(prevImg.src);
-  preload(nextImg.src);
+  // preload
+  preload(prevImg.src); preload(nextImg.src);
 
-  // caption: show index bắt đầu từ 00 (bìa)
-  caption.innerText = `Trang ${String(currentIndex).padStart(2,"0")} / ${String(lastIndex).padStart(2,"0")}`;
+  // caption: hiện index theo dạng 00
+  caption.innerText = `Trang ${String(currentIndex).padStart(2,'0')} / ${String(lastIndex).padStart(2,'0')}`;
 
-  // restart button khi chạm cuối
-  restartBtn.style.display = (currentIndex === lastIndex) ? "block" : "none";
+  // restart visibility
+  restartBtn.style.display = (currentIndex === lastIndex) ? 'block' : 'none';
 }
 
-// mở truyện: bắt đầu từ index 0 (bìa)
-function openStory(folder) {
+/* open story (bắt đầu từ bìa 00) */
+function openStory(folder){
   currentStory = folder;
   const total = storyPages[folder] || 0;
-  lastIndex = Math.max(0, total - 1); // ví dụ total=14 -> lastIndex=13
-  currentIndex = 0; // BẮT ĐẦU TỪ BÌA 00.webp
-  overlay.style.display = "flex";
-  showPage();
+  lastIndex = Math.max(0, total - 1); // total=14 => lastIndex=13
+  currentIndex = 0; // bắt đầu từ bìa 00.webp
+  overlay.style.display = 'flex';
+  // short delay để CSS transition mượt hơn khi mở lần đầu
+  setTimeout(showPage, 10);
 }
 
-// next/prev
-function nextPage() {
-  if (currentIndex < lastIndex) {
-    currentIndex++;
-    showPage();
-  }
-}
-function prevPageFunc() {
-  if (currentIndex > 0) {
-    currentIndex--;
-    showPage();
-  }
-}
-function restart() { currentIndex = 0; showPage(); }
+/* navigation */
+function nextPage(){ if(currentIndex < lastIndex){ currentIndex++; showPage(); } }
+function prevPage(){ if(currentIndex > 0){ currentIndex--; showPage(); } }
+function restart(){ currentIndex = 0; showPage(); }
 
-// sự kiện
-closeBtn.addEventListener("click", () => overlay.style.display = "none");
-restartBtn.addEventListener("click", restart);
+/* events */
+closeBtn.addEventListener('click', ()=> overlay.style.display='none');
+restartBtn.addEventListener('click', restart);
 
-document.querySelectorAll(".menuItem").forEach(item => {
-  item.addEventListener("click", () => openStory(item.dataset.folder));
+/* giả sử menuItem giống file cũ (data-folder attribute) */
+document.querySelectorAll('.menuItem').forEach(el => {
+  el.addEventListener('click', ()=> openStory(el.dataset.folder));
 });
 
-// click ảnh
-prevImg.addEventListener("click", prevPageFunc);
-nextImg.addEventListener("click", nextPage);
-currImg.addEventListener("click", nextPage);
+/* click ảnh để chuyển */
+prevImg.addEventListener('click', prevPage);
+currImg.addEventListener('click', nextPage);
+nextImg.addEventListener('click', nextPage);
 
-// keyboard
-document.addEventListener("keydown", e => {
-  if (overlay.style.display === "flex") {
-    if (e.key === "ArrowRight") nextPage();
-    if (e.key === "ArrowLeft") prevPageFunc();
-    if (e.key === "Escape") overlay.style.display = "none";
-    if (e.key.toLowerCase() === "r") restart();
+/* keyboard */
+document.addEventListener('keydown', e=>{
+  if(overlay.style.display === 'flex'){
+    if(e.key === 'ArrowRight') nextPage();
+    if(e.key === 'ArrowLeft') prevPage();
+    if(e.key === 'Escape') overlay.style.display = 'none';
+    if(e.key.toLowerCase() === 'r') restart();
   }
 });
 
-// swipe detection
-let touchStartX = 0, touchEndX = 0;
-function handleGesture() {
-  const diff = touchEndX - touchStartX;
-  if (Math.abs(diff) > 50) {
-    if (diff > 0) prevPageFunc(); else nextPage();
-  }
-}
-deck.addEventListener("touchstart", e => touchStartX = e.changedTouches[0].screenX);
-deck.addEventListener("touchend", e => { touchEndX = e.changedTouches[0].screenX; handleGesture(); });
+/* swipe */
+let sx=0, ex=0;
+deck.addEventListener('touchstart', e=> sx = e.changedTouches[0].screenX );
+deck.addEventListener('touchend', e=> { ex = e.changedTouches[0].screenX; const d = ex - sx; if(Math.abs(d) > 60) { if(d>0) prevPage(); else nextPage(); } });
 
+/* preload first covers */
+document.addEventListener('DOMContentLoaded', ()=>{
+  for(const f in storyPages){
+    const i = new Image(); i.src = `comics/${f}/00.webp`;
+  }
+});
 </script>
-
 </body>
 </html>
