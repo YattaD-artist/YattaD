@@ -72,6 +72,51 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
   box-shadow: 0 6px 12px rgba(0,0,0,0.15);
   border-color: var(--accent);
 }
+/* --- Trang Truyện---*/
+/* --- Overlay ComicReader --- */
+#overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.95);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    flex-direction: column;
+}
+
+#deck {
+    position: relative;
+    width: min(96vw, 1200px);
+    height: min(92vh, 1000px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+#deck img {
+    max-height: 90%;
+    object-fit: contain;
+}
+
+#currImg {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    max-height: 90%;
+}
+
+#prevImg, #nextImg {
+    max-height: 45%;
+    opacity: 0.4;
+    z-index: 1;
+}
+
+#prevImg { margin-right: 40px; }
+#nextImg { margin-left: 40px; }
 
 /* --- Mobile --- */
 @media (max-width: 768px) {
