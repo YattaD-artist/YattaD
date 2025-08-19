@@ -75,14 +75,36 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
   border-color: var(--accent);
 }
 
+/* --- Animation cho overlay reader (THÊM) --- */
+#deck img {
+  transition: opacity 0.45s ease, transform 0.6s ease;
+  will-change: opacity, transform;
+}
+
+/* class trạng thái 3 ảnh */
+.curr-active {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  z-index: 2;
+}
+.prev-side {
+  opacity: 0.4;
+  transform: rotate(-15deg) translateX(-40px) scale(0.88);
+  z-index: 1;
+}
+.next-side {
+  opacity: 0.4;
+  transform: rotate(15deg) translateX(40px) scale(0.88);
+  z-index: 1;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   main { padding: 10px; gap: 12px; }
   .info { padding: 16px; }
   .menu { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
 }
-
-</style>
+  </style>
 </head>
 <body>
 <header>
@@ -141,7 +163,7 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 
 <!-- Overlay Reader -->
 <div id="overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); justify-content:center; align-items:center; z-index:9999; flex-direction:column;">
-  <div id="deck" style="position:relative; width:80%; max-width:800px; height:90%; overflow:hidden; display:flex; align-items:center; justify-content:center;"></div>
+  <div id="deck" style="position:relative; width:80%; max-width:800px; height:90%; overflow:hidden; display:flex; align-items:center; justify-content:center; gap:20px;"></div>
   <div id="caption" style="color:#fff; margin-top:12px; font-size:1.1rem; text-align:center;"></div>
   <button id="closeBtn" style="position:absolute; top:20px; right:20px; font-size:1.5rem; background:none; color:#fff; border:none; cursor:pointer;">✖</button>
   <button id="restartBtn" style="position:absolute; bottom:20px; right:20px; font-size:1rem; display:none; padding:6px 12px; cursor:pointer;">Restart</button>
@@ -238,7 +260,7 @@ const closeBtn = document.getElementById("closeBtn");
 const restartBtn = document.getElementById("restartBtn");
 
 const prevImg = document.createElement("img");
-prevImg.style.maxHeight = "45%";
+prevImg.style.maxHeight = "60%";
 prevImg.style.opacity = "0.4";
 prevImg.style.marginRight = "40px";
 prevImg.style.transform = "rotate(-15deg)";  // nghiêng trái
@@ -247,7 +269,7 @@ const currImg = document.createElement("img");
 currImg.style.maxHeight = "90%";
 
 const nextImg = document.createElement("img");
-nextImg.style.maxHeight = "45%";
+nextImg.style.maxHeight = "60%";
 nextImg.style.opacity = "0.4";
 nextImg.style.marginLeft = "40px";
 nextImg.style.transform = "rotate(15deg)";   // nghiêng phải
@@ -256,13 +278,59 @@ deck.appendChild(prevImg);
 deck.appendChild(currImg);
 deck.appendChild(nextImg);
 
+// --- Helper animation fade + zoom nhẹ cho ảnh chính (THÊM) ---
+function animatePageChange(imgEl, newSrc, isCenter = false) {
+  // fade out
+  imgEl.style.opacity = "0";
+  // sau 180ms đổi src rồi fade in
+  setTimeout(() => {
+    if (!newSrc) {
+      imgEl.removeAttribute("src");
+      imgEl.style.opacity = "0";
+      return;
+    }
+    imgEl.src = newSrc;
+    imgEl.onload = () => {
+      // reset transform class trước khi vào
+      if (isCenter) {
+        // tạo hiệu ứng zoom nhẹ rồi trả về 1
+        imgEl.style.transformOrigin = "center center";
+        imgEl.style.transition = "opacity 0.45s ease, transform 0.6s ease";
+        imgEl.style.transform = "scale(1.04)";
+        requestAnimationFrame(() => {
+          // buộc browser tính layout
+          setTimeout(() => {
+            imgEl.style.opacity = "1";
+            imgEl.style.transform = "scale(1)";
+          }, 16);
+        });
+      } else {
+        imgEl.style.opacity = "1";
+      }
+    };
+  }, 180);
+}
+
+function buildSrc(folder, page) {
+  return `comics/${folder}/${String(page).padStart(2, "0")}.webp`;
+}
+
+// --- Hiển thị trang (có animation) ---
 function showPage() {
-  prevImg.src = currentPage > 1 ?
-    `comics/${currentStory}/${String(currentPage - 1).padStart(2, "0")}.webp` :
-    `comics/${currentStory}/00.webp`;
-  currImg.src = `comics/${currentStory}/${String(currentPage).padStart(2, "0")}.webp`;
-  nextImg.src = currentPage < totalPages ?
-    `comics/${currentStory}/${String(currentPage + 1).padStart(2, "0")}.webp` : "";
+  const prevSrc = currentPage > 1 ? buildSrc(currentStory, currentPage - 1) : `comics/${currentStory}/00.webp`;
+  const currSrc = buildSrc(currentStory, currentPage);
+  const nextSrc = currentPage < totalPages ? buildSrc(currentStory, currentPage + 1) : "";
+
+  // Gán class trạng thái để đảm bảo nghiêng 15° cho ảnh phụ
+  prevImg.className = "prev-side";
+  currImg.className = "curr-active";
+  nextImg.className = "next-side";
+
+  // chạy animation fade đổi ảnh
+  animatePageChange(prevImg, prevSrc, false);
+  animatePageChange(currImg, currSrc, true);
+  animatePageChange(nextImg, nextSrc, false);
+
   restartBtn.style.display = (currentPage === totalPages) ? "block" : "none";
   caption.innerText = `Trang ${currentPage} / ${totalPages}`;
 }
@@ -300,7 +368,6 @@ document.addEventListener("keydown", e => {
     if (e.key.toLowerCase() === "r") restart();
   }
 });
-
 </script>
 </body>
 </html>
