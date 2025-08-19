@@ -87,7 +87,23 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
   gap: 20px;
   /* BỎ overflow:hidden */
 }
+/* Overlay & deck: không cắt ảnh */
+#overlay { padding: 16px; }
+#deck { overflow: visible !important; }
 
+/* Ảnh luôn fit vào khung, không cắt nội dung */
+#deck img {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+/* Chia tỷ lệ để 3 ảnh đều nhìn thấy trên màn hình */
+.curr-active { max-width: 60vw; max-height: 90vh; z-index: 3; }
+.prev-side, .next-side { max-width: 16vw; max-height: 65vh; }
+
+    
 /* class trạng thái 3 ảnh */
 .curr-active {
   opacity: 1;
@@ -170,7 +186,7 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 
 <!-- Overlay Reader -->
 <div id="overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); justify-content:center; align-items:center; z-index:9999; flex-direction:column;">
-  <div id="deck" style="position:relative; width:80%; max-width:800px; height:90%; overflow:hidden; display:flex; align-items:center; justify-content:center; gap:20px;"></div>
+  <div id="deck" style="position:relative; width:min(96vw,1200px); height:min(92vh,1000px); overflow:visible; display:flex; align-items:center; justify-content:center; gap:20px;"></div>
   <div id="caption" style="color:#fff; margin-top:12px; font-size:1.1rem; text-align:center;"></div>
   <button id="closeBtn" style="position:absolute; top:20px; right:20px; font-size:1.5rem; background:none; color:#fff; border:none; cursor:pointer;">✖</button>
   <button id="restartBtn" style="position:absolute; bottom:20px; right:20px; font-size:1rem; display:none; padding:6px 12px; cursor:pointer;">Restart</button>
