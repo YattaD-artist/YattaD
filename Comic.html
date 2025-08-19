@@ -81,6 +81,16 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
   box-shadow: 0 6px 12px rgba(0,0,0,0.15);
   border-color: var(--accent);
 }
+.deck-img {
+  position: absolute;
+  max-height: 90%;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  cursor: pointer;
+}
+
+#prevImg { opacity: 0.4; transform: translateX(-150%); }
+#currImg { opacity: 1; transform: translateX(0); }
+#nextImg { opacity: 0.4; transform: translateX(150%); }
 
 /* --- Mobile --- */
 @media (max-width: 768px) {
@@ -324,17 +334,80 @@ function openStory(storyName) {
 
 // --- Navigation ---
 function nextPage() {
-    if(currentPage < totalPages){
-        currentPage++;
-        showPage();
-    }
+  if(currentPage >= totalPages) return;
+  currentPage++;
+
+  // trượt
+  prevImg.style.transform = "translateX(-300%)";
+  prevImg.style.opacity = "0";
+  currImg.style.transform = "translateX(-150%)";
+  currImg.style.opacity = "0.4";
+  nextImg.style.transform = "translateX(0)";
+  nextImg.style.opacity = "1";
+
+  setTimeout(() => {
+    // swap img
+    const tmp = prevImg;
+    prevImg = currImg;
+    currImg = nextImg;
+    nextImg = tmp;
+
+    // load ảnh tiếp theo vào nextImg
+    const folder = storyFolders[currentStory];
+    const nextPageNum = currentPage + 1;
+    nextImg.src = nextPageNum <= totalPages ? 
+                  `comics/${folder}/${String(nextPageNum).padStart(2,'0')}.webp` : '';
+    
+    prevImg.style.transform = "translateX(-150%)";
+    currImg.style.transform = "translateX(0)";
+    nextImg.style.transform = "translateX(150%)";
+
+    prevImg.style.opacity = 0.4;
+    currImg.style.opacity = 1;
+    nextImg.style.opacity = 0.4;
+
+    restartBtn.style.display = (currentPage === totalPages) ? 'block' : 'none';
+    caption.innerText = `Trang ${currentPage} / ${totalPages}`;
+  }, 400);
 }
+
 function prevPageFunc() {
-    if(currentPage > 1){
-        currentPage--;
-        showPage();
-    }
+  if(currentPage <= 1) return;
+  currentPage--;
+
+  prevImg.style.transform = "translateX(0)";
+  prevImg.style.opacity = 1;
+  currImg.style.transform = "translateX(150%)";
+  currImg.style.opacity = 0.4;
+  nextImg.style.transform = "translateX(300%)";
+  nextImg.style.opacity = 0;
+
+  setTimeout(() => {
+    // swap img
+    const tmp = nextImg;
+    nextImg = currImg;
+    currImg = prevImg;
+    prevImg = tmp;
+
+    // load ảnh trước vào prevImg
+    const folder = storyFolders[currentStory];
+    const prevPageNum = currentPage - 1;
+    prevImg.src = prevPageNum > 0 ? 
+                  `comics/${folder}/${String(prevPageNum).padStart(2,'0')}.webp` : 'comics/'+folder+'/00.webp';
+
+    prevImg.style.transform = "translateX(-150%)";
+    currImg.style.transform = "translateX(0)";
+    nextImg.style.transform = "translateX(150%)";
+
+    prevImg.style.opacity = 0.4;
+    currImg.style.opacity = 1;
+    nextImg.style.opacity = 0.4;
+
+    restartBtn.style.display = (currentPage === totalPages) ? 'block' : 'none';
+    caption.innerText = `Trang ${currentPage} / ${totalPages}`;
+  }, 400);
 }
+
 function restart() {
     currentPage = 1;
     showPage();
