@@ -1,68 +1,145 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>YattaD - Truyện Tranh</title>
-<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="Comic.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YattaD - Truyện Tranh</title>
+  <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+* { box-sizing: border-box; }
+html, body { max-width: 100%; overflow-x: hidden; }
+body {
+  margin: 0; font-family: 'Saira', sans-serif;
+  background-color: var(--bg); color: var(--text);
+  --bg: #ede9eb; --text: #1a2129; --accent: #e32630;
+  transition: background-color 0.3s, color 0.3s;
+}
+body.dark { --bg: #1b1b1b; --text: #f5f5f5; --accent: #1cd9cf; }
+
+header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 24px; border-bottom: 1px solid #ccc; background-color: var(--bg);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.center-title { flex: 1; text-align: center; font-weight: 800; font-size: 2.5rem; color: var(--accent); }
+.left, .right { display: flex; align-items: center; gap: 16px; }
+.icon-btn {
+  background: none; border: none; cursor: pointer; font-size: 1.3rem;
+  color: var(--text); display: flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; border-radius: 50%;
+  transition: transform 0.25s ease, color 0.25s ease, background-color 0.25s ease;
+  text-decoration: none;
+}
+.icon-btn:hover { transform: scale(1.15); color: var(--accent); background-color: rgba(0,0,0,0.05); }
+
+main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
+
+/* Intro */
+.info {
+  width: 100%; padding: 32px; background-color: var(--bg);
+  border-radius: 12px; border: 1px solid rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+  transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+.info h2 { font-size: 2rem; margin-bottom: 16px; font-weight: 700; color: var(--accent);
+  border-bottom: 3px solid var(--accent); display: inline-block; padding-bottom: 5px; }
+.info p { margin-bottom: 12px; line-height: 1.6; }
+
+/* Menu grid */
+.menu {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 18px;
+}
+.menuItem {
+  cursor: pointer;
+  text-align: center;
+  border: 2px solid var(--text);
+  border-radius: 12px;
+  padding: 8px;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.menuItem img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+.menuItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  border-color: var(--accent);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  main { padding: 10px; gap: 12px; }
+  .info { padding: 16px; }
+  .menu { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
+}
+
+</style>
 </head>
 <body>
 <header>
-    <div class="left">
-        <a href="index.html" class="icon-btn" title="Trang chủ"><i class="fas fa-home"></i></a>
-    </div>
-    <div class="center-title" id="title">YattaD</div>
-    <div class="right">
-        <button class="icon-btn" id="theme-toggle" title="Đổi chế độ"><i class="fas fa-adjust"></i></button>
-        <button class="icon-btn" id="lang-toggle" title="Đổi ngôn ngữ"><i class="fa-solid fa-language"></i></button>
-    </div>
+  <div class="left">
+    <a href="index.html" class="icon-btn" title="Trang chủ"><i class="fas fa-home"></i></a>
+  </div>
+  <div class="center-title" id="title">YattaD</div>
+  <div class="right">
+    <button class="icon-btn" id="theme-toggle" title="Đổi chế độ"><i class="fas fa-adjust"></i></button>
+    <button class="icon-btn" id="lang-toggle" title="Đổi ngôn ngữ"><i class="fa-solid fa-language"></i></button>
+  </div>
 </header>
 
 <main>
-    <div class="info">
-        <h2 id="introTitle">Lời Nói Đầu</h2>
-        <p id="introP1">Chào mừng bạn đến với trang đọc truyện tranh của tôi! Tại đây bạn có thể khám phá các bộ truyện độc đáo và hấp dẫn.</p>
-        <p id="introP2">Mỗi câu chuyện đều được lựa chọn kỹ lưỡng, hy vọng bạn sẽ tìm thấy những khoảnh khắc thú vị và cảm xúc khi thưởng thức.</p>
-    </div>
-   <div class="menu">
-  <div id="menu1" class="menuItem" onclick="openStory('PunkgaMerch')">
-    <img src="comics/PunkgaMerch/00.webp" alt="PunkgaMerch">
-    <p>PunkgaMerch</p>
+  <div class="info">
+    <h2 id="introTitle">Lời Nói Đầu</h2>
+    <p id="introP1">Chào mừng bạn đến với trang đọc truyện tranh của tôi! Tại đây bạn có thể khám phá các bộ truyện độc đáo và hấp dẫn.</p>
+    <p id="introP2">Mỗi câu chuyện đều được lựa chọn kỹ lưỡng, hy vọng bạn sẽ tìm thấy những khoảnh khắc thú vị và cảm xúc khi thưởng thức.</p>
   </div>
-  <div id="menu2" class="menuItem" onclick="openStory('Red&Ruby')">
-    <img src="comics/Red&Ruby/00.webp" alt="Red và Ruby">
-    <p>Red và Ruby</p>
-  </div>
-  <div id="menu3" class="menuItem" onclick="openStory('TieuTung')">
-    <img src="comics/TieuTung/00.webp" alt="Tiêu Tùng">
-    <p>Tiêu Tùng</p>
-  </div>
-  <div id="menu4" class="menuItem" onclick="openStory('Siin')">
-    <img src="comics/Siin/00.webp" alt="Sao Băng Mùa Hạ">
-    <p>Sao Băng Mùa Hạ</p>
-  </div>
-  <div id="menu5" class="menuItem" onclick="openStory('BreakthRough')">
-    <img src="comics/BreakthRough/00.webp" alt="Khai Phá">
-    <p>Khai Phá</p>
-  </div>
-  <div id="menu6" class="menuItem" onclick="openStory('StillComeTrue')">
-    <img src="comics/StillComeTrue/00.webp" alt="Vẫn Đúng">
-    <p>Vẫn Đúng</p>
-  </div>
-  <div id="menu7" class="menuItem" onclick="openStory('LeThan')">
-    <img src="comics/LeThan/00.webp" alt="Lê Thận">
-    <p>Lê Thận</p>
-  </div>
-  <div id="menu8" class="menuItem" onclick="openStory('Raku')">
-    <img src="comics/Raku/00.webp" alt="Raku">
-    <p>Raku</p>
-  </div>
-</div>
 
+  <div class="menu">
+    <div class="menuItem" data-folder="PunkgaMerch">
+      <img src="comics/PunkgaMerch/00.webp" alt="PunkgaMerch">
+      <p id="menu1Name">PunkgaMerch</p>
+    </div>
+    <div class="menuItem" data-folder="Red&Ruby">
+      <img src="comics/Red&Ruby/00.webp" alt="Red và Ruby">
+      <p id="menu2Name">Red và Ruby</p>
+    </div>
+    <div class="menuItem" data-folder="TieuTung">
+      <img src="comics/TieuTung/00.webp" alt="Tiêu Tùng">
+      <p id="menu3Name">Tiêu Tùng</p>
+    </div>
+    <div class="menuItem" data-folder="Siin">
+      <img src="comics/Siin/00.webp" alt="Sao Băng Mùa Hạ">
+      <p id="menu4Name">Sao Băng Mùa Hạ</p>
+    </div>
+    <div class="menuItem" data-folder="BreakthRough">
+      <img src="comics/BreakthRough/00.webp" alt="Khai Phá">
+      <p id="menu5Name">Khai Phá</p>
+    </div>
+    <div class="menuItem" data-folder="StillComeTrue">
+      <img src="comics/StillComeTrue/00.webp" alt="Vẫn Đúng">
+      <p id="menu6Name">Vẫn Đúng</p>
+    </div>
+    <div class="menuItem" data-folder="LeThan">
+      <img src="comics/LeThan/00.webp" alt="Lê Thận">
+      <p id="menu7Name">Lê Thận</p>
+    </div>
+    <div class="menuItem" data-folder="Raku">
+      <img src="comics/Raku/00.webp" alt="Raku">
+      <p id="menu8Name">Raku</p>
+    </div>
+  </div>
 </main>
 
+<!-- Overlay Reader -->
 <div id="overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); justify-content:center; align-items:center; z-index:9999; flex-direction:column;">
   <div id="deck" style="position:relative; width:80%; max-width:800px; height:90%; overflow:hidden; display:flex; align-items:center; justify-content:center;"></div>
   <div id="caption" style="color:#fff; margin-top:12px; font-size:1.1rem; text-align:center;"></div>
@@ -70,6 +147,160 @@
   <button id="restartBtn" style="position:absolute; bottom:20px; right:20px; font-size:1rem; display:none; padding:6px 12px; cursor:pointer;">Restart</button>
 </div>
 
-<script src="Comic.js"></script>
+<script>
+// --- Config số trang mỗi truyện ---
+const storyPages = {
+  "PunkgaMerch": 14,
+  "Red&Ruby": 0,
+  "BreakthRough": 11,
+  "TieuTung": 8,
+  "Siin": 5,
+  "StillComeTrue": 0,
+  "LeThan": 0,
+  "Raku": 0
+};
+
+// --- Preload ảnh trang 00 cho tất cả ---
+function preloadFirstPages() {
+  for (const folder in storyPages) {
+    const img = new Image();
+    img.src = `comics/${folder}/00.webp`;
+  }
+}
+document.addEventListener("DOMContentLoaded", preloadFirstPages);
+
+// --- Theme toggle ---
+const themeBtn = document.getElementById("theme-toggle");
+themeBtn.addEventListener("click", () => {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("theme", document.body.classList.contains("dark") ? "dark" : "light");
+});
+if (localStorage.getItem("theme") === "dark") document.body.classList.add("dark");
+
+// --- Language toggle ---
+const langBtn = document.getElementById("lang-toggle");
+let currentLang = localStorage.getItem("lang") || "vi";
+
+const translations = {
+  vi: {
+    title: "YattaD",
+    introTitle: "Lời Nói Đầu",
+    introP1: "Chào mừng bạn đến với trang đọc truyện tranh của tôi! Tại đây bạn có thể khám phá các bộ truyện độc đáo và hấp dẫn.",
+    introP2: "Mỗi câu chuyện đều được lựa chọn kỹ lưỡng, hy vọng bạn sẽ tìm thấy những khoảnh khắc thú vị và cảm xúc khi thưởng thức.",
+    menu1Name: "PunkgaMerch",
+    menu2Name: "Red và Ruby",
+    menu3Name: "Tiêu Tùng",
+    menu4Name: "Sao Băng Mùa Hạ",
+    menu5Name: "Khai Phá",
+    menu6Name: "Vẫn Đúng",
+    menu7Name: "Lê Thận",
+    menu8Name: "Raku"
+  },
+  en: {
+    title: "YattaD",
+    introTitle: "Introduction",
+    introP1: "Welcome to my comic reading page! Here you can explore unique and exciting stories.",
+    introP2: "Each story is carefully selected, hope you will find interesting moments and emotions while enjoying.",
+    menu1Name: "PunkgaMerch",
+    menu2Name: "Red & Ruby",
+    menu3Name: "Tieu Tung",
+    menu4Name: "Summer Shooting Star",
+    menu5Name: "Break thRough",
+    menu6Name: "Still Come True",
+    menu7Name: "Le Than",
+    menu8Name: "Raku"
+  }
+};
+
+function switchLanguage() {
+  currentLang = currentLang === "vi" ? "en" : "vi";
+  localStorage.setItem("lang", currentLang);
+
+  for (const key in translations[currentLang]) {
+    const el = document.getElementById(key);
+    if (el) el.textContent = translations[currentLang][key];
+  }
+}
+langBtn.addEventListener("click", switchLanguage);
+document.addEventListener("DOMContentLoaded", () => {
+  if (currentLang === "en") switchLanguage();
+});
+
+// --- Overlay Reader ---
+let currentStory = "";
+let currentPage = 1;
+let totalPages = 0;
+
+const overlay = document.getElementById("overlay");
+const deck = document.getElementById("deck");
+const caption = document.getElementById("caption");
+const closeBtn = document.getElementById("closeBtn");
+const restartBtn = document.getElementById("restartBtn");
+
+const prevImg = document.createElement("img");
+prevImg.style.maxHeight = "45%";
+prevImg.style.opacity = "0.4";
+prevImg.style.marginRight = "40px";
+prevImg.style.transform = "rotate(-15deg)";  // nghiêng trái
+
+const currImg = document.createElement("img");
+currImg.style.maxHeight = "90%";
+
+const nextImg = document.createElement("img");
+nextImg.style.maxHeight = "45%";
+nextImg.style.opacity = "0.4";
+nextImg.style.marginLeft = "40px";
+nextImg.style.transform = "rotate(15deg)";   // nghiêng phải
+
+deck.appendChild(prevImg);
+deck.appendChild(currImg);
+deck.appendChild(nextImg);
+
+function showPage() {
+  prevImg.src = currentPage > 1 ?
+    `comics/${currentStory}/${String(currentPage - 1).padStart(2, "0")}.webp` :
+    `comics/${currentStory}/00.webp`;
+  currImg.src = `comics/${currentStory}/${String(currentPage).padStart(2, "0")}.webp`;
+  nextImg.src = currentPage < totalPages ?
+    `comics/${currentStory}/${String(currentPage + 1).padStart(2, "0")}.webp` : "";
+  restartBtn.style.display = (currentPage === totalPages) ? "block" : "none";
+  caption.innerText = `Trang ${currentPage} / ${totalPages}`;
+}
+
+function openStory(folder) {
+  currentStory = folder;
+  totalPages = storyPages[folder] || 1;
+  currentPage = 1;
+  overlay.style.display = "flex";
+  showPage();
+}
+
+// --- Navigation ---
+function nextPage() { if (currentPage < totalPages) { currentPage++; showPage(); } }
+function prevPageFunc() { if (currentPage > 1) { currentPage--; showPage(); } }
+function restart() { currentPage = 1; showPage(); }
+
+// --- Events ---
+closeBtn.addEventListener("click", () => overlay.style.display = "none");
+restartBtn.addEventListener("click", restart);
+
+document.querySelectorAll(".menuItem").forEach(item => {
+  item.addEventListener("click", () => openStory(item.dataset.folder));
+});
+
+prevImg.addEventListener("click", prevPageFunc);
+nextImg.addEventListener("click", nextPage);
+currImg.addEventListener("click", nextPage);
+
+document.addEventListener("keydown", e => {
+  if (overlay.style.display === "flex") {
+    if (e.key === "ArrowRight") nextPage();
+    if (e.key === "ArrowLeft") prevPageFunc();
+    if (e.key === "Escape") overlay.style.display = "none";
+    if (e.key.toLowerCase() === "r") restart();
+  }
+});
+
+</script>
 </body>
 </html>
