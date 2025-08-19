@@ -368,6 +368,31 @@ document.addEventListener("keydown", e => {
     if (e.key.toLowerCase() === "r") restart();
   }
 });
+
+  // --- Swipe detection ---
+let touchStartX = 0;
+let touchEndX = 0;
+
+function handleGesture() {
+  const diff = touchEndX - touchStartX;
+  if (Math.abs(diff) > 50) { // ngưỡng tối thiểu 50px
+    if (diff > 0) {
+      prevPageFunc(); // vuốt phải -> lùi trang
+    } else {
+      nextPage();     // vuốt trái -> tới trang
+    }
+  }
+}
+
+deck.addEventListener("touchstart", e => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+deck.addEventListener("touchend", e => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleGesture();
+});
+
 </script>
 </body>
 </html>
