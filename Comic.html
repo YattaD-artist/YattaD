@@ -92,42 +92,40 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 #deck { overflow: visible !important; }
 
 /* Ảnh luôn fit vào khung, không cắt nội dung */
-#deck img {
-  max-width: 100%;
-  max-height: 90vh;
-  object-fit: contain;
-  cursor: pointer;
+#deck {
+  position: relative;
+  width: 100%;
+  height: 90vh;
+  overflow: hidden;
 }
 
-/* Chia tỷ lệ để 3 ảnh đều nhìn thấy trên màn hình */
-.curr-active { max-width: 60vw; max-height: 90vh; z-index: 3; }
-.prev-side, .next-side { max-width: 16vw; max-height: 65vh; }
+/* tất cả ảnh cùng kiểu */
+#deck img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  max-height: 90vh;
+  max-width: 90vw;
+  object-fit: contain;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
 
-    
-/* vị trí cố định cho 3 trạng thái */
+/* 3 vị trí */
 .prev-side {
-  transform: translateX(-60%) scale(0.8);
+  transform: translate(calc(-50% - 60%), -50%) scale(0.8);
   opacity: 0.5;
   z-index: 1;
 }
 .curr-active {
-  transform: translateX(0) scale(1);
+  transform: translate(-50%,-50%) scale(1);
   opacity: 1;
   z-index: 2;
 }
 .next-side {
-  transform: translateX(60%) scale(0.8);
+  transform: translate(calc(-50% + 60%), -50%) scale(0.8);
   opacity: 0.5;
   z-index: 1;
-}
-
-/* hiệu ứng trượt mượt */
-#deck img {
-  transition: transform 0.5s ease, opacity 0.5s ease;
-  position: absolute; /* ảnh xếp chồng */
-  max-height: 90vh;
-  max-width: 90vw;
-  object-fit: contain;
 }
 
 /* Mobile */
