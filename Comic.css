@@ -75,38 +75,52 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 /* --- Trang Truyện---*/
 /* --- Overlay ComicReader --- */
 #overlay {
-    display: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0.95);
-    justify-content: center;
-    align-items: center;
     z-index: 9999;
-    flex-direction: column;
 }
 
 #deck {
-    display: flex;
-
-    align-items: center;
-    gap: 20px;
     position: relative;
     width: min(96vw, 1200px);
     height: min(92vh, 1000px);
+    margin: 0 auto; /* căn giữa deck trong overlay */
 }
 
 #deck img {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
     max-height: 90%;
-justify-content: center;
     object-fit: contain;
     transition: opacity 0.25s, transform 0.25s;
 }
 
-#prevImg, #nextImg {
+#prevImg {
+    left: 0;           /* cố định bên trái */
     max-height: 45%;
     opacity: 0.4;
     cursor: pointer;
 }
+
+#currImg {
+    left: 50%;          /* chính giữa deck */
+    transform: translate(-50%, -50%);
+    z-index: 2;         /* đảm bảo nằm trên prev/next */
+}
+
+#nextImg {
+    right: 0;           /* cố định bên phải */
+    max-height: 45%;
+    opacity: 0.4;
+    cursor: pointer;
+}
+
 #prevImg.hidden, #nextImg.hidden {
     display: none;
 }
