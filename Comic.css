@@ -87,7 +87,7 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 
 #deck {
     display: flex;
-    justify-content: center;
+
     align-items: center;
     gap: 20px;
     position: relative;
@@ -97,6 +97,7 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 
 #deck img {
     max-height: 90%;
+justify-content: center;
     object-fit: contain;
     transition: opacity 0.25s, transform 0.25s;
 }
