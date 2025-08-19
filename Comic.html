@@ -104,21 +104,30 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 .prev-side, .next-side { max-width: 16vw; max-height: 65vh; }
 
     
-/* class trạng thái 3 ảnh */
+/* vị trí cố định cho 3 trạng thái */
+.prev-side {
+  transform: translateX(-60%) scale(0.8);
+  opacity: 0.5;
+  z-index: 1;
+}
 .curr-active {
+  transform: translateX(0) scale(1);
   opacity: 1;
-  transform: scale(1) rotate(0deg);
   z-index: 2;
 }
-.prev-side {
-  opacity: 0.4;
-  transform: rotate(-15deg) translateX(-40px) scale(0.88);
+.next-side {
+  transform: translateX(60%) scale(0.8);
+  opacity: 0.5;
   z-index: 1;
 }
-.next-side {
-  opacity: 0.4;
-  transform: rotate(15deg) translateX(40px) scale(0.88);
-  z-index: 1;
+
+/* hiệu ứng trượt mượt */
+#deck img {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+  position: absolute; /* ảnh xếp chồng */
+  max-height: 90vh;
+  max-width: 90vw;
+  object-fit: contain;
 }
 
 /* Mobile */
@@ -343,17 +352,23 @@ function buildSrc(folder, page) {
 
 // --- Hiển thị trang (có animation) ---
 function showPage(direction = "right") {
-  const prevSrc = currentPage > 1 ? buildSrc(currentStory, currentPage - 1) : `comics/${currentStory}/00.webp`;
+  const prevSrc = currentPage > 1 ? buildSrc(currentStory, currentPage - 1) : "";
   const currSrc = buildSrc(currentStory, currentPage);
   const nextSrc = currentPage < totalPages ? buildSrc(currentStory, currentPage + 1) : "";
 
-  prevImg.className = "prev-side";
-  currImg.className = "curr-active";
-  nextImg.className = "next-side";
+  prevImg.src = prevSrc;
+  currImg.src = currSrc;
+  nextImg.src = nextSrc;
 
-  animatePageChange(prevImg, prevSrc, false, direction);
-  animatePageChange(currImg, currSrc, true, direction);
-  animatePageChange(nextImg, nextSrc, false, direction);
+  // reset class
+  prevImg.className = "";
+  currImg.className = "";
+  nextImg.className = "";
+
+  // gán trạng thái
+  prevImg.classList.add("prev-side");
+  currImg.classList.add("curr-active");
+  nextImg.classList.add("next-side");
 
   restartBtn.style.display = (currentPage === totalPages) ? "block" : "none";
   caption.innerText = `Trang ${currentPage} / ${totalPages}`;
