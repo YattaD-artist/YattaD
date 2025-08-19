@@ -75,54 +75,73 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
   border-color: var(--accent);
 }
 
-/* --- Animation cho overlay reader (THÊM) --- */
+/* --- Animation cho overlay reader --- */
 #deck {
   position: relative;
   width: 100%;   /* full chiều ngang */
   max-width: 1000px; /* có thể giới hạn tối đa nếu muốn */
   height: 100%;  /* choáng hết overlay */
-  display: flex;
+  display: block;
   align-items: center;
   justify-content: center;
   gap: 20px;
-  /* BỎ overflow:hidden */
+  overflow: visible !important;
 }
+
 /* Overlay & deck: không cắt ảnh */
 #overlay { padding: 16px; }
-#deck { overflow: visible !important; }
 
 /* Ảnh luôn fit vào khung, không cắt nội dung */
 #deck img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   max-width: 100%;
   max-height: 90vh;
   object-fit: contain;
   cursor: pointer;
+  transition: transform 0.52s cubic-bezier(.2,.8,.2,1), opacity 0.44s ease;
+  will-change: transform, opacity;
 }
 
-/* Chia tỷ lệ để 3 ảnh đều nhìn thấy trên màn hình */
-.curr-active { max-width: 60vw; max-height: 90vh; z-index: 3; }
-.prev-side, .next-side { max-width: 16vw; max-height: 65vh; }
-
-    
-/* class trạng thái 3 ảnh */
-.curr-active {
+/* Kích thước và vị trí cho 3 trạng thái (lá bài) */
+.curr-active { 
+  /* chính giữa */
+  transform: translate(-50%, -50%) translateX(0) scale(1) rotate(0deg);
+  z-index: 3;
   opacity: 1;
-  transform: scale(1) rotate(0deg);
-  z-index: 2;
+  max-width: 60vw;
+  max-height: 90vh;
 }
 .prev-side {
-  opacity: 0.4;
-  transform: rotate(-15deg) translateX(-40px) scale(0.88);
-  z-index: 1;
+  /* thu nhỏ và nghiêng bên trái (vẫn hiện) */
+  transform: translate(-50%, -50%) translateX(-36vw) rotate(-15deg) scale(0.82);
+  z-index: 2;
+  opacity: 0.95;
+  max-width: 18vw;
+  max-height: 60vh;
 }
 .next-side {
-  opacity: 0.4;
-  transform: rotate(15deg) translateX(40px) scale(0.88);
-  z-index: 1;
+  /* thu nhỏ và nghiêng bên phải (vẫn hiện) */
+  transform: translate(-50%, -50%) translateX(36vw) rotate(15deg) scale(0.82);
+  z-index: 2;
+  opacity: 0.95;
+  max-width: 18vw;
+  max-height: 60vh;
 }
 
-/* Mobile */
+/* Ẩn ảnh nếu không có src (đỡ chiếm sự kiện click) */
+.hidden-side {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Mobile: giảm khoảng cách translate để còn vừa màn hình */
 @media (max-width: 768px) {
+  .prev-side { transform: translate(-50%, -50%) translateX(-28vw) rotate(-12deg) scale(0.78); max-width: 24vw; }
+  .next-side { transform: translate(-50%, -50%) translateX(28vw) rotate(12deg) scale(0.78); max-width: 24vw; }
+  .curr-active { max-width: 86vw; }
   main { padding: 10px; gap: 12px; }
   .info { padding: 16px; }
   .menu { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
@@ -186,7 +205,7 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 
 <!-- Overlay Reader -->
 <div id="overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); justify-content:center; align-items:center; z-index:9999; flex-direction:column;">
-  <div id="deck" style="position:relative; width:min(96vw,1200px); height:min(92vh,1000px); overflow:visible; display:flex; align-items:center; justify-content:center; gap:20px;"></div>
+  <div id="deck" style="position:relative; width:min(96vw,1200px); height:min(92vh,1000px); overflow:visible; display:block; align-items:center; justify-content:center; gap:20px;"></div>
   <div id="caption" style="color:#fff; margin-top:12px; font-size:1.1rem; text-align:center;"></div>
   <button id="closeBtn" style="position:absolute; top:20px; right:20px; font-size:1.5rem; background:none; color:#fff; border:none; cursor:pointer;">✖</button>
   <button id="restartBtn" style="position:absolute; bottom:20px; right:20px; font-size:1rem; display:none; padding:6px 12px; cursor:pointer;">Restart</button>
@@ -282,107 +301,163 @@ const caption = document.getElementById("caption");
 const closeBtn = document.getElementById("closeBtn");
 const restartBtn = document.getElementById("restartBtn");
 
-const prevImg = document.createElement("img");
-prevImg.style.maxHeight = "60%";
-prevImg.style.opacity = "0.4";
-prevImg.style.marginRight = "40px";
-prevImg.style.transform = "rotate(-15deg)";  // nghiêng trái
+// tạo 3 ảnh (prev, curr, next) - có thể hoán đổi tham chiếu khi cần
+let prevImg = document.createElement("img");
+let currImg = document.createElement("img");
+let nextImg = document.createElement("img");
 
-const currImg = document.createElement("img");
-currImg.style.maxHeight = "90%";
+// style cơ bản (các lớp CSS sẽ override transform)
+[prevImg, currImg, nextImg].forEach(img => {
+  img.style.position = "absolute";
+  img.style.transition = "transform 0.52s cubic-bezier(.2,.8,.2,1), opacity 0.44s ease";
+  img.style.objectFit = "contain";
+  img.draggable = false;
+});
 
-const nextImg = document.createElement("img");
-nextImg.style.maxHeight = "60%";
-nextImg.style.opacity = "0.4";
-nextImg.style.marginLeft = "40px";
-nextImg.style.transform = "rotate(15deg)";   // nghiêng phải
-
+// append vào deck (thứ tự không quan trọng vì z-index do class quyết định)
 deck.appendChild(prevImg);
 deck.appendChild(currImg);
 deck.appendChild(nextImg);
 
-// --- Helper animation slide cho ảnh ---
-function animatePageChange(imgEl, newSrc, isCenter = false, direction = "right") {
-  // slide out
-  imgEl.style.transition = "transform 0.4s ease, opacity 0.4s ease";
-  imgEl.style.transform = direction === "right" ? "translateX(-100%)" : "translateX(100%)";
-  imgEl.style.opacity = "0";
-
-  setTimeout(() => {
-    if (!newSrc) {
-      imgEl.removeAttribute("src");
-      return;
-    }
-    imgEl.src = newSrc;
-
-    imgEl.onload = () => {
-      // reset vị trí bên ngoài trước khi vào
-      imgEl.style.transition = "none";
-      imgEl.style.transform = direction === "right" ? "translateX(100%)" : "translateX(-100%)";
-      imgEl.style.opacity = "0";
-
-      requestAnimationFrame(() => {
-        imgEl.style.transition = "transform 0.5s ease, opacity 0.5s ease";
-        imgEl.style.transform = "translateX(0)";
-        imgEl.style.opacity = "1";
-
-        if (isCenter) {
-          imgEl.style.transform += " scale(1.02)";
-          setTimeout(() => {
-            imgEl.style.transform = "translateX(0) scale(1)";
-          }, 300);
-        }
-      });
-    };
-  }, 200);
-}
-
+// helper build src
 function buildSrc(folder, page) {
   return `comics/${folder}/${String(page).padStart(2, "0")}.webp`;
 }
 
-// --- Hiển thị trang (có animation) ---
-function showPage(direction = "right") {
-  const prevSrc = currentPage > 1 ? buildSrc(currentStory, currentPage - 1) : `comics/${currentStory}/00.webp`;
+// hiển thị trạng thái 3 ảnh theo currentPage
+function showPageInitial() {
+  const prevSrc = (currentPage > 1) ? buildSrc(currentStory, currentPage - 1) : "";
   const currSrc = buildSrc(currentStory, currentPage);
-  const nextSrc = currentPage < totalPages ? buildSrc(currentStory, currentPage + 1) : "";
+  const nextSrc = (currentPage < totalPages) ? buildSrc(currentStory, currentPage + 1) : "";
 
-  prevImg.className = "prev-side";
+  // gán src
+  if (prevSrc) { prevImg.src = prevSrc; prevImg.className = "prev-side"; prevImg.classList.remove("hidden-side"); }
+  else { prevImg.removeAttribute("src"); prevImg.className = "prev-side hidden-side"; }
+
+  currImg.src = currSrc;
   currImg.className = "curr-active";
-  nextImg.className = "next-side";
 
-  animatePageChange(prevImg, prevSrc, false, direction);
-  animatePageChange(currImg, currSrc, true, direction);
-  animatePageChange(nextImg, nextSrc, false, direction);
+  if (nextSrc) { nextImg.src = nextSrc; nextImg.className = "next-side"; nextImg.classList.remove("hidden-side"); }
+  else { nextImg.removeAttribute("src"); nextImg.className = "next-side hidden-side"; }
 
-  restartBtn.style.display = (currentPage === totalPages) ? "block" : "none";
   caption.innerText = `Trang ${currentPage} / ${totalPages}`;
+  restartBtn.style.display = (currentPage === totalPages) ? "block" : "none";
 }
 
+// Khi mở truyện
 function openStory(folder) {
   currentStory = folder;
   totalPages = storyPages[folder] || 1;
   currentPage = 1;
   overlay.style.display = "flex";
-  showPage("right");
+  showPageInitial();
 }
 
-// --- Navigation ---
-function nextPage() { 
-  if (currentPage < totalPages) { 
-    currentPage++; 
-    showPage("right"); 
-  } 
-}
-function prevPageFunc() { 
-  if (currentPage > 1) { 
-    currentPage--; 
-    showPage("left"); 
-  } 
-}
-function restart() { currentPage = 1; showPage("right"); }
+// Hàm next với animation lá bài: curr -> prev (trượt trái), next -> curr (từ phải vào), tạo next mới
+let animating = false;
+function nextPage() {
+  if (animating) return;
+  if (currentPage >= totalPages) return;
+  animating = true;
+  const oldPrev = prevImg, oldCurr = currImg, oldNext = nextImg;
 
-// --- Events ---
+  // tăng trang trước để biết page mới
+  currentPage++;
+
+  // 1) set class để chạy animation:
+  // curr trượt sang trái -> prev-side
+  oldCurr.className = "prev-side";
+  // next trượt vào giữa -> curr-active
+  oldNext.className = "curr-active";
+
+  // nếu không còn next sau trang mới thì newNext sẽ hidden
+  const futureNextSrc = (currentPage < totalPages) ? buildSrc(currentStory, currentPage + 1) : "";
+
+  // sau animation (khoảng thời gian bằng CSS transition), hoán đổi tham chiếu
+  setTimeout(() => {
+    // rotate references: prev <- oldCurr, curr <- oldNext, next <- oldPrev
+    prevImg = oldCurr;
+    currImg = oldNext;
+    nextImg = oldPrev;
+
+    // gán src cho nextImg (đặt ra phải, nhưng class sẽ là next-side)
+    if (futureNextSrc) {
+      nextImg.src = futureNextSrc;
+      nextImg.className = "next-side";
+      nextImg.classList.remove("hidden-side");
+    } else {
+      nextImg.removeAttribute("src");
+      nextImg.className = "next-side hidden-side";
+    }
+
+    // prevImg should already show page currentPage -1 (oldCurr). Ensure src correctness:
+    const prevSrc = (currentPage > 1) ? buildSrc(currentStory, currentPage - 1) : "";
+    if (prevSrc) prevImg.src = prevSrc;
+    else prevImg.removeAttribute("src");
+
+    // currImg should be page currentPage
+    currImg.src = buildSrc(currentStory, currentPage);
+
+    caption.innerText = `Trang ${currentPage} / ${totalPages}`;
+    restartBtn.style.display = (currentPage === totalPages) ? "block" : "none";
+    animating = false;
+  }, 540); // nhỏ hơn hoặc xấp xỉ duration CSS (0.52s)
+}
+
+// Hàm prev với animation ngược lại: curr -> next (trượt phải), prev -> curr (từ trái vào)
+function prevPageFunc() {
+  if (animating) return;
+  if (currentPage <= 1) return;
+  animating = true;
+  const oldPrev = prevImg, oldCurr = currImg, oldNext = nextImg;
+
+  currentPage--;
+
+  // set classes để animate:
+  oldCurr.className = "next-side"; // center trượt sang phải
+  oldPrev.className = "curr-active"; // left trượt vào giữa
+
+  const futurePrevSrc = (currentPage > 1) ? buildSrc(currentStory, currentPage - 1) : "";
+
+  setTimeout(() => {
+    // rotate references: next <- oldCurr, curr <- oldPrev, prev <- oldNext
+    nextImg = oldCurr;
+    currImg = oldPrev;
+    prevImg = oldNext;
+
+    // prevImg (new) should show page (currentPage -1) if exists, else hidden
+    if (futurePrevSrc) {
+      prevImg.src = futurePrevSrc;
+      prevImg.className = "prev-side";
+      prevImg.classList.remove("hidden-side");
+    } else {
+      prevImg.removeAttribute("src");
+      prevImg.className = "prev-side hidden-side";
+    }
+
+    // currImg should be current page
+    currImg.src = buildSrc(currentStory, currentPage);
+
+    // nextImg should show page currentPage + 1 if exists
+    const nextSrc = (currentPage < totalPages) ? buildSrc(currentStory, currentPage + 1) : "";
+    if (nextSrc) {
+      nextImg.src = nextSrc;
+      nextImg.className = "next-side";
+      nextImg.classList.remove("hidden-side");
+    } else {
+      nextImg.removeAttribute("src");
+      nextImg.className = "next-side hidden-side";
+    }
+
+    caption.innerText = `Trang ${currentPage} / ${totalPages}`;
+    restartBtn.style.display = (currentPage === totalPages) ? "block" : "none";
+    animating = false;
+  }, 540);
+}
+
+function restart() { currentPage = 1; showPageInitial(); }
+
+// Events
 closeBtn.addEventListener("click", () => overlay.style.display = "none");
 restartBtn.addEventListener("click", restart);
 
@@ -390,10 +465,16 @@ document.querySelectorAll(".menuItem").forEach(item => {
   item.addEventListener("click", () => openStory(item.dataset.folder));
 });
 
-prevImg.addEventListener("click", prevPageFunc);
-nextImg.addEventListener("click", nextPage);
-currImg.addEventListener("click", nextPage);
+// Click xử lý: bấm vào ảnh giữa hoặc ảnh phải => next, bấm vào ảnh trái => prev
+deck.addEventListener("click", e => {
+  if (overlay.style.display !== "flex") return;
+  const t = e.target;
+  if (t === currImg) nextPage();
+  else if (t === nextImg) nextPage();
+  else if (t === prevImg) prevPageFunc();
+});
 
+// Keyboard
 document.addEventListener("keydown", e => {
   if (overlay.style.display === "flex") {
     if (e.key === "ArrowRight") nextPage();
@@ -403,18 +484,15 @@ document.addEventListener("keydown", e => {
   }
 });
 
-// --- Swipe detection ---
+// Swipe detection
 let touchStartX = 0;
 let touchEndX = 0;
 
 function handleGesture() {
   const diff = touchEndX - touchStartX;
-  if (Math.abs(diff) > 50) { 
-    if (diff > 0) {
-      prevPageFunc(); // vuốt phải -> lùi trang
-    } else {
-      nextPage();     // vuốt trái -> tới trang
-    }
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) prevPageFunc();
+    else nextPage();
   }
 }
 
