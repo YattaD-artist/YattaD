@@ -86,26 +86,26 @@ document.addEventListener('DOMContentLoaded', () => {
 // --- Cấu hình số trang cho từng truyện ---
 const storyPages = {
     "PunkgaMerch": 14,
-    "Red và Ruby": 10,      // sửa từ Red&Ruby → Red và Ruby
-    "Khai Phá": 11,
-    "Tiêu Tùng": 8,
-    "Sao Băng Mùa Hạ": 5,
-    "Vẫn Đúng": 6,
-    "Lê Thận": 4,
+    "Red&Ruby": 10,
+    "TieuTung": 8,
+    "Siin": 5,
+    "BreakthRough": 11,
+    "StillComeTrue": 6,
+    "LeThan": 4,
     "Raku": 7
 };
 
-// --- Mapping menu text sang folder ---
 const storyFolders = {
     "PunkgaMerch": "PunkgaMerch",
-    "Red và Ruby": "Red&Ruby",
-    "Khai Phá": "BreakthRough",
-    "Tiêu Tùng": "TieuTung",
-    "Sao Băng Mùa Hạ": "Siin",
-    "Vẫn Đúng": "StillComeTrue",
-    "Lê Thận": "LeThan",
+    "Red&Ruby": "Red&Ruby",
+    "TieuTung": "TieuTung",
+    "Siin": "Siin",
+    "BreakthRough": "BreakthRough",
+    "StillComeTrue": "StillComeTrue",
+    "LeThan": "LeThan",
     "Raku": "Raku"
 };
+
 
 let currentStory = "";
 let currentPage = 1;
@@ -193,7 +193,7 @@ restartBtn.addEventListener('click', restart);
 
 // --- Click menu ---
 document.querySelectorAll('.menuItem').forEach(item => {
-    item.addEventListener('click', () => openStory(item.innerText));
+    item.addEventListener('click', () => openStory(item.dataset.folder));
 });
 
 // --- Click qua ảnh mini ---
