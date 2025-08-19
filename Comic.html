@@ -6,7 +6,90 @@
 <title>YattaD - Truyện Tranh</title>
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<link rel="stylesheet" href="Comic.css">
+<style>
+/* --- CSS cơ bản giữ nguyên --- */
+* { box-sizing: border-box; }
+html, body { max-width: 100%; overflow-x: hidden; }
+body {
+    margin: 0; font-family: 'Saira', sans-serif;
+    background-color: var(--bg); color: var(--text);
+    --bg: #ede9eb; --text: #1a2129; --accent: #e32630;
+    transition: background-color 0.3s, color 0.3s;
+}
+body.dark { --bg: #1b1b1b; --text: #f5f5f5; --accent: #1cd9cf; }
+
+header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 24px; border-bottom: 1px solid #ccc; background-color: var(--bg);
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.center-title { flex: 1; text-align: center; font-weight: 800; font-size: 2.5rem; color: var(--accent); }
+.left, .right { display: flex; align-items: center; gap: 16px; }
+.icon-btn {
+    background: none; border: none; cursor: pointer; font-size: 1.3rem;
+    color: var(--text); display: flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; border-radius: 50%;
+    transition: transform 0.25s ease, color 0.25s ease, background-color 0.25s ease; text-decoration: none;
+   
+}
+.icon-btn:hover { transform: scale(1.15); color: var(--accent); background-color: rgba(0,0,0,0.05); }
+
+main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
+
+/* --- Intro full width --- */
+.info {
+    width: 100%; padding: 32px; background-color: var(--bg);
+    border-radius: 12px; border: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+    transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
+}
+.info h2 { font-size: 2rem; margin-bottom: 16px; font-weight: 700; color: var(--accent);
+          border-bottom: 3px solid var(--accent); display: inline-block; padding-bottom: 5px; }
+.info p { margin-bottom: 12px; line-height: 1.6; }
+
+/* --- Menu grid --- */
+.menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 18px;
+}
+.menu a {
+    display: block; padding: 14px; text-align: center; font-weight: 700; font-size: 1.1rem;
+    background-color: var(--bg); border: 2px solid var(--text); border-radius: 12px;
+    transition: all 0.25s ease; box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.menu a:hover { background-color: var(--accent); color: var(--bg); transform: translateY(-2px); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+.menuItem {
+  cursor: pointer;
+  text-align: center;
+  border: 2px solid var(--text);
+  border-radius: 12px;
+  padding: 8px;
+  transition: transform 0.25s, box-shadow 0.25s;
+}
+.menuItem img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 6px;
+}
+.menuItem:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+  border-color: var(--accent);
+}
+
+/* --- Mobile --- */
+@media (max-width: 768px) {
+    main { padding: 10px; gap: 12px; }
+    .info { padding: 16px; }
+    .menu { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 10px; }
+    .menu a { padding: 10px 6px; font-size: 0.95rem; }
+}
+</style>
 </head>
 <body>
 <header>
@@ -70,6 +153,240 @@
   <button id="restartBtn" style="position:absolute; bottom:20px; right:20px; font-size:1rem; display:none; padding:6px 12px; cursor:pointer;">Restart</button>
 </div>
 
-<script src="Comic.js"></script>
+<script>
+    // --- Preload ảnh 00.webp của tất cả menu ---
+function preloadFirstPageImages() {
+    for (const storyName in storyFolders) {
+        const folder = storyFolders[storyName];
+        const img = new Image();
+        img.src = `comics/${folder}/00.webp`;
+    }
+}
+
+// Gọi hàm preload khi DOM load xong
+document.addEventListener('DOMContentLoaded', preloadFirstPageImages);
+    
+// --- Theme Toggle ---
+const themeBtn = document.getElementById('theme-toggle');
+themeBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+});
+if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+
+// --- Language Toggle ---
+const langBtn = document.getElementById('lang-toggle');
+let currentLang = localStorage.getItem('lang') || 'vi';
+
+const translations = {
+    vi: {
+        title: "YattaD",
+        introTitle: "Lời Nói Đầu",
+        introP1: "Chào mừng bạn đến với trang đọc truyện tranh của tôi! Tại đây bạn có thể khám phá các bộ truyện độc đáo và hấp dẫn.",
+        introP2: "Mỗi câu chuyện đều được lựa chọn kỹ lưỡng, hy vọng bạn sẽ tìm thấy những khoảnh khắc thú vị và cảm xúc khi thưởng thức.",
+        menu1: "PunkgaMerch",
+        menu2: "Red và Ruby",
+        menu3: "Tiêu Tùng",
+        menu4: "Sao Băng Mùa Hạ",
+        menu5: "Khai Phá",
+        menu6: "Vẫn Đúng",
+        menu7: "Lê Thận",
+        menu8: "Raku"
+    },
+    en: {
+        title: "YattaD",
+        introTitle: "Introduction",
+        introP1: "Welcome to my comic reading page! Here you can explore unique and exciting stories.",
+        introP2: "Each story is carefully selected, hope you will find interesting moments and emotions while enjoying.",
+        menu1: "PunkgaMerch",
+        menu2: "Red & Ruby",
+        menu3: "Tieu Tung",
+        menu4: "Summer Shooting Star",
+        menu5: "Break thRough",
+        menu6: "Still Come True",
+        menu7: "Le Than",
+        menu8: "Raku"
+    }
+};
+
+function switchLanguage() {
+    currentLang = currentLang === 'vi' ? 'en' : 'vi';
+    localStorage.setItem('lang', currentLang);
+
+    for (const key in translations[currentLang]) {
+        const el = document.getElementById(key);
+        if (el) {
+            // Nếu là menu thì chỉ đổi text trong <p>
+            if (key.startsWith('menu')) {
+                const p = el.querySelector('p');
+                if (p) p.textContent = translations[currentLang][key];
+            } else {
+                el.innerHTML = translations[currentLang][key];
+            }
+        }
+    }
+}
+
+
+langBtn.addEventListener('click', switchLanguage);
+document.addEventListener('DOMContentLoaded', () => {
+    if(currentLang === 'en') switchLanguage();
+});
+
+// ComicReader.js - Script đọc truyện cho Comic.html
+// ComicReader.js - Script đọc truyện cho Comic.html
+// ComicReader.js - Script đọc truyện cho Comic.html
+
+// --- Cấu hình số trang cho từng truyện ---
+const storyPages = {
+    "PunkgaMerch": 14, // sửa số lượng trang thực tế
+    "Red&Ruby": 0,
+    "BreakthRough": 11,
+    "TieuTung": 8,
+    "Siin": 5,
+    "StillComeTrue": 0,
+    "LeThan": 0,
+    "Raku": 0
+};
+
+// --- Mapping menu text sang folder ---
+const storyFolders = {
+    "PunkgaMerch": "PunkgaMerch",
+    "Red và Ruby": "Red&Ruby",
+    "Khai Phá": "BreakthRough",
+    "Tiêu Tùng": "TieuTung",
+    "Sao Băng Mùa Hạ": "Siin",
+    "Vẫn Đúng": "StillComeTrue",
+    "Lê Thận": "LeThan",
+    "Raku": "Raku"
+};
+
+let currentStory = "";
+let currentPage = 1;
+let totalPages = 0;
+    
+// --- Preload tất cả ảnh ---
+function preloadImages(storyName) {
+    const folder = storyFolders[storyName];
+    const total = storyPages[folder] || 3; // mặc định 3 nếu chưa khai báo
+    for(let i=1; i<=total; i++){
+        const img = new Image();
+        img.src = `comics/${folder}/${String(i).padStart(2,'0')}.webp`;
+    }
+}
+// Lấy overlay và các element
+const overlay = document.getElementById('overlay');
+const deck = document.getElementById('deck');
+const caption = document.getElementById('caption');
+const closeBtn = document.getElementById('closeBtn');
+const restartBtn = document.getElementById('restartBtn');
+
+// --- Tạo 3-panel layout ---
+const prevImg = document.createElement('img');
+prevImg.style.maxHeight = "45%";
+prevImg.style.opacity = "0.4";
+prevImg.style.marginRight = "40px";
+
+const currImg = document.createElement('img');
+currImg.style.maxHeight = "90%";
+
+const nextImg = document.createElement('img');
+nextImg.style.maxHeight = "45%";
+nextImg.style.opacity = "0.4";
+nextImg.style.marginLeft = "40px";
+
+deck.appendChild(prevImg);
+deck.appendChild(currImg);
+deck.appendChild(nextImg);
+
+// --- Hàm hiển thị trang ---
+function showPage() {
+    const folder = storyFolders[currentStory];
+    prevImg.src = currentPage > 1 ? 
+        `comics/${folder}/${String(currentPage-1).padStart(2,'0')}.webp` : 
+        `comics/${folder}/00.webp`;
+    currImg.src = `comics/${folder}/${String(currentPage).padStart(2,'0')}.webp`;
+    nextImg.src = currentPage < totalPages ? 
+        `comics/${folder}/${String(currentPage+1).padStart(2,'0')}.webp` : '';
+    restartBtn.style.display = (currentPage === totalPages) ? 'block' : 'none';
+    caption.innerText = `Trang ${currentPage} / ${totalPages}`;
+}
+
+// --- Hàm mở truyện ---
+function openStory(storyName) {
+    currentStory = storyName;
+    const folder = storyFolders[storyName];
+    totalPages = storyPages[folder] || 3; // mặc định 3 nếu chưa khai báo
+    currentPage = 1;
+    overlay.style.display = 'flex';
+    showPage();
+}
+
+// --- Navigation ---
+function nextPage() {
+    if(currentPage < totalPages){
+        currentPage++;
+        showPage();
+    }
+}
+function prevPageFunc() {
+    if(currentPage > 1){
+        currentPage--;
+        showPage();
+    }
+}
+function restart() {
+    currentPage = 1;
+    showPage();
+}
+
+// --- Sự kiện nút ---
+closeBtn.addEventListener('click', ()=> overlay.style.display='none');
+restartBtn.addEventListener('click', restart);
+
+// --- Click menu ---
+document.querySelectorAll('.menuItem').forEach(item => {
+    item.addEventListener('click', () => openStory(item.innerText));
+});
+
+// --- Click qua ảnh mini ---
+prevImg.addEventListener('click', prevPageFunc);
+nextImg.addEventListener('click', nextPage);
+currImg.addEventListener('click', nextPage); // click vào ảnh lớn cũng next
+
+// --- Key navigation ---
+document.addEventListener('keydown', e => {
+    if(overlay.style.display === 'flex'){
+        if(e.key === "ArrowRight") nextPage();
+        if(e.key === "ArrowLeft") prevPageFunc();
+        if(e.key === "Escape") overlay.style.display='none';
+    }
+
+// --- MOBILE SWIPE ---
+let touchStartX = 0;
+let touchEndX = 0;
+
+if (deck) {
+  deck.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+
+  deck.addEventListener("touchend", (e) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  });
+}
+
+function handleSwipe() {
+  let swipeDistance = touchEndX - touchStartX;
+  if (Math.abs(swipeDistance) < 50) return; // bỏ qua nếu vuốt ngắn
+
+  if (swipeDistance > 0) {
+    prevPageFunc(); // lùi
+  } else {
+    nextPage(); // tới
+  }
+}
+</script>
 </body>
 </html>
