@@ -363,30 +363,23 @@ document.addEventListener('keydown', e => {
     }
 
 // --- MOBILE SWIPE ---
-let touchStartX = 0;
-let touchEndX = 0;
+let touchStartX = 0, touchEndX = 0;
 
-if (deck) {
-  deck.addEventListener("touchstart", (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-  });
-
-  deck.addEventListener("touchend", (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
-  });
-}
+deck.addEventListener("touchstart", (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+deck.addEventListener("touchend", (e) => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
+});
 
 function handleSwipe() {
-  let swipeDistance = touchEndX - touchStartX;
-  if (Math.abs(swipeDistance) < 50) return; // bỏ qua nếu vuốt ngắn
-
-  if (swipeDistance > 0) {
-    prevPageFunc(); // lùi
-  } else {
-    nextPage(); // tới
-  }
+  const distance = touchEndX - touchStartX;
+  if(Math.abs(distance) < 50) return;
+  if(distance > 0) prevPageFunc();
+  else nextPage();
 }
+
 </script>
 </body>
 </html>
