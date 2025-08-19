@@ -140,22 +140,15 @@ deck.appendChild(nextImg);
 function showPage() {
     const folder = storyFolders[currentStory];
 
-    // currImg luôn hiển thị
+    prevImg.src = currentPage > 1 ? 
+        `comics/${folder}/${String(currentPage-1).padStart(2,'0')}.webp` : 
+        `comics/${folder}/00.webp`;
+
     currImg.src = `comics/${folder}/${String(currentPage).padStart(2,'0')}.webp`;
 
-    // prevImg chỉ hiển thị nếu có trang trước
-    if(currentPage > 1){
-        prevImg.src = `comics/${folder}/${String(currentPage-1).padStart(2,'0')}.webp`;
-        prevImg.style.display = 'block';
-    } else prevImg.style.display = 'none';
+    nextImg.src = currentPage < totalPages ? 
+        `comics/${folder}/${String(currentPage+1).padStart(2,'0')}.webp` : '';
 
-    // nextImg chỉ hiển thị nếu có trang sau
-    if(currentPage < totalPages){
-        nextImg.src = `comics/${folder}/${String(currentPage+1).padStart(2,'0')}.webp`;
-        nextImg.style.display = 'block';
-    } else nextImg.style.display = 'none';
-
-    // preload ảnh tiếp theo
     if(currentPage + 1 < totalPages){
         const img = new Image();
         img.src = `comics/${folder}/${String(currentPage+2).padStart(2,'0')}.webp`;
@@ -232,4 +225,3 @@ function handleSwipe() {
   if(distance > 0) prevPageFunc();
   else nextPage();
 }
-
