@@ -76,9 +76,16 @@ main { display: flex; flex-direction: column; gap: 24px; padding: 30px; }
 }
 
 /* --- Animation cho overlay reader (THÊM) --- */
-#deck img {
-  transition: opacity 0.45s ease, transform 0.6s ease;
-  will-change: opacity, transform;
+#deck {
+  position: relative;
+  width: 100%;   /* full chiều ngang */
+  max-width: 1000px; /* có thể giới hạn tối đa nếu muốn */
+  height: 100%;  /* choáng hết overlay */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  /* BỎ overflow:hidden */
 }
 
 /* class trạng thái 3 ảnh */
