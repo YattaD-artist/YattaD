@@ -413,6 +413,14 @@ deck.addEventListener("touchend", e => {
     if(distance > 0) prevSlide();
     else nextSlide();
 });
+    
+// Gắn sự kiện click cho tất cả menuItem
+document.querySelectorAll('.menuItem').forEach(item => {
+    item.addEventListener('click', () => {
+        const folder = item.getAttribute('data-folder');
+        openStory(folder);
+    });
+});
 
 </script>
 </body>
