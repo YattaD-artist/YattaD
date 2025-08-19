@@ -85,14 +85,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // --- Cấu hình số trang cho từng truyện ---
 const storyPages = {
-    "PunkgaMerch": 14, // sửa số lượng trang thực tế
-    "Red&Ruby": 0,
-    "BreakthRough": 11,
-    "TieuTung": 8,
-    "Siin": 5,
-    "StillComeTrue": 0,
-    "LeThan": 0,
-    "Raku": 0
+    "PunkgaMerch": 14,
+    "Red và Ruby": 10,      // sửa từ Red&Ruby → Red và Ruby
+    "Khai Phá": 11,
+    "Tiêu Tùng": 8,
+    "Sao Băng Mùa Hạ": 5,
+    "Vẫn Đúng": 6,
+    "Lê Thận": 4,
+    "Raku": 7
 };
 
 // --- Mapping menu text sang folder ---
@@ -162,11 +162,12 @@ function showPage() {
 function openStory(storyName) {
     currentStory = storyName;
     const folder = storyFolders[storyName];
-    totalPages = storyPages[folder] || 3; // mặc định 3 nếu chưa khai báo
+    totalPages = storyPages[storyName] || 3; 
     currentPage = 1;
     overlay.style.display = 'flex';
     showPage();
 }
+
 
 // --- Navigation ---
 function nextPage() {
