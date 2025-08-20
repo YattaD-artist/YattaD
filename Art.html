@@ -245,11 +245,14 @@ function loadCategory(cat) {
     gallery.innerHTML = "";
     const total = categoryImages[cat] || 0;
     for (let i = 1; i <= total; i++) {
-        const path = `arts/${cat}/${String(i).padStart(2, '0')}.webp`;
+        const baseName = String(i).padStart(2, '0');
+        const thumbPath = `arts/${cat}/${baseName}.min.webp`; // Thumbnail nhỏ
+        const fullPath = `arts/${cat}/${baseName}.webp`;       // Ảnh gốc
+
         const img = document.createElement('img');
-        img.src = path;
+        img.src = thumbPath;       // Load thumbnail
         img.className = "thumb";
-        img.onclick = () => openFull(path);
+        img.onclick = () => openFull(fullPath); // Khi click, mở ảnh gốc
         gallery.appendChild(img);
     }
 }
