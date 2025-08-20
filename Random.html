@@ -219,6 +219,17 @@ main {
 .menuItem img { width:100%; border-radius:8px; margin-bottom:6px; }
 .menuItem:hover { transform:translateY(-3px); box-shadow:0 6px 12px rgba(0,0,0,0.15); border-color:var(--accent); }
 
+/* Style cho ô kết quả ABCD */
+.abcdCell {
+  border:2px solid var(--text);
+  border-radius:8px;
+  padding:6px;
+  background: var(--bg);
+  font-weight:600;
+  color: var(--text);
+  text-align:center;
+}
+
 @media(max-width:768px){ 
     #centerContainer { flex-direction:column; }
     .right-panel { justify-content:center; margin-top:16px; }
@@ -229,7 +240,7 @@ main {
 <body>
 <header>
     <div class="left"><a href="index.html" class="icon-btn" title="Trang chủ"><i class="fas fa-home"></i></a></div>
-    <div class="center-title" id="title">TIÊU CHUẨN</div>
+    <div class="center-title" id="title">Tiêu Chuẩn</div>
     <div class="right">
         <button class="icon-btn" id="theme-toggle" title="Đổi chế độ"><i class="fas fa-adjust"></i></button>
         <button class="icon-btn" id="lang-toggle" title="Đổi ngôn ngữ"><i class="fa-solid fa-language"></i></button>
@@ -321,6 +332,18 @@ Chuẩn</textarea>
   </div>
 </div>
 
+<!-- Popup ABCD -->
+<div id="abcdOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); align-items:center; justify-content:center; z-index:1001;">
+  <div id="abcdPopup" style="background:white; padding:20px 24px; border-radius:12px; box-shadow:0 4px 16px rgba(0,0,0,0.4); max-width:400px; width:90%; text-align:center;">
+    <h3 style="margin-top:0; color:var(--accent);">ABCD Random</h3>
+    <p>Nhập số lượng câu hỏi (tối đa 50):</p>
+    <input type="number" id="abcdCount" min="1" max="50" style="width:80px; padding:6px 10px; border:2px solid var(--text); border-radius:8px; margin-bottom:12px;">
+    <br>
+    <button id="abcdStart" style="padding:8px 16px; border:none; background:var(--accent); color:white; border-radius:8px; cursor:pointer; font-weight:600;">BẮT ĐẦU</button>
+    <div id="abcdResult" style="margin-top:16px; display:grid; grid-template-columns:repeat(auto-fill, minmax(60px,1fr)); gap:8px;"></div>
+    <button onclick="closeABCD()" style="margin-top:12px; padding:8px 14px; border:none; background:var(--accent); color:white; border-radius:8px; cursor:pointer;">Đóng</button>
+  </div>
+</div>
 
 <div class="menu">
     <div id="menu1" class="menuItem"><img src="images/mega.png"><p>Vietlott Mega</p></div>
@@ -557,6 +580,56 @@ document.getElementById('menu1').addEventListener('click',()=>showLottery('mega'
 document.getElementById('menu2').addEventListener('click',()=>showLottery('power'));
 
 //ABCD
+// ===== Menu ABCD =====
+const abcdOverlay = document.getElementById('abcdOverlay');
+const abcdStartBtn = document.getElementById('abcdStart');
+const abcdCountInput = document.getElementById('abcdCount');
+const abcdResultDiv = document.getElementById('abcdResult');
+
+function showABCD(){
+  abcdCountInput.value = '';
+  abcdResultDiv.innerHTML = '';
+  abcdOverlay.style.display = 'flex';
+}
+
+function closeABCD(){
+  abcdOverlay.style.display = 'none';
+}
+
+// Sinh kết quả ngẫu nhiên A/B/C/D
+function generateABCD(n){
+  const answers = ['A','B','C','D'];
+  const results = [];
+  for(let i=1;i<=n;i++){
+    const ans = answers[Math.floor(Math.random()*4)];
+    results.push({stt:i, ans});
+  }
+  return results;
+}
+
+abcdStartBtn.addEventListener('click', ()=>{
+  let n = parseInt(abcdCountInput.value);
+  if(isNaN(n) || n < 1) n = 1;
+  if(n > 50) n = 50;
+
+  const results = generateABCD(n);
+  abcdResultDiv.innerHTML = '';
+
+  results.forEach(r=>{
+    const div = document.createElement('div');
+    div.className = 'abcdCell';
+    div.textContent = `${r.stt}: ${r.ans}`;
+    abcdResultDiv.appendChild(div);
+  });
+});
+
+// Đóng khi click ngoài
+abcdOverlay.addEventListener('click', (e)=>{
+  if(e.target === abcdOverlay) closeABCD();
+});
+
+// Gắn menu
+document.getElementById('menu3').addEventListener('click', showABCD);
 
 </script>
 </body>
