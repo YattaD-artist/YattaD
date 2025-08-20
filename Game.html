@@ -1,1 +1,120 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>YattaD - Mini Games</title>
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+* { box-sizing: border-box; }
+html, body { max-width: 100%; overflow-x: hidden; }
+body {
+    margin: 0; font-family: 'Saira', sans-serif;
+    background-color: var(--bg); color: var(--text);
+    --bg: #ede9eb; --text: #1a2129; --accent: #e32630;
+    transition: background-color 0.3s, color 0.3s;
+}
+body.dark { --bg: #1b1b1b; --text: #f5f5f5; --accent: #1cd9cf; }
 
+header { display:flex; justify-content:space-between; align-items:center; padding:12px 24px; border-bottom:1px solid #ccc; background-color:var(--bg); position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+.center-title { flex:1; text-align:center; font-weight:800; font-size:2.5rem; color:var(--accent); }
+.left,.right { display:flex; align-items:center; gap:16px; }
+.icon-btn { background:none; text-decoration: none !important; border:none; cursor:pointer; font-size:1.3rem; color:var(--text); width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition: transform 0.25s, color 0.25s, background-color 0.25s; }
+.icon-btn:hover { transform: scale(1.15); color:var(--accent); background-color: rgba(0,0,0,0.05); }
+
+main { display:flex; flex-direction:column; gap:24px; padding:30px; }
+.info { width:100%; padding:32px; background-color:var(--bg); border-radius:12px; border:1px solid rgba(0,0,0,0.1); box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+.info h2 { font-size:2rem; margin-bottom:16px; font-weight:700; color:var(--accent); border-bottom:3px solid var(--accent); display:inline-block; padding-bottom:5px; }
+.info p { margin-bottom:12px; line-height:1.6; }
+
+.menu { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:18px; }
+.menuItem { cursor:pointer; text-align:center; border:2px solid var(--text); border-radius:12px; padding:16px; transition: transform 0.25s, box-shadow 0.25s; font-weight:700; font-size:1.1rem; }
+.menuItem:hover { transform:translateY(-3px); box-shadow:0 6px 12px rgba(0,0,0,0.15); border-color:var(--accent); }
+
+#overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); justify-content:center; align-items:center; z-index:9999; flex-direction:column; }
+#overlay iframe { width:90vw; height:90vh; border:none; border-radius:12px; }
+
+#closeBtn { position:absolute; top:20px; right:20px; font-size:1.5rem; background:none; color:#fff; border:none; cursor:pointer; }
+
+@media(max-width:768px){
+    main{padding:10px; gap:12px;} 
+    .info{padding:16px;} 
+    .menu{grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:10px;} 
+}
+</style>
+</head>
+<body>
+<header>
+    <div class="left"><a href="index.html" class="icon-btn" title="Trang chủ"><i class="fas fa-home"></i></a></div>
+    <div class="center-title" id="title">YattaD</div>
+    <div class="right">
+        <button class="icon-btn" id="theme-toggle" title="Đổi chế độ"><i class="fas fa-adjust"></i></button>
+        <button class="icon-btn" id="lang-toggle" title="Đổi ngôn ngữ"><i class="fa-solid fa-language"></i></button>
+    </div>
+</header>
+
+<main>
+<div class="info">
+<h2 id="introTitle">Chào Mừng</h2>
+<p id="introP1">Đây là trang mini game. Chọn một trò chơi để bắt đầu chơi ngay trong popup.</p>
+</div>
+
+<div class="menu">
+    <div class="menuItem" data-game="games/game1.html">Game 1</div>
+    <div class="menuItem" data-game="games/game2.html">Game 2</div>
+    <div class="menuItem" data-game="games/game3.html">Game 3</div>
+    <div class="menuItem" data-game="games/game4.html">Game 4</div>
+</div>
+</main>
+
+<div id="overlay">
+    <iframe src="" id="gameFrame"></iframe>
+    <button id="closeBtn">✖</button>
+</div>
+
+<script>
+// Theme toggle
+const themeBtn = document.getElementById('theme-toggle');
+themeBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+});
+if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+
+// Language toggle (giữ cơ chế đơn giản)
+const langBtn = document.getElementById('lang-toggle'); 
+let currentLang = localStorage.getItem('lang') || 'vi';
+const translations = {
+    vi: { title: "YattaD", introTitle: "Chào Mừng", introP1: "Đây là trang mini game. Chọn một trò chơi để bắt đầu chơi ngay trong popup." },
+    en: { title: "YattaD", introTitle: "Welcome", introP1: "This is a mini game page. Click a game to play it in a popup." }
+};
+function switchLanguage(){
+    currentLang = currentLang==='vi'?'en':'vi'; 
+    localStorage.setItem('lang', currentLang);
+    document.getElementById('title').textContent = translations[currentLang].title;
+    document.getElementById('introTitle').textContent = translations[currentLang].introTitle;
+    document.getElementById('introP1').textContent = translations[currentLang].introP1;
+}
+langBtn.addEventListener('click', switchLanguage);
+if(currentLang==='en') switchLanguage();
+
+// Overlay
+const overlayEl = document.getElementById('overlay');
+const gameFrame = document.getElementById('gameFrame');
+const closeBtn = document.getElementById('closeBtn');
+
+document.querySelectorAll('.menuItem').forEach(item=>{
+    item.addEventListener('click',()=>{
+        const gameSrc = item.getAttribute('data-game');
+        gameFrame.src = gameSrc;
+        overlayEl.style.display = 'flex';
+    });
+});
+closeBtn.addEventListener('click', ()=>{
+    overlayEl.style.display = 'none';
+    gameFrame.src = '';
+});
+</script>
+</body>
+</html>
