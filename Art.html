@@ -244,16 +244,31 @@ const imageDetails = {
 function loadCategory(cat) {
     gallery.innerHTML = "";
     const total = categoryImages[cat] || 0;
+
     for (let i = 1; i <= total; i++) {
         const baseName = String(i).padStart(2, '0');
-        const thumbPath = `arts/${cat}/${baseName}.min.webp`; // Thumbnail nhỏ
-        const fullPath = `arts/${cat}/${baseName}.webp`;       // Ảnh gốc
+        const thumbPath = `arts/${cat}/${baseName}.min.webp`;
+        const fullPath = `arts/${cat}/${baseName}.webp`;
 
         const img = document.createElement('img');
-        img.src = thumbPath;       // Load thumbnail
+        img.dataset.src = thumbPath; // Lazy load thumbnail
         img.className = "thumb";
-        img.onclick = () => openFull(fullPath); // Khi click, mở ảnh gốc
+        img.onclick = () => openFull(fullPath);
         gallery.appendChild(img);
+
+        // Preload full image khi thumbnail xuất hiện
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    img.src = img.dataset.src; // Load thumbnail
+                    const preload = new Image();
+                    preload.src = fullPath; // Preload ảnh gốc
+                    obs.unobserve(img);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        observer.observe(img);
     }
 }
 
