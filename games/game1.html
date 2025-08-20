@@ -40,61 +40,28 @@
     padding:8px 14px; border-radius:12px; min-width:70px; text-align:center;}
 
   .canvas-wrap{ background: linear-gradient(180deg, #e9edf0, #ffffff); border-radius:12px; padding:12px; position:relative;}
-  canvas{ display:block; border-radius:10px; background:#70c5ce; width:100%; height:auto;
+  canvas{ display:block; border-radius:10px; background:#70c5ce; width:400px; height:600px;
     box-shadow:0 18px 40px rgba(0,0,0,0.12); }
 
-  .controls{ display:flex; gap:12px; margin-top:10px; width:100%; }
+  .controls{ display:flex; gap:12px; margin-top:10px; }
   .btn{
     flex:1; background:var(--accent); color:#fff; border:none; border-radius:12px;
     padding:10px; font-size:16px; cursor:pointer; box-shadow:0 6px 14px rgba(227,38,48,0.2);
   }
   .btn:active{ transform:translateY(1px); }
 
-  #settingsBtn{
-    width:50px; height:50px; border-radius:50%; background:var(--card);
-    display:flex; align-items:center; justify-content:center;
-    font-size:22px; cursor:pointer; box-shadow:var(--shadow);
-  }
-
   #gameOver{
     display:none; position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
     background:rgba(255,255,255,0.95); padding:30px 40px; border-radius:16px;
     font-size:24px; color:var(--accent); text-align:center; box-shadow:var(--shadow);
   }
-
-  /* Mobile: ẩn panel, dùng popup */
-  @media(max-width:980px){
-    .page{flex-direction:column; padding:18px;}
-    .panel{display:none;}
-    .game-card{width:100%; max-width:420px;}
-    #settingsMenu{display:none; position:fixed; bottom:70px; right:20px;
-      width:260px; max-height:80vh; overflow:auto;
-      background:var(--card); padding:18px; border-radius:16px; box-shadow:var(--shadow); z-index:1000;}
-    #settingsMenu.active{display:block;}
-  }
+  @media(max-width:980px){ .page{flex-direction:column; padding:18px;} .panel,.game-card{width:90%; max-width:420px;} }
 </style>
 </head>
 <body>
 <div class="page">
-
-  <!-- Game center -->
-  <div class="game-card">
-    <div class="top-row">
-      <div style="color:var(--muted); font-size:13px;">Press Space / Click / Touch</div>
-      <div id="score">0</div>
-    </div>
-    <div class="canvas-wrap">
-      <canvas id="gameCanvas" width="400" height="600"></canvas>
-      <div id="gameOver">Game Over</div>
-    </div>
-    <div class="controls">
-      <button id="mainBtn" class="btn">Start</button>
-      <div id="settingsBtn">⚙️</div>
-    </div>
-  </div>
-
-  <!-- Settings + Score history (gộp) -->
-  <div class="panel" id="desktopSettings">
+  <!-- Left settings -->
+  <div class="panel">
     <h3>Settings</h3>
     <label>Character Skin</label>
     <select id="charSkin">
@@ -111,32 +78,28 @@
       <option value="#70c5ce">Sky Blue</option><option value="#ffe066">Yellow</option>
       <option value="#c0e0de">Mint</option><option value="#f0b0c0">Pink</option>
     </select>
+  </div>
+
+  <!-- Game center -->
+  <div class="game-card">
+    <div class="top-row">
+      <div style="color:var(--muted); font-size:13px;">Press Space / Click / Touch</div>
+      <div id="score">0</div>
+    </div>
+    <div class="canvas-wrap">
+      <canvas id="gameCanvas" width="400" height="600"></canvas>
+      <div id="gameOver">Game Over</div>
+    </div>
+    <div class="controls">
+      <button id="mainBtn" class="btn">Start</button>
+    </div>
+  </div>
+
+  <!-- Right history -->
+  <div class="panel">
     <h3>Score History</h3>
     <ul id="scoreList"></ul>
   </div>
-
-  <!-- Mobile popup -->
-  <div id="settingsMenu">
-    <h3>Settings</h3>
-    <label>Character Skin</label>
-    <select id="charSkinMobile">
-      <option value="yellow">Yellow</option><option value="red">Red</option>
-      <option value="blue">Blue</option><option value="purple">Purple</option>
-    </select>
-    <label>Pipe Color</label>
-    <select id="pipeSkinMobile">
-      <option value="green">Green</option><option value="darkgreen">Dark Green</option>
-      <option value="orange">Orange</option><option value="brown">Brown</option>
-    </select>
-    <label>Background</label>
-    <select id="bgSkinMobile">
-      <option value="#70c5ce">Sky Blue</option><option value="#ffe066">Yellow</option>
-      <option value="#c0e0de">Mint</option><option value="#f0b0c0">Pink</option>
-    </select>
-    <h3>Score History</h3>
-    <ul id="scoreListMobile"></ul>
-  </div>
-
 </div>
 
 <script>
@@ -157,19 +120,25 @@ function createPipe(){
   const gapX=Math.floor(Math.random()*(canvas.width-gapWidth-50))+25;
   pipes.push({y:0,height:pipeHeight,gapX:gapX});
 }
+
 function drawBird(){
   ctx.save();
+  // di chuyển gốc tọa độ tới tâm bird
   ctx.translate(bird.x + bird.width/2, bird.y + bird.height/2);
-  ctx.rotate(bird.angle);
+  ctx.rotate(bird.angle); // xoay theo góc
   ctx.fillStyle = charColor;
+
+  // vẽ tam giác cân thay vì hình vuông
   ctx.beginPath();
-  ctx.moveTo(0, -bird.height/2);
-  ctx.lineTo(-bird.width/2, bird.height/2);
-  ctx.lineTo(bird.width/2, bird.height/2);
+  ctx.moveTo(0, -bird.height/2);          // đỉnh trên
+  ctx.lineTo(-bird.width/2, bird.height/2); // góc trái
+  ctx.lineTo(bird.width/2, bird.height/2);  // góc phải
   ctx.closePath();
   ctx.fill();
+
   ctx.restore();
 }
+
 function drawPipes(){ctx.fillStyle=pipeColor;
   for(const p of pipes){
     ctx.fillRect(0,p.y,p.gapX,p.height);
@@ -199,64 +168,82 @@ function endGame(){
   document.getElementById('mainBtn').textContent="Restart";
 }
 function pushScore(){if(score>0){historyScores.push(score);updateHistory();}}
-function updateHistory(){
-  const ul=document.getElementById('scoreList');ul.innerHTML='';
-  const ulM=document.getElementById('scoreListMobile');ulM.innerHTML='';
-  historyScores.slice().reverse().forEach((s,i)=>{
-    const li=document.createElement('li');li.textContent=`#${historyScores.length-i}: ${s}`;
-    ul.appendChild(li.cloneNode(true)); ulM.appendChild(li);
-  });
+function updateHistory(){const ul=document.getElementById('scoreList');ul.innerHTML='';
+  historyScores.slice().reverse().forEach((s,i)=>{const li=document.createElement('li');li.textContent=`#${historyScores.length-i}: ${s}`;ul.appendChild(li);});
 }
 
 // Main button
 document.getElementById('mainBtn').onclick=()=>{
   const btn=document.getElementById('mainBtn');
-  if(btn.textContent==="Start"){init(); loop(); btn.textContent="Pause";}
-  else if(btn.textContent==="Pause"){paused=true; btn.textContent="Resume";}
-  else if(btn.textContent==="Resume"){paused=false; loop(); btn.textContent="Pause";}
-  else if(btn.textContent==="Restart"){pushScore(); init(); loop(); btn.textContent="Pause";}
+  if(btn.textContent==="Start"){ // Start game
+    init(); loop(); btn.textContent="Pause";
+  }
+  else if(btn.textContent==="Pause"){ // Pause game
+    paused=true; btn.textContent="Resume";
+  }
+  else if(btn.textContent==="Resume"){ // Resume game
+    paused=false; loop(); btn.textContent="Pause";
+  }
+  else if(btn.textContent==="Restart"){ // Restart after game over
+    pushScore(); init(); loop(); btn.textContent="Pause";
+  }
 };
 document.addEventListener('keydown',e=>{if(e.code==='Space')flap();});
 canvas.addEventListener('click',flap);
 canvas.addEventListener('touchstart',e=>{e.preventDefault();flap();});
 
-// Settings đồng bộ
-function syncSelect(id1,id2,setter){
-  const el1=document.getElementById(id1);
-  const el2=document.getElementById(id2);
-  [el1,el2].forEach(el=>{
-    el.onchange=e=>{
-      el1.value=el.value; el2.value=el.value; setter(el.value);
-    };
-  });
-}
-syncSelect('charSkin','charSkinMobile',v=>charColor=v);
-syncSelect('pipeSkin','pipeSkinMobile',v=>pipeColor=v);
-syncSelect('bgSkin','bgSkinMobile',v=>{bgColor=v;canvas.style.background=bgColor;});
+// Settings
+document.getElementById('charSkin').onchange=e=>charColor=e.target.value;
+document.getElementById('pipeSkin').onchange=e=>pipeColor=e.target.value;
+document.getElementById('bgSkin').onchange=e=>{bgColor=e.target.value;canvas.style.background=bgColor;};
 
-// Ripple
+//Sóng
+// --- Hiệu ứng sóng nước ---
 let ripples=[];
+
 function drawRipples(){
   for(let i=ripples.length-1;i>=0;i--){
     let r=ripples[i];
-    ctx.beginPath(); ctx.arc(r.x,r.y,r.radius,0,Math.PI*2);
+    ctx.beginPath();
+    ctx.arc(r.x,r.y,r.radius,0,Math.PI*2);
     ctx.strokeStyle=`rgba(255,255,255,${r.alpha})`;
-    ctx.lineWidth=2; ctx.stroke();
-    r.radius+=1.5; r.alpha-=0.02;
+    ctx.lineWidth=2;
+    ctx.stroke();
+    r.radius+=1.5; // lan rộng
+    r.alpha-=0.02; // mờ dần
     if(r.alpha<=0) ripples.splice(i,1);
   }
 }
-const oldRender=render;
-render=function(){oldRender(); drawRipples();};
-function addRipple(x,y){ripples.push({x,y,radius:0,alpha:0.6});}
-canvas.addEventListener('click',e=>{const rect=canvas.getBoundingClientRect();addRipple(e.clientX-rect.left,e.clientY-rect.top);});
-canvas.addEventListener('touchstart',e=>{const rect=canvas.getBoundingClientRect();const t=e.touches[0];addRipple(t.clientX-rect.left,t.clientY-rect.top);});
-document.addEventListener('keydown',e=>{if(e.code==='Space'){addRipple(bird.x+bird.width/2,bird.y+bird.height/2);}});
 
-// Toggle settings mobile
-document.getElementById('settingsBtn').onclick=()=>{
-  document.getElementById('settingsMenu').classList.toggle('active');
+function addRipple(x,y){
+  ripples.push({x,y,radius:0,alpha:0.6});
+}
+
+// chèn vào render gốc
+const oldRender = render;
+render = function(){
+  oldRender();
+  drawRipples();
 };
+
+// bắt sự kiện click/touch/space để tạo ripple
+canvas.addEventListener('click',e=>{
+  const rect=canvas.getBoundingClientRect();
+  addRipple(e.clientX-rect.left,e.clientY-rect.top);
+});
+canvas.addEventListener('touchstart',e=>{
+  const rect=canvas.getBoundingClientRect();
+  const t=e.touches[0];
+  addRipple(t.clientX-rect.left,t.clientY-rect.top);
+});
+document.addEventListener('keydown',e=>{
+  if(e.code==='Space'){
+    addRipple(bird.x+bird.width/2,bird.y+bird.height/2);
+  }
+});
+
+//THÊM
+
 </script>
 </body>
 </html>
