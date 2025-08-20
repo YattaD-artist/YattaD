@@ -48,13 +48,95 @@ main {
 .info h2 { font-size:1.6rem; margin-bottom:12px; color:var(--accent); }
 .info p { font-size:0.9rem; margin-bottom:8px; }
 
-.left-panel {
-    padding:16px; background-color:var(--bg); border-radius:12px;
-    border:1px solid rgba(0,0,0,0.1); box-shadow:0 4px 12px rgba(0,0,0,0.05);
-    display:flex; flex-direction:column; gap:12px;
+/* Nâng cấp input, select */
+
+.left-panel textarea,
+.left-panel input[type="number"],
+.left-panel select {
+    border: 2px solid var(--text);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 1rem;
+    background-color: var(--bg); /* theo theme */
+    color: var(--text);           /* theo theme */
+    box-sizing: border-box;
+    height: 38px;
+    width: 100px;     /* rộng hơn để giống select */
+    min-width: 80px;  /* hạn chế quá nhỏ */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
+
+/* Chiều cao và chiều rộng hợp lý */
 .left-panel textarea {
-    width:100%; height:120px; padding:8px; border-radius:8px; border:1px solid #ccc;
+    width: 100%;      /* full chiều rộng */
+    height: 140px;    /* cao hơn để hiển thị nhiều dòng */
+    resize: vertical;
+}
+.left-panel input[type="number"],
+.left-panel select {
+    width: 80px;
+    min-width: 60px;
+    height: 38px;
+}
+
+/* Hiệu ứng focus */
+.left-panel textarea:focus,
+.left-panel input[type="number"],
+.left-panel select {
+    border: 2px solid var(--text);
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 1rem;
+    background-color: var(--bg); /* theo theme */
+    color: var(--text);           /* theo theme */
+    box-sizing: border-box;
+    height: 38px;
+    width: 80px;
+    min-width: 60px;
+    appearance: none;              /* bỏ style mặc định của select */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+/* Hiệu ứng khi focus */
+.left-panel input[type="number"]:focus,
+.left-panel select:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Nút Quay giống MenuItem */
+.options-container {
+    display: flex;
+    justify-content: center; /* căn giữa ngang */
+    margin-top: 20px; /* tăng khoảng cách so với phần trên */
+}
+
+#spinBtn {
+    display: block;
+    width: 70%;
+    padding: 12px 0;
+    margin: 24px auto 0; /* top margin lớn hơn để đẩy xuống */
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    border: 2px solid var(--accent);
+    background-color: var(--bg);
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+#spinBtn:hover {
+    background-color: var(--accent);
+    color: var(--bg);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    border-color: var(--accent);
 }
 
 .options { display:flex; flex-direction:column; gap:10px; }
@@ -64,14 +146,15 @@ main {
 }
 
 #wheelContainer {
-    position: relative; width:470px; height:470px;
-    border-radius:50%; border:6px solid #ff7361; box-shadow:0 8px 20px rgba(0,0,0,0.3);
-    display:flex; justify-content:center; align-items:center; background:#fff;
+    position: relative; width:470px; height:470px; margin-top:40px;
+    border-radius:50%; border:6px solid var(--accent); 
+    box-shadow:0 8px 20px rgba(0,0,0,0.3);
+    display:flex; justify-content:center; align-items:center; background:var(--bg);
 }
+
 #centerImg {
     position:absolute; top:50%; left:50%; transform:translate(-50%, -50%);
-    height:70px; width:auto; border-radius:50%; box-shadow:0 4px 10px rgba(0,0,0,0.3);
-}
+    height:70px; width:auto; border-radius:50%;}
 
 #resultOverlay {
     position:fixed; top:0; left:0; width:100%; height:100%;
@@ -89,7 +172,7 @@ main {
 }
 @keyframes popscale { from { transform:scale(0.7); opacity:0; } to { transform:scale(1); opacity:1; } }
 
-.menu { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:18px; margin-top:20px; }
+.menu { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:18px; margin-top:100px; }
 .menuItem { cursor:pointer; text-align:center; border:2px solid var(--text); border-radius:12px; padding:8px; transition: transform 0.25s, box-shadow 0.25s; }
 .menuItem img { width:100%; border-radius:8px; margin-bottom:6px; }
 .menuItem:hover { transform:translateY(-3px); box-shadow:0 6px 12px rgba(0,0,0,0.15); border-color:var(--accent); }
@@ -104,7 +187,7 @@ main {
 <body>
 <header>
     <div class="left"><a href="index.html" class="icon-btn" title="Trang chủ"><i class="fas fa-home"></i></a></div>
-    <div class="center-title" id="title">TIÊU CHUẨN</div>
+    <div class="center-title" id="title">Tiêu Chuẩn</div>
     <div class="right">
         <button class="icon-btn" id="theme-toggle" title="Đổi chế độ"><i class="fas fa-adjust"></i></button>
         <button class="icon-btn" id="lang-toggle" title="Đổi ngôn ngữ"><i class="fa-solid fa-language"></i></button>
@@ -136,9 +219,15 @@ Chuẩn</textarea>
 
             <div class="options">
               <label>
-                <span id="repeat">Số lần lặp:</span>
-                <input type="number" id="repeatInput" value="1" min="1" max="5" style="width:60px">
-              </label>
+                 <span id="repeat">Số lần lặp:</span>
+    <select id="repeatSelect">
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+    </select>
+  </label>
 
               <label>
                 <span id="spin">Thời gian quay:</span>
@@ -248,7 +337,7 @@ const colors = [
 
 function updateNames(){
   const raw = nameInput.value.split("\n").map(x=>x.trim()).filter(x=>x);
-  const repeat = Math.min(+repeatInput.value||1, 5);
+  const repeat = Math.min(+document.getElementById('repeatSelect').value||1, 5);
   names = [];
   raw.forEach(n => { for(let i=0;i<repeat;i++) names.push(n); });
   drawWheel();
@@ -330,6 +419,7 @@ nameInput.addEventListener("input",updateNames);
 repeatInput.addEventListener("input",updateNames);
 durationSelect.addEventListener("change",updateNames);
 spinBtn.addEventListener("click",spinWheel);
+
 </script>
 </body>
 </html>
