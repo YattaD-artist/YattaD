@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+<!-- Logo chính -->
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon192.png">
+<link rel="apple-touch-icon" href="assets/icons/icon192.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2c3642">
+
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>YattaD</title>
@@ -535,6 +542,12 @@ imageModal.addEventListener('click', () => {
     applyLanguage();
 
     // MOBILE
+
+    if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js")
+    .then(() => console.log("Service Worker đã đăng ký"))
+    .catch(err => console.error("SW lỗi:", err));
+}
     // MOBILE
     // MOBILE
 function adjustMobileLayout() {
