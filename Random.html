@@ -1,1 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Tiêu Chuẩn</title>
+<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+* { box-sizing: border-box; }
+html, body { max-width: 100%; overflow-x: hidden; }
+body {
+    margin: 0; font-family: 'Saira', sans-serif;
+    background-color: var(--bg); color: var(--text);
+    --bg: #ede9eb; --text: #1a2129; --accent: #e32630;
+    transition: background-color 0.3s, color 0.3s;
+}
+body.dark { --bg: #1b1b1b; --text: #f5f5f5; --accent: #1cd9cf; }
+
+header { display:flex; justify-content:space-between; align-items:center; padding:12px 24px; border-bottom:1px solid #ccc; background-color:var(--bg); position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+.center-title { flex:1; text-align:center; font-weight:800; font-size:2.5rem; color:var(--accent); }
+.left,.right { display:flex; align-items:center; gap:16px; }
+.icon-btn { background:none; text-decoration: none !important; border:none; cursor:pointer; font-size:1.3rem; color:var(--text); width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition: transform 0.25s, color 0.25s, background-color 0.25s; }
+.icon-btn:hover { transform: scale(1.15); color:var(--accent); background-color: rgba(0,0,0,0.05); }
+
+main { display:flex; flex-direction:column; gap:24px; padding:30px; }
+.info { width:100%; padding:32px; background-color:var(--bg); border-radius:12px; border:1px solid rgba(0,0,0,0.1); box-shadow:0 4px 12px rgba(0,0,0,0.05); }
+.info h2 { font-size:2rem; margin-bottom:16px; font-weight:700; color:var(--accent); border-bottom:3px solid var(--accent); display:inline-block; padding-bottom:5px; }
+.info p { margin-bottom:12px; line-height:1.6; }
+
+.menu { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:18px; }
+.menuItem { cursor:pointer; text-align:center; border:2px solid var(--text); border-radius:12px; padding:8px; transition: transform 0.25s, box-shadow 0.25s; }
+.menuItem img { width:100%; border-radius:8px; margin-bottom:6px; }
+.menuItem:hover { transform:translateY(-3px); box-shadow:0 6px 12px rgba(0,0,0,0.15); border-color:var(--accent); }
+
+@media(max-width:768px){ 
+    main{padding:10px; gap:12px;} 
+    .info{padding:16px;} 
+    .menu{grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:10px;} 
+    .menuItem img{margin-bottom:4px;} 
+}
+</style>
+</head>
+<body>
+<header>
+    <div class="left"><a href="index.html" class="icon-btn" title="Trang chủ"><i class="fas fa-home"></i></a></div>
+    <div class="center-title" id="title">Tiêu Chuẩn</div>
+    <div class="right">
+        <button class="icon-btn" id="theme-toggle" title="Đổi chế độ"><i class="fas fa-adjust"></i></button>
+        <button class="icon-btn" id="lang-toggle" title="Đổi ngôn ngữ"><i class="fa-solid fa-language"></i></button>
+    </div>
+</header>
+
+<main>
+<div class="info">
+<h2 id="introTitle">Giới Thiệu</h2>
+<p id="introP1">Đây là trang Tiêu Chuẩn – nơi cung cấp thông tin cơ bản và rõ ràng.</p>
+<p id="introP2">Bạn có thể chọn một trong ba mục dưới đây để bắt đầu.</p>
+</div>
+
+<div class="menu">
+    <div id="menu1" class="menuItem"><img src="images/mega.png"><p>Vietlott Mega</p></div>
+    <div id="menu2" class="menuItem"><img src="images/power.png"><p>Vietlott Power</p></div>
+    <div id="menu3" class="menuItem"><img src="images/abcd.png"><p>ABCD</p></div>
+</div>
+</main>
+
+<script>
+// Theme toggle
+const themeBtn=document.getElementById('theme-toggle');
+themeBtn.addEventListener('click',()=>{
+    document.body.classList.toggle('dark'); 
+    localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');
+});
+if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark');
+
+// Language toggle
+const langBtn=document.getElementById('lang-toggle'); 
+let currentLang=localStorage.getItem('lang')||'vi';
+
+const translations={
+    vi:{
+        title:"Tiêu Chuẩn",
+        introTitle:"Giới Thiệu",
+        introP1:"Đây là trang Tiêu Chuẩn – nơi cung cấp thông tin cơ bản và rõ ràng.",
+        introP2:"Bạn có thể chọn một trong ba mục dưới đây để bắt đầu.",
+        menu1:"Vietlott Mega",
+        menu2:"Vietlott Power",
+        menu3:"ABCD"
+    },
+    en:{
+        title:"Standard",
+        introTitle:"Introduction",
+        introP1:"This is the Standard page – providing simple and clear information.",
+        introP2:"You can select one of the three options below to begin.",
+        menu1:"Vietlott Mega",
+        menu2:"Vietlott Power",
+        menu3:"ABCD"
+    }
+};
+
+function switchLanguage(){
+    currentLang=currentLang==='vi'?'en':'vi'; 
+    localStorage.setItem('lang',currentLang);
+    for(const key in translations[currentLang]){
+        const el=document.getElementById(key);
+        if(el){
+            if(key.startsWith('menu')){
+                const p=el.querySelector('p');
+                if(p) p.textContent=translations[currentLang][key];
+            } else {
+                el.innerHTML=translations[currentLang][key];
+            }
+        }
+    }
+}
+langBtn.addEventListener('click',switchLanguage); 
+document.addEventListener('DOMContentLoaded',()=>{if(currentLang==='en') switchLanguage();});
+</script>
+</body>
+</html>
 
