@@ -107,7 +107,14 @@ main {
     outline: none;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-
+/* Dòng setting */
+.options {
+    display: flex;
+    flex-direction: row; /* ngang */
+    gap: 20px;           /* khoảng cách giữa 2 phần */
+    align-items: center; /* căn giữa theo chiều dọc */
+}
+    
 /* Nút Quay giống MenuItem */
 .options-container {
     display: flex;
@@ -234,7 +241,12 @@ main {
     #centerContainer { flex-direction:column; }
     .right-panel { justify-content:center; margin-top:16px; }
     .menu{grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:10px;} 
+    .options {
+        flex-direction: column;
+        gap: 10px;
+    }
 }
+    
 </style>
 </head>
 <body>
@@ -346,9 +358,9 @@ Chuẩn</textarea>
 </div>
 
 <div class="menu">
-    <div id="menu1" class="menuItem"><img src="assets/Tieuchuan/mega.webp"><p>Vietlott Mega</p></div>
-    <div id="menu2" class="menuItem"><img src="assets/Tieuchuan/power.webp"><p>Vietlott Power</p></div>
-    <div id="menu3" class="menuItem"><img src="assets/Tieuchuan/abcd.webp"><p>ABCD</p></div>
+    <div id="menu1" class="menuItem"><p>Vietlott Mega</p><img src="assets/Tieuchuan/mega.webp"></div>
+    <div id="menu2" class="menuItem"><p>Vietlott Power</p><img src="assets/Tieuchuan/power.webp"></div>
+    <div id="menu3" class="menuItem"><p>ABCD</p><img src="assets/Tieuchuan/abcd.webp"></div>
 </div>
 </main>
 
@@ -460,22 +472,50 @@ function drawWheel(){
   });
 }
 
-function spinWheel(){
-  if(spinning||names.length===0) return;
-  spinning=true;
-  const duration = +durationSelect.value;
-  const targetAngle = angle+Math.random()*2*Math.PI+10*Math.PI;
-  const start = performance.now();
-  function animate(now){
-    const elapsed = now-start;
-    const progress = Math.min(elapsed/duration,1);
-    angle = targetAngle*progress;
+function spinWheel() {
+  if(spinning || names.length === 0) return;
+  spinning = true;
+
+  const initialSpeed = 0.25; // tốc độ bình thường (rad/ms)
+  const decelTime = 3000;    // 3 giây cuối giảm tốc
+  let currentSpeed = initialSpeed;
+  let decelStartTime = null;
+
+  const totalSpinAngle = Math.random() * 2 * Math.PI + 10 * Math.PI; // quay nhiều vòng
+  const startAngle = angle;
+  const startTime = performance.now();
+
+  function animate(now) {
+    const elapsed = now - startTime;
+
+    // Bắt đầu giảm tốc khi còn 3 giây cuối
+    if (!decelStartTime && elapsed >= totalSpinAngle / initialSpeed - decelTime) {
+      decelStartTime = now;
+    }
+
+    if (decelStartTime) {
+      const t = now - decelStartTime;
+      if (t < decelTime) {
+        currentSpeed = initialSpeed * (1 - t / decelTime); // giảm tuyến tính
+      } else {
+        currentSpeed = 0;
+      }
+    }
+
+    angle += currentSpeed * 16; // 16ms ~ 1 frame, vẫn mượt
     drawWheel();
-    if(progress<1) requestAnimationFrame(animate);
-    else { spinning=false; showResult(); }
+
+    if (currentSpeed > 0) {
+      requestAnimationFrame(animate);
+    } else {
+      spinning = false;
+      showResult();
+    }
   }
+
   requestAnimationFrame(animate);
 }
+
 
 function showResult(){
   const arc=2*Math.PI/names.length;
