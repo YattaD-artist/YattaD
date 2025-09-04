@@ -130,9 +130,11 @@ main { display:flex; flex-direction:column; gap:24px; padding:20px 30px; }
 
 /* ===== Responsive ===== */
 @media(max-width:768px){
-  #centerContainer { flex-direction:column; }
-  .right-panel { justify-content:center; margin-top:16px; }
-  .menu{ grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:10px; }
+   #centerContainer { flex-direction: column; }
+    .right-panel { justify-content: center; margin-top: 16px; }
+     /* Menu trên mobile: 1 cột */
+    .menu { display: flex; flex-direction: column; gap: 12px; margin-top: 40px; /* cho thoáng */ }
+    .menuItem {width: 100%; /* full chiều ngang */}
   .options { flex-direction:column; gap:10px; }
 }
 </style>
