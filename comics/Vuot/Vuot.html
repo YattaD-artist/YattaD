@@ -109,6 +109,84 @@
         #page-search:focus { background-color: #ffffff; }
 
         #sentinel { height: 50px; width: 100%; grid-column: span 2; }
+
+@media (max-width: 768px) {
+    .app-container {
+        display: flex;
+        flex-direction: column;
+        padding: 0;
+        gap: 0;
+    }
+
+    /* Danh mục thành thanh ngang cố định */
+    .sidebar-left-top {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100px;
+        z-index: 100;
+        display: flex;
+        overflow-x: auto;
+        padding: 5px;
+        border-bottom: 4px solid #000;
+    }
+
+    .chapter-list {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    padding: 0px;
+}
+
+/* Nút chapter */
+.chapter-item {
+    flex: 0 0 auto;              /* không bị co */
+    min-width: max-content;      /* rộng theo chữ */
+    padding: 10px 14px;          /* tăng vùng bấm */
+    font-size: 0.9rem;
+    border: 3px solid #000;
+    white-space: nowrap;         /* không xuống dòng */
+    border-radius: 6px;          /* dễ nhìn hơn trên mobile */
+}
+
+.sidebar-left-top {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+    /* Ẩn toàn bộ panel không cần */
+    .sidebar-left-bottom,
+    .sidebar-right-top,
+    .sidebar-right-bottom {
+        display: none;
+    }
+
+    /* Reader chiếm toàn bộ */
+    .main-reader {
+        margin-top: 60px; /* tránh bị header đè */
+        height: calc(100vh - 60px);
+    }
+
+    /* Gallery thành 1 cột */
+    #gallery {
+        display: block;
+        padding: 0;
+        row-gap: 0;
+    }
+
+    .img-container {
+        height: auto;
+        justify-content: center !important;
+    }
+
+    .img-container img {
+        width: 100%;
+        height: auto;
+        max-height: none;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -133,7 +211,7 @@
         <div class="cover-box">
             <img id="chapter-cover" src="" alt=" ">
         </div>
-        <div class="ad-area">QUẢNG CÁO</div>
+        <div class="ad-area">Chúc Bạn Đọc Truyện Vui Vẻ!</div>
     </div>
 
     <div class="panel sidebar-right-bottom">
