@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vuot - Reader</title>
+    <title>Vuot - Mobile Optimized</title>
     <style>
         :root { 
             --border-width: 4px; 
@@ -30,7 +30,7 @@
             position: relative;
         }
 
-        /* BÊN TRÁI: CHƯƠNG & TRANG */
+        /* SIDEBAR TRÁI */
         .sidebar-left-top { grid-column: 1; grid-row: 1; padding: 10px; }
         .chapter-list { overflow-y: auto; flex-grow: 1; }
         .chapter-item {
@@ -39,7 +39,6 @@
             border: 3px solid #000;
             cursor: pointer; font-weight: bold; text-align: center; text-transform: uppercase;
         }
-        .chapter-item:hover { background: #e0e0e0; }
         .chapter-item.active { background: #000; color: #fff; }
         
         .sidebar-left-bottom { 
@@ -48,31 +47,20 @@
             font-weight: 900; font-size: 1.1rem; 
         }
 
-        /* GIỮA: KHU VỰC ĐỌC */
+        /* KHU VỰC ĐỌC CHÍNH */
         .main-reader { 
             grid-column: 2; grid-row: 1 / span 2; 
             overflow-y: auto; 
-            background-color: #333;
+            background-color: #222; /* Tối hơn một chút để tập trung vào nội dung */
             scroll-snap-type: y mandatory;
-            position: relative;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .main-reader::after {
-            content: "";
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url("paper-texture.png");
-            background-repeat: repeat;
-            opacity: 0.1;
-            pointer-events: none;
-            z-index: 10;
-        }
+        /* ĐÃ LOẠI BỎ LỚP PHỦ PATTERN THEO YÊU CẦU */
 
         #gallery { 
             display: grid; grid-template-columns: 1fr 1fr; width: 100%; 
             row-gap: 20vh; padding-bottom: 100px;
-            position: relative;
-            z-index: 1;
         }
         
         .img-container { display: flex; width: 100%; height: 95vh; align-items: center; scroll-snap-align: center; }
@@ -83,7 +71,7 @@
         .img-container img.loaded { opacity: 1; }
         .empty-slot { width: 100%; height: 95vh; }
 
-        /* BÊN PHẢI */
+        /* SIDEBAR PHẢI */
         .sidebar-right-top { grid-column: 3; grid-row: 1; }
         .cover-box { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 10px; }
         .cover-box img { max-width: 100%; border: 3px solid #000; }
@@ -96,28 +84,33 @@
 
         .sidebar-right-bottom { grid-column: 3; grid-row: 2; padding: 15px; display: flex; align-items: center; }
         #page-search { 
-            width: 100%; padding: 12px; 
-            border: 4px solid #000; 
-            background-color: var(--chapter-bg);
-            text-align: center; font-weight: bold; font-size: 1rem;
-            outline: none;
+            width: 100%; padding: 12px; border: 4px solid #000; 
+            background-color: var(--chapter-bg); text-align: center; font-weight: bold;
         }
 
         #sentinel { height: 50px; width: 100%; grid-column: span 2; }
 
+        /* TỐI ƯU MOBILE */
         @media (max-width: 768px) {
             .app-container { display: flex; flex-direction: column; padding: 0; gap: 0; }
             .sidebar-left-top {
-                position: fixed; top: 0; left: 0; width: 100%; height: 100px;
+                position: fixed; top: 0; left: 0; width: 100%; height: 60px;
                 z-index: 100; display: flex; overflow-x: auto; padding: 5px;
-                border-bottom: 4px solid #000; background: var(--main-bg);
+                border-bottom: 3px solid #000; background: #fff;
             }
-            .chapter-list { display: flex; flex-direction: row; gap: 10px; }
-            .chapter-item { flex: 0 0 auto; min-width: max-content; padding: 10px 14px; }
+            .sidebar-left-top > div:first-child { display: none; } /* Ẩn chữ "Danh mục" để tiết kiệm chỗ */
+            .chapter-list { display: flex; flex-direction: row; gap: 8px; }
+            .chapter-item { flex: 0 0 auto; padding: 8px 12px; margin-bottom: 0; font-size: 0.8rem; border-width: 2px; }
+            
             .sidebar-left-bottom, .sidebar-right-top, .sidebar-right-bottom { display: none; }
-            .main-reader { margin-top: 100px; height: calc(100vh - 100px); }
+            
+            .main-reader { margin-top: 60px; height: calc(100vh - 60px); scroll-snap-type: none; }
             #gallery { display: block; padding: 0; }
-            .img-container { height: auto; justify-content: center !important; }
+            .img-container { 
+                height: auto; min-height: 200px; 
+                margin-bottom: 10px; justify-content: center !important; 
+                scroll-snap-align: none;
+            }
             .img-container img { width: 100%; height: auto; max-height: none; }
         }
     </style>
@@ -159,7 +152,7 @@
     let currentChapter = 1;
     let currentIndex = 1;
     let isEnded = false;
-    let isFirstLoad = true; // Biến đánh dấu lần load đầu tiên của chương
+    let isFirstLoad = true;
     let visiblePages = new Set();
 
     const gallery = document.getElementById('gallery');
@@ -186,7 +179,7 @@
         currentChapter = idx;
         currentIndex = 1;
         isEnded = false;
-        isFirstLoad = true; // Reset trạng thái khi sang chương mới
+        isFirstLoad = true;
         visiblePages.clear();
         
         document.querySelectorAll('.chapter-item').forEach(b => b.classList.remove('active'));
@@ -194,10 +187,11 @@
         
         gallery.innerHTML = '<div class="empty-slot"></div>';
         coverImg.src = `Chap${idx}/0${IMAGE_EXT}`;
-        coverImg.onerror = () => coverImg.src = "";
-
+        
         scrollArea.scrollTop = 0;
-        loadNextBatch();
+        
+        // Kỹ thuật "Double Load" cho đợt đầu để ưu tiên hiển thị ngay lập tức
+        loadNextBatch(); 
     }
 
     function attemptLoadImage(imgElement, chapter, index, zeroCount = 0) {
@@ -206,7 +200,7 @@
         imgElement.src = `Chap${chapter}/${fileName}${IMAGE_EXT}`;
 
         imgElement.onerror = () => {
-            if (zeroCount < 2) { // Thử các định dạng 01, 001
+            if (zeroCount < 2) {
                 attemptLoadImage(imgElement, chapter, index, zeroCount + 1);
             } else {
                 imgElement.closest('.img-container')?.remove();
@@ -220,10 +214,14 @@
         container.className = 'img-container';
         container.dataset.page = index;
         container.id = `cp-${currentChapter}-${index}`;
+        
         const img = new Image();
-        img.loading = "lazy";
+        // Lần load đầu tiên không dùng lazy để ưu tiên tốc độ tải tối đa
+        if (!isFirstLoad) img.loading = "lazy"; 
+        
         attemptLoadImage(img, currentChapter, index);
         img.onload = () => img.classList.add('loaded');
+        
         container.appendChild(img);
         pageObserver.observe(container);
         return container;
@@ -232,16 +230,18 @@
     function loadNextBatch() {
         if (isEnded) return;
 
-        // Quyết định số lượng ảnh cần load
-        const amountToLoad = isFirstLoad ? 11 : 10;
+        // Quy tắc: Load lần đầu 11 ảnh, các lần sau 10 ảnh
+        const amount = isFirstLoad ? 11 : 10;
         
-        for (let i = 0; i < amountToLoad; i++) {
+        // Sử dụng DocumentFragment để giảm thiểu layout thrashing trên mobile
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < amount; i++) {
             if (isEnded) break;
-            gallery.appendChild(createImgContainer(currentIndex));
+            fragment.appendChild(createImgContainer(currentIndex));
             currentIndex++;
         }
+        gallery.appendChild(fragment);
 
-        // Sau lần load đầu tiên, chuyển flag về false
         isFirstLoad = false;
     }
 
@@ -253,14 +253,13 @@
         if (visiblePages.size > 0) {
             pageIndicator.textContent = Array.from(visiblePages).sort((a,b)=>a-b).join(' - ');
         }
-    }, { threshold: 0.2, root: scrollArea });
+    }, { threshold: 0.1, root: scrollArea });
 
     const scrollObserver = new IntersectionObserver((entries) => {
-        // Nếu sentinel xuất hiện và không phải đang ở trạng thái kết thúc truyện
         if (entries[0].isIntersecting && !isEnded) {
             loadNextBatch();
         }
-    }, { root: scrollArea, rootMargin: '800px' });
+    }, { root: scrollArea, rootMargin: '1200px' }); // Tăng margin để load sớm hơn khi cuộn
 
     scrollObserver.observe(document.getElementById('sentinel'));
 
@@ -269,16 +268,16 @@
             const targetPage = parseInt(pageSearch.value);
             if (targetPage > 0) {
                 let safetyCounter = 0;
-                while (targetPage >= currentIndex && !isEnded && safetyCounter < 100) {
+                while (targetPage >= currentIndex && !isEnded && safetyCounter < 150) {
                     loadNextBatch();
                     safetyCounter++;
                 }
                 setTimeout(() => {
                     const targetElement = document.getElementById(`cp-${currentChapter}-${targetPage}`);
                     if (targetElement) {
-                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     }
-                }, 100);
+                }, 150);
             }
             pageSearch.value = "";
             pageSearch.blur();
