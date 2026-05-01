@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vuot</title>
+    <style>
+        :root { 
+            --border-width: 4px; 
+            --main-bg: #f5f5f5; 
+            --chapter-bg: #eeeeee;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #1a1a1a; font-family: sans-serif; height: 100vh; overflow: hidden; }
+
+        .app-container {
+            display: grid;
+            grid-template-columns: 250px 1fr 250px;
+            grid-template-rows: 1fr 80px;
+            height: 100vh; gap: 12px; padding: 12px; background-color: #1a1a1a;
+        }
+
+        .panel { 
+            background-color: var(--main-bg); 
+            border: var(--border-width) solid #000; 
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            position: relative;
+        }
+
+        /* BÊN TRÁI: CHƯƠNG & TRANG */
+        .sidebar-left-top { grid-column: 1; grid-row: 1; padding: 10px; }
+        .chapter-list { overflow-y: auto; flex-grow: 1; }
+        .chapter-item {
+            width: 100%; padding: 12px; margin-bottom: 8px; 
+            background: var(--chapter-bg); 
+            border: 3px solid #000;
+            cursor: pointer; font-weight: bold; text-align: center; text-transform: uppercase;
+        }
+        .chapter-item:hover { background: #e0e0e0; }
+        .chapter-item.active { background: #000; color: #fff; }
+        
+        .sidebar-left-bottom { 
+            grid-column: 1; grid-row: 2; 
+            justify-content: center; align-items: center; 
+            font-weight: 900; font-size: 1.1rem; 
+        }
+
+        /* GIỮA: KHU VỰC ĐỌC */
+        .main-reader { 
+            grid-column: 2; grid-row: 1 / span 2; 
+            overflow-y: auto; 
+            background-color: #333;
+            scroll-snap-type: y mandatory;
+            position: relative; /* Để lớp pattern phủ lên trên */
+        }
+
+        /* LỚP PHỦ PATTERN SEAMLESS */
+        .main-reader::after {
+            content: "";
+            position: fixed; /* Giữ pattern cố định khi cuộn truyện */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("paper-texture.png");
+            background-repeat: repeat;
+            opacity: 0.1;
+            pointer-events: none; /* Quan trọng: để vẫn cuộn được chuột bên dưới */
+            z-index: 10;
+        }
+
+        #gallery { 
+            display: grid; grid-template-columns: 1fr 1fr; width: 100%; 
+            row-gap: 20vh; padding-bottom: 100px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .img-container { display: flex; width: 100%; height: 95vh; align-items: center; scroll-snap-align: center; }
+        .img-container:nth-child(odd) { justify-content: flex-end; } 
+        .img-container:nth-child(even) { justify-content: flex-start; }
+        
+        .img-container img { max-width: 100%; max-height: 90vh; opacity: 0; transition: opacity 0.3s; border: none; }
+        .img-container img.loaded { opacity: 1; }
+        .empty-slot { width: 100%; height: 95vh; }
+
+        /* BÊN PHẢI: BÌA, QC, TÌM KIẾM */
+        .sidebar-right-top { grid-column: 3; grid-row: 1; }
+        .cover-box { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 10px; }
+        .cover-box img { max-width: 100%; border: 3px solid #000; }
+        
+        .ad-area { 
+            height: 120px; border-top: 4px solid #000; 
+            display: flex; align-items: center; justify-content: center; 
+            background: #e0e0e0; font-weight: bold; 
+        }
+
+        .sidebar-right-bottom { grid-column: 3; grid-row: 2; padding: 15px; display: flex; align-items: center; }
+        #page-search { 
+            width: 100%; padding: 12px; 
+            border: 4px solid #000; 
+            background-color: var(--chapter-bg);
+            text-align: center; font-weight: bold; font-size: 1rem;
+            outline: none;
+        }
+        #page-search:focus { background-color: #ffffff; }
+
+        #sentinel { height: 50px; width: 100%; grid-column: span 2; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="panel sidebar-left-top">
+        <div style="text-align:center; font-weight:bold; margin-bottom:10px; border-bottom:2px solid #000; padding-bottom:5px">DANH MỤC</div>
+        <div class="chapter-list" id="chapter-list-ui"></div>
+    </div>
+    
+    <div class="panel sidebar-left-bottom">
+        TRANG: <span id="page-indicator">-</span>
+    </div>
+
+    <div class="panel main-reader" id="reader-scroll-area">
+        <div id="gallery"></div>
+        <div id="sentinel"></div>
+    </div>
+
+    <div class="panel sidebar-right-top">
+        <div style="text-align:center; font-weight:bold; padding:5px; border-bottom:4px solid #000">BÌA CHƯƠNG</div>
+        <div class="cover-box">
+            <img id="chapter-cover" src="" alt=" ">
+        </div>
+        <div class="ad-area">QUẢNG CÁO</div>
+    </div>
+
+    <div class="panel sidebar-right-bottom">
+        <input type="number" id="page-search" placeholder="NHẬP SỐ TRANG..." min="1">
+    </div>
+</div>
+
+<script>
+    const TOTAL_CHAPTERS = 1; 
+    const IMAGE_EXT = ".jpg";
+
+    let currentChapter = 1;
+    let currentIndex = 1;
+    let isEnded = false;
+    let visiblePages = new Set();
+
+    const gallery = document.getElementById('gallery');
+    const chapterListUI = document.getElementById('chapter-list-ui');
+    const coverImg = document.getElementById('chapter-cover');
+    const pageIndicator = document.getElementById('page-indicator');
+    const scrollArea = document.getElementById('reader-scroll-area');
+    const pageSearch = document.getElementById('page-search');
+
+    function initChapters() {
+        for (let i = 1; i <= TOTAL_CHAPTERS; i++) {
+            const btn = document.createElement('div');
+            btn.className = 'chapter-item';
+            btn.textContent = `Chương ${i}`;
+            btn.id = `btn-chap-${i}`;
+            btn.onclick = () => loadChapter(i);
+            chapterListUI.appendChild(btn);
+        }
+        loadChapter(1);
+    }
+
+    function loadChapter(idx) {
+        currentChapter = idx;
+        currentIndex = 1;
+        isEnded = false;
+        visiblePages.clear();
+        
+        document.querySelectorAll('.chapter-item').forEach(b => b.classList.remove('active'));
+        document.getElementById(`btn-chap-${idx}`)?.classList.add('active');
+        
+        gallery.innerHTML = '<div class="empty-slot"></div>';
+        coverImg.src = `Chap${idx}/0${IMAGE_EXT}`;
+        coverImg.onerror = () => coverImg.src = "";
+
+        scrollArea.scrollTop = 0;
+        loadNextBatch();
+    }
+
+    function attemptLoadImage(imgElement, chapter, index, zeroCount = 0) {
+        let fileName = String(index);
+        if (zeroCount > 0) fileName = fileName.padStart(zeroCount + 1, '0');
+        imgElement.src = `Chap${chapter}/${fileName}${IMAGE_EXT}`;
+
+        imgElement.onerror = () => {
+            if (zeroCount < 3) {
+                attemptLoadImage(imgElement, chapter, index, zeroCount + 1);
+            } else {
+                imgElement.closest('.img-container')?.remove();
+                isEnded = true;
+            }
+        };
+    }
+
+    function createImgContainer(index) {
+        const container = document.createElement('div');
+        container.className = 'img-container';
+        container.dataset.page = index;
+        container.id = `cp-${currentChapter}-${index}`;
+        const img = new Image();
+        img.loading = "lazy";
+        attemptLoadImage(img, currentChapter, index);
+        img.onload = () => img.classList.add('loaded');
+        container.appendChild(img);
+        pageObserver.observe(container);
+        return container;
+    }
+
+    function loadNextBatch() {
+        if (isEnded) return;
+        for (let i = 0; i < 6; i++) {
+            if (isEnded) break;
+            gallery.appendChild(createImgContainer(currentIndex));
+            currentIndex++;
+        }
+    }
+
+    const pageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) visiblePages.add(entry.target.dataset.page);
+            else visiblePages.delete(entry.target.dataset.page);
+        });
+        if (visiblePages.size > 0) {
+            pageIndicator.textContent = Array.from(visiblePages).sort((a,b)=>a-b).join(' - ');
+        }
+    }, { threshold: 0.5, root: scrollArea });
+
+    const scrollObserver = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting) loadNextBatch();
+    }, { root: scrollArea, rootMargin: '1200px' });
+
+    scrollObserver.observe(document.getElementById('sentinel'));
+
+    pageSearch.onkeypress = (e) => {
+        if (e.key === 'Enter') {
+            const targetPage = parseInt(pageSearch.value);
+            if (targetPage > 0) {
+                let safetyCounter = 0;
+                while (targetPage >= currentIndex && !isEnded && safetyCounter < 150) {
+                    loadNextBatch();
+                    safetyCounter++;
+                }
+                const targetElement = document.getElementById(`cp-${currentChapter}-${targetPage}`);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+            pageSearch.value = "";
+            pageSearch.blur();
+        }
+    };
+
+    initChapters();
+</script>
+</body>
+</html>
