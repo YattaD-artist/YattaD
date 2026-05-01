@@ -54,7 +54,7 @@
             position: relative;
         }
 
-        /* TEXTURE: Chỉ hiển thị trên màn hình lớn (Máy tính) */
+        /* TEXTURE: CHỈ HIỆN TRÊN MÁY TÍNH (MÀN HÌNH > 768PX) */
         @media (min-width: 769px) {
             .main-reader::after {
                 content: "";
@@ -79,20 +79,17 @@
         
         .img-container img { max-width: 100%; max-height: 90vh; opacity: 0; transition: opacity 0.3s; border: none; }
         .img-container img.loaded { opacity: 1; }
-        .empty-slot { width: 100%; height: 95vh; }
 
         /* SIDEBAR PHẢI */
         .sidebar-right-top { grid-column: 3; grid-row: 1; }
         .cover-box { flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 10px; }
         .cover-box img { max-width: 100%; border: 3px solid #000; }
-        .ad-area { height: 120px; border-top: 4px solid #000; display: flex; align-items: center; justify-content: center; background: #e0e0e0; font-weight: bold; }
-
         .sidebar-right-bottom { grid-column: 3; grid-row: 2; padding: 15px; display: flex; align-items: center; }
         #page-search { width: 100%; padding: 12px; border: 4px solid #000; background-color: var(--chapter-bg); text-align: center; font-weight: bold; }
 
         #sentinel { height: 50px; width: 100%; grid-column: span 2; }
 
-        /* TỐI ƯU MOBILE */
+        /* TỐI ƯU MOBILE (MÀN HÌNH <= 768PX) - ẨN TEXTURE TẠI ĐÂY */
         @media (max-width: 768px) {
             .app-container { display: flex; flex-direction: column; padding: 0; gap: 0; }
             .sidebar-left-top {
@@ -105,6 +102,9 @@
             .chapter-item { flex: 0 0 auto; padding: 8px 12px; margin-bottom: 0; font-size: 0.8rem; border-width: 2px; }
             .sidebar-left-bottom, .sidebar-right-top, .sidebar-right-bottom { display: none; }
             .main-reader { margin-top: 60px; height: calc(100vh - 60px); scroll-snap-type: none; }
+            /* Vô hiệu hóa texture bằng CSS trên mobile */
+            .main-reader::after { display: none !important; } 
+
             #gallery { display: block; padding: 0; }
             .img-container { height: auto; margin-bottom: 15px; justify-content: center !important; scroll-snap-align: none; }
             .img-container img { width: 100%; height: auto; max-height: none; }
@@ -126,7 +126,6 @@
     <div class="panel sidebar-right-top">
         <div style="text-align:center; font-weight:bold; padding:5px; border-bottom:4px solid #000">BÌA CHƯƠNG</div>
         <div class="cover-box"><img id="chapter-cover" src="" alt=" "></div>
-        <div class="ad-area">Chúc Bạn Đọc Truyện Vui Vẻ!</div>
     </div>
     <div class="panel sidebar-right-bottom"><input type="number" id="page-search" placeholder="NHẬP SỐ TRANG..." min="1"></div>
 </div>
@@ -134,7 +133,6 @@
 <script>
     const TOTAL_CHAPTERS = 1;
     const IMAGE_EXT = ".jpg";
-
     let currentChapter = 1;
     let currentIndex = 1;
     let isEnded = false;
@@ -167,22 +165,18 @@
         isEnded = false;
         isFirstLoad = true;
         visiblePages.clear();
-        
         document.querySelectorAll('.chapter-item').forEach(b => b.classList.remove('active'));
         document.getElementById(`btn-chap-${idx}`)?.classList.add('active');
-        
-        gallery.innerHTML = '<div class="empty-slot"></div>';
+        gallery.innerHTML = '<div style="height: 95vh; width: 100%;"></div>';
         coverImg.src = `Chap${idx}/0${IMAGE_EXT}`;
-        
         scrollArea.scrollTop = 0;
-        loadNextBatch(); // Load đợt đầu tiên (11 ảnh)
+        loadNextBatch();
     }
 
     function attemptLoadImage(imgElement, chapter, index, zeroCount = 0) {
         let fileName = String(index);
         if (zeroCount > 0) fileName = fileName.padStart(zeroCount + 1, '0');
         imgElement.src = `Chap${chapter}/${fileName}${IMAGE_EXT}`;
-
         imgElement.onerror = () => {
             if (zeroCount < 2) {
                 attemptLoadImage(imgElement, chapter, index, zeroCount + 1);
@@ -193,19 +187,15 @@
         };
     }
 
-    function createImgContainer(index, priorityLoad = false) {
+    function createImgContainer(index, priority) {
         const container = document.createElement('div');
         container.className = 'img-container';
         container.dataset.page = index;
         container.id = `cp-${currentChapter}-${index}`;
-        
         const img = new Image();
-        // Lần đầu tiên load 11 ảnh sẽ không dùng lazy để ưu tiên hiển thị ngay
-        if (!priorityLoad) img.loading = "lazy"; 
-        
+        if (!priority) img.loading = "lazy";
         attemptLoadImage(img, currentChapter, index);
         img.onload = () => img.classList.add('loaded');
-        
         container.appendChild(img);
         pageObserver.observe(container);
         return container;
@@ -213,13 +203,10 @@
 
     function loadNextBatch() {
         if (isEnded) return;
-
-        const amount = isFirstLoad ? 11 : 10;
+        const amount = isFirstLoad ? 11 : 10; // Đợt đầu 11, sau 10
         const fragment = document.createDocumentFragment();
-        
         for (let i = 0; i < amount; i++) {
             if (isEnded) break;
-            // Truyền tham số priorityLoad = true nếu là lần đầu
             fragment.appendChild(createImgContainer(currentIndex, isFirstLoad));
             currentIndex++;
         }
@@ -238,9 +225,7 @@
     }, { threshold: 0.1, root: scrollArea });
 
     const scrollObserver = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && !isEnded) {
-            loadNextBatch();
-        }
+        if (entries[0].isIntersecting && !isEnded) loadNextBatch();
     }, { root: scrollArea, rootMargin: '1000px' });
 
     scrollObserver.observe(document.getElementById('sentinel'));
