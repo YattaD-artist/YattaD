@@ -4,162 +4,188 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>YattaD - Truyện Tranh</title>
+
 <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 <style>
 * { box-sizing: border-box; }
-html, body { max-width: 100%; overflow-x: hidden; }
 body {
-    margin: 0; font-family: 'Saira', sans-serif;
-    background-color: var(--bg); color: var(--text);
-    --bg: #ede9eb; --text: #1a2129; --accent: #e32630;
-    transition: background-color 0.3s, color 0.3s;
+    margin: 0;
+    font-family: 'Saira', sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+
+    --bg: #ede9eb;
+    --text: #1a2129;
+    --accent: #e32630;
 }
-body.dark { --bg: #1b1b1b; --text: #f5f5f5; --accent: #1cd9cf; }
 
-header { display:flex; justify-content:space-between; align-items:center; padding:12px 24px; border-bottom:1px solid #ccc; background-color:var(--bg); position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
-.center-title { flex:1; text-align:center; font-weight:800; font-size:2.5rem; color:var(--accent); }
-.left,.right { display:flex; align-items:center; gap:16px; }
-.icon-btn { background:none; text-decoration: none !important; border:none; cursor:pointer; font-size:1.3rem; color:var(--text); width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; transition: transform 0.25s, color 0.25s, background-color 0.25s; }
-.icon-btn:hover { transform: scale(1.15); color:var(--accent); background-color: rgba(0,0,0,0.05); }
+body.dark {
+    --bg: #1b1b1b;
+    --text: #f5f5f5;
+    --accent: #1cd9cf;
+}
 
-main { display:flex; flex-direction:column; gap:24px; padding:30px; }
-.info { width:100%; padding:32px; background-color:var(--bg); border-radius:12px; border:1px solid rgba(0,0,0,0.1); box-shadow:0 4px 12px rgba(0,0,0,0.05); }
-.info h2 { font-size:2rem; margin-bottom:16px; font-weight:700; color:var(--accent); border-bottom:3px solid var(--accent); display:inline-block; padding-bottom:5px; }
-.info p { margin-bottom:12px; line-height:1.6; }
+header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 24px;
+    border-bottom:1px solid #ccc;
+    position:sticky;
+    top:0;
+    background:var(--bg);
+}
 
-.menu { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:18px; }
-.menuItem { cursor:pointer; text-align:center; border:2px solid var(--text); border-radius:12px; padding:8px; transition: transform 0.25s, box-shadow 0.25s; }
-.menuItem img { width:100%; border-radius:8px; margin-bottom:6px; }
-.menuItem:hover { transform:translateY(-3px); box-shadow:0 6px 12px rgba(0,0,0,0.15); border-color:var(--accent); }
+.center-title {
+    flex:1;
+    text-align:center;
+    font-weight:800;
+    font-size:2rem;
+    color:var(--accent);
+}
 
-#overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); justify-content:center; align-items:center; z-index:9999; flex-direction:column; }
-#deck { position:relative; width:min(96vw,1200px); height:min(92vh,1000px); display:flex; align-items:center; justify-content:center; gap:20px; overflow:visible; }
-#deck img { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.7); transition:transform 0.6s, opacity:0.9 ; cursor:pointer; border-radius:10px; box-shadow:0 20px 40px rgba(0,0,0,0.5); max-width:100%; max-height:100%; z-index:0; opacity:0; }
-#deck img.active { transform:translate(-50%,-50%) scale(1); z-index:10; opacity:1; }
-#deck img.left { transform:translateX(-150%) translateY(-50%) scale(0.6) rotateZ(-10deg); z-index:5; } 
-#deck img.right { transform:translateX(50%) translateY(-50%) scale(0.6) rotateZ(10deg); z-index:5; }
-#deck img.left, #deck img.right {opacity: 1; filter: brightness(0.7) contrast(0.8);
+.icon-btn {
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-size:1.2rem;
+    color:var(--text);
+}
 
+main {
+    padding:30px;
+}
 
-@media(max-width:768px){ main{padding:10px; gap:12px;} .info{padding:16px;} .menu{grid-template-columns:repeat(auto-fit,minmax(100px,1fr)); gap:10px;} .menuItem img{margin-bottom:4px;} }
+.menu {
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:20px;
+}
 
+.menuItem {
+    text-decoration:none;
+    color:inherit;
+    border:2px solid var(--text);
+    border-radius:12px;
+    padding:10px;
+    text-align:center;
+    transition:0.25s;
+}
+
+.menuItem img {
+    width:100%;
+    border-radius:8px;
+}
+
+.menuItem:hover {
+    transform:translateY(-4px);
+    border-color:var(--accent);
+    box-shadow:0 6px 12px rgba(0,0,0,0.15);
+}
+
+@media(max-width:768px){
+    main{padding:15px;}
+}
 </style>
 </head>
+
 <body>
+
 <header>
-    <div class="left"><a href="index.html" class="icon-btn" title="Trang chủ"><i class="fas fa-home"></i></a></div>
+    <div></div>
     <div class="center-title" id="title">YattaD</div>
-    <div class="right">
-        <button class="icon-btn" id="theme-toggle" title="Đổi chế độ"><i class="fas fa-adjust"></i></button>
-        <button class="icon-btn" id="lang-toggle" title="Đổi ngôn ngữ"><i class="fa-solid fa-language"></i></button>
+    <div>
+        <button class="icon-btn" id="theme-toggle"><i class="fas fa-adjust"></i></button>
+        <button class="icon-btn" id="lang-toggle"><i class="fa-solid fa-language"></i></button>
     </div>
 </header>
 
 <main>
-<div class="info">
-<h2 id="introTitle">Lời Nói Đầu</h2>
-<p id="introP1">Chào mừng bạn đến với trang đọc truyện tranh của tôi! Tại đây bạn có thể khám phá các bộ truyện độc đáo và hấp dẫn.</p>
-<p id="introP2">Mỗi câu chuyện đều được lựa chọn kỹ lưỡng, hy vọng bạn sẽ tìm thấy những khoảnh khắc thú vị và cảm xúc khi thưởng thức.</p>
-</div>
 <div class="menu">
-<div id="menu1" class="menuItem" data-folder="PunkgaMerch"><img src="comics/PunkgaMerch/00.webp"><p>PunkgaMerch</p></div>
-<div id="menu2" class="menuItem" data-folder="Red&Ruby"><img src="comics/Red&Ruby/00.webp"><p>Red & Ruby</p></div>
-<div id="menu3" class="menuItem" data-folder="TieuTung"><img src="comics/TieuTung/00.webp"><p>Tiêu Tùng</p></div>
-<div id="menu4" class="menuItem" data-folder="Siin"><img src="comics/Siin/00.webp"><p>Sao Băng Mùa Hạ</p></div>
-<div id="menu5" class="menuItem" data-folder="BreakthRough"><img src="comics/BreakthRough/00.webp"><p>Khai Phá</p></div>
-<div id="menu6" class="menuItem" data-folder="StillComeTrue"><img src="comics/StillComeTrue/00.webp"><p>Vẫn Đúng</p></div>
-<div id="menu7" class="menuItem" data-folder="LeThan"><img src="comics/LeThan/00.webp"><p>Lê Thận</p></div>
-<div id="menu8" class="menuItem" data-folder="Raku"><img src="comics/Raku/00.webp"><p>Raku</p></div>
+
+<a class="menuItem" href="Thi.html" target="_blank">
+    <img src="placeholder.jpg">
+    <p id="menu1">Bộ truyện ngắn dự thi PunkgaMe</p>
+</a>
+
+<a class="menuItem" href="PunkgaMerch.html" target="_blank">
+    <img src="placeholder.jpg">
+    <p id="menu2">Bộ Áo mới của nhà vua</p>
+</a>
+
+<a class="menuItem" href="Vuot.html" target="_blank">
+    <img src="placeholder.jpg">
+    <p id="menu3">Vượt</p>
+</a>
+
+<a class="menuItem" href="StillComeTrue.html" target="_blank">
+    <img src="placeholder.jpg">
+    <p id="menu4">Vẫn đúng</p>
+</a>
+
+<a class="menuItem" href="Red&Ruby.html" target="_blank">
+    <img src="placeholder.jpg">
+    <p id="menu5">Red và Ruby</p>
+</a>
+
+<a class="menuItem" href="ThuanThien.html" target="_blank">
+    <img src="placeholder.jpg">
+    <p id="menu6">Thuận Thiên</p>
+</a>
+
 </div>
 </main>
 
-<div id="overlay">
-<div id="deck"></div>
-<div id="caption" style="color:#fff;margin-top:12px;font-size:1.1rem;text-align:center;"></div>
-<button id="closeBtn" style="position:absolute;top:20px;right:20px;font-size:1.5rem;background:none;color:#fff;border:none;cursor:pointer;">✖</button>
-<button id="restartBtn" style="position:absolute;bottom:20px;right:20px;font-size:1rem;display:none;padding:6px 12px;cursor:pointer;">Restart</button>
-</div>
-
 <script>
-const storyPages={PunkgaMerch:14,"Red&Ruby":10,TieuTung:8,Siin:5,BreakthRough:11,StillComeTrue:16,LeThan:4,Raku:7};
-const storyFolders={PunkgaMerch:"PunkgaMerch","Red&Ruby":"Red&Ruby",TieuTung:"TieuTung",Siin:"Siin",BreakthRough:"BreakthRough",StillComeTrue:"StillComeTrue",LeThan:"LeThan",Raku:"Raku"};
-let currentStory="", currentIndex=0, totalPages=0, slides=[];
-
 // Theme
 const themeBtn=document.getElementById('theme-toggle');
-themeBtn.addEventListener('click',()=>{document.body.classList.toggle('dark'); localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');});
+themeBtn.onclick=()=>{
+    document.body.classList.toggle('dark');
+    localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');
+};
 if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark');
 
 // Language
-const langBtn=document.getElementById('lang-toggle'); let currentLang=localStorage.getItem('lang')||'vi';
-const translations={vi:{title:"YattaD",introTitle:"Lời Nói Đầu",introP1:"Chào mừng bạn đến với trang đọc truyện tranh của tôi! Tại đây bạn có thể khám phá các bộ truyện độc đáo và hấp dẫn.",introP2:"Mỗi câu chuyện đều được lựa chọn kỹ lưỡng, hy vọng bạn sẽ tìm thấy những khoảnh khắc thú vị và cảm xúc khi thưởng thức.",menu1:"PunkgaMerch",menu2:"Red và Ruby",menu3:"Tiêu Tùng",menu4:"Sao Băng Mùa Hạ",menu5:"Khai Phá",menu6:"Vẫn Đúng",menu7:"Lê Thận",menu8:"Raku",page:"Trang"},en:{title:"YattaD",introTitle:"Introduction",introP1:"Welcome to my comic reading page! Here you can explore unique and exciting stories.",introP2:"Each story is carefully selected, hope you will find interesting moments and emotions while enjoying.",menu1:"PunkgaMerch",menu2:"Red & Ruby",menu3:"Tieu Tung",menu4:"Summer Shooting Star",menu5:"Break thRough",menu6:"Still Come True",menu7:"Le Than",menu8:"Raku",page:"Page"}};
-function switchLanguage(){currentLang=currentLang==='vi'?'en':'vi'; localStorage.setItem('lang',currentLang); for(const key in translations[currentLang]){ const el=document.getElementById(key); if(el){ if(key.startsWith('menu')){ const p=el.querySelector('p'); if(p) p.textContent=translations[currentLang][key]; } else el.innerHTML=translations[currentLang][key]; } } }
-langBtn.addEventListener('click',switchLanguage); document.addEventListener('DOMContentLoaded',()=>{if(currentLang==='en') switchLanguage();});
+const langBtn=document.getElementById('lang-toggle');
+let currentLang=localStorage.getItem('lang')||'vi';
 
-// Preload
-function preloadFirstPageImages(){for(const story in storyFolders){let img=new Image(); img.src=`comics/${storyFolders[story]}/00.webp`;}} document.addEventListener('DOMContentLoaded',preloadFirstPageImages);
+const translations={
+vi:{
+title:"YattaD",
+menu1:"Bộ truyện ngắn dự thi PunkgaMe",
+menu2:"Bộ Áo mới của nhà vua",
+menu3:"Vượt",
+menu4:"Vẫn đúng",
+menu5:"Red và Ruby",
+menu6:"Thuận Thiên"
+},
+en:{
+title:"YattaD",
+menu1:"PunkgaMe Short Stories",
+menu2:"The Emperor's New Clothes",
+menu3:"Overcome",
+menu4:"Still True",
+menu5:"Red & Ruby",
+menu6:"Thuan Thien"
+}
+};
 
-// Overlay
-const overlayEl=document.getElementById('overlay'); const deck=document.getElementById('deck'); const caption=document.getElementById('caption');
-const closeBtn=document.getElementById('closeBtn'); const restartBtn=document.getElementById('restartBtn');
+function switchLanguage(){
+    currentLang=currentLang==='vi'?'en':'vi';
+    localStorage.setItem('lang',currentLang);
 
-function openStory(storyName){
-    currentStory=storyName; totalPages=storyPages[storyName]; currentIndex=0;
-    deck.innerHTML=''; slides=[];
-    for(let i=0;i<totalPages;i++){
-        const img=document.createElement('img'); 
-        img.src=`comics/${storyFolders[storyName]}/${String(i+1).padStart(2,'0')}.webp`;
-        img.alt=`Trang ${i+1}`; 
-        deck.appendChild(img); 
-        slides.push(img);
-        img.addEventListener('click',()=>{ 
-            if(i<currentIndex) prevSlide();
-            else nextSlide();
-        });
+    for(const key in translations[currentLang]){
+        const el=document.getElementById(key);
+        if(el) el.textContent=translations[currentLang][key];
     }
-    overlayEl.style.display='flex'; updateSlides();
 }
 
-function updateSlides(){
-    slides.forEach((img,i)=>{
-        img.classList.remove('left','active','right'); img.style.opacity=0;
-        if(i===currentIndex-1){img.classList.add('left'); img.style.opacity=0.6;}
-        else if(i===currentIndex){img.classList.add('active'); img.style.opacity=1;}
-        else if(i===currentIndex+1){img.classList.add('right'); img.style.opacity=0.6;}
-        else{img.style.opacity=0;}
-    });
-    caption.innerText=`${translations[currentLang].page} ${currentIndex+1} / ${totalPages}`;
-    restartBtn.style.display=(currentIndex===totalPages-1)?'block':'none';
-}
+langBtn.onclick=switchLanguage;
 
-function nextSlide(){if(currentIndex<totalPages-1){currentIndex++; updateSlides();}}
-function prevSlide(){if(currentIndex>0){currentIndex--; updateSlides();}}
-function restart(){currentIndex=0; updateSlides();}
-restartBtn.addEventListener('click',restart);
-closeBtn.addEventListener('click',()=>overlayEl.style.display='none');
-
-// Keyboard
-document.addEventListener('keydown',e=>{
-    if(overlayEl.style.display==='flex'){
-        if(e.key==='ArrowRight') nextSlide();
-        if(e.key==='ArrowLeft') prevSlide();
-        if(e.key==='Escape') overlayEl.style.display='none';
-    }
-});
-
-// Swipe
-let touchStartX=0;
-deck.addEventListener('touchstart',e=>touchStartX=e.changedTouches[0].screenX);
-deck.addEventListener('touchend',e=>{
-    let touchEndX=e.changedTouches[0].screenX;
-    const distance=touchEndX-touchStartX;
-    if(Math.abs(distance)<50) return;
-    if(distance>0) prevSlide(); else nextSlide();
-});
-
-// Menu click
-document.querySelectorAll('.menuItem').forEach(item=>{item.addEventListener('click',()=>openStory(item.getAttribute('data-folder')));});
+if(currentLang==='en') switchLanguage();
 </script>
+
 </body>
 </html>
