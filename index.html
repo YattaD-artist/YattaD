@@ -212,21 +212,19 @@
       font-weight: 600;
     }
 
-    /* Mascot */
+    /* ----- MASCOT: loại bỏ khung bao, tối ưu không gian ----- */
     .mascot-box {
       text-align: center;
-      border: 2px solid var(--border-color);
-      padding: 24px 16px;
-      background: rgba(0,0,0,0.01);
-    }
-    body.dark .mascot-box {
-      background: rgba(255,255,255,0.02);
+      border: none;                 /* loại bỏ khung viền */
+      padding: 0;                  /* loại bỏ padding để ảnh sát mép */
+      background: transparent;     /* nền trong suốt */
+      margin: 0;
     }
     
     .mascot-box img {
       max-width: 100%;
       height: auto;
-      max-height: 300px;
+      max-height: 350px;           /* tăng chiều cao tối đa để hiển thị rõ hơn */
       display: block;
       margin: 0 auto;
       border: none;
@@ -248,7 +246,7 @@
       color: var(--accent);
     }
 
-    /* ========== MENU + DROPDOWN ========== */
+    /* MENU + DROPDOWN (giữ nguyên từ lần trước) */
     .menu {
       flex: 0.8;
       display: flex;
@@ -259,7 +257,6 @@
       align-self: flex-start;
     }
 
-    /* Nút dropdown (giống menu a) */
     .dropdown {
       position: relative;
     }
@@ -288,8 +285,6 @@
       box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
       transform: translate(1px, 1px);
     }
-
-    /* Submenu */
     .dropdown-content {
       display: none;
       position: absolute;
@@ -327,7 +322,6 @@
       display: flex;
     }
 
-    /* Các menu thường (không dropdown) */
     .menu a:not(.dropdown-btn) {
       display: block;
       text-align: center;
@@ -351,7 +345,7 @@
       transform: translate(1px, 1px);
     }
 
-    /* ========== MODAL ========== */
+    /* MODAL */
     .modal {
       display: none;
       position: fixed;
@@ -427,7 +421,7 @@
       border: 4px solid white;
     }
 
-    /* ----- MOBILE: menu fixed bottom, dropdown mở LÊN trên ----- */
+    /* MOBILE */
     @media (max-width: 768px) {
       header {
         padding: 8px 16px;
@@ -455,7 +449,7 @@
         margin-bottom: 24px;
       }
       .mascot-box img {
-        max-height: 200px;
+        max-height: 250px;
       }
       .menu {
         position: fixed;
@@ -490,7 +484,6 @@
         box-shadow: none;
         border: 1.5px solid var(--border-color);
       }
-      /* Trên mobile, submenu mở LÊN trên */
       .dropdown-content {
         top: auto;
         bottom: 100%;
@@ -501,10 +494,6 @@
         left: 0;
         right: auto;
       }
-      /* Đảm bảo submenu không bị tràn màn hình */
-      .dropdown {
-        position: relative;
-      }
     }
     @media (max-width: 480px) {
       .menu a, .dropdown-btn {
@@ -514,6 +503,9 @@
       .dropdown-content a {
         font-size: 0.7rem;
         padding: 8px 8px;
+      }
+      .mascot-box img {
+        max-height: 200px;
       }
     }
   </style>
@@ -658,7 +650,6 @@
         document.querySelectorAll("[data-lang]").forEach(el => {
           const key = el.getAttribute("data-lang");
           if (translations[currentLang] && translations[currentLang][key] !== undefined) {
-            // Nếu là dropdown-btn thì cần giữ icon
             if (el.classList && el.classList.contains('dropdown-btn')) {
               const span = document.createElement('span');
               span.innerHTML = translations[currentLang][key];
@@ -737,7 +728,6 @@
         e.stopPropagation();
         dropdown.classList.toggle("show");
         if (dropdown.classList.contains("show")) {
-          // Thêm listener đóng khi click ra ngoài
           setTimeout(() => {
             document.addEventListener("click", closeDropdown);
           }, 0);
@@ -746,7 +736,6 @@
         }
       });
       
-      // Đóng dropdown khi click vào một link bên trong (tuỳ chọn)
       const subLinks = dropdown.querySelectorAll(".dropdown-content a");
       subLinks.forEach(link => {
         link.addEventListener("click", () => {
@@ -755,7 +744,6 @@
         });
       });
       
-      // Xử lý link external (tạm thời alert)
       const externalLink = document.getElementById("external-link");
       if (externalLink) {
         externalLink.addEventListener("click", (e) => {
