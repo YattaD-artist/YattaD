@@ -1,0 +1,1641 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio Vẽ Tranh Chuyên Nghiệp</title>
+    <style>
+        :root {
+            --bg: #1e1e2e;
+            --panel: #252536;
+            --border: #3a3a52;
+            --text: #cdd6f4;
+            --text-secondary: #a6adc8;
+            --accent: #89b4fa;
+            --accent-hover: #b4d0fb;
+            --danger: #f38ba8;
+            --success: #a6e3a1;
+            --warning: #fab387;
+            --btn-bg: #313244;
+            --btn-hover: #45475a;
+            --input-bg: #1e1e2e;
+            --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+            --radius: 10px;
+            --radius-sm: 6px;
+            --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: #11111b;
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* === TOP BAR === */
+        #topBar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 16px;
+            background: var(--panel);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            flex-wrap: wrap;
+            min-height: 48px;
+        }
+        #topBar .logo {
+            font-weight: 700;
+            font-size: 1.1em;
+            letter-spacing: -0.5px;
+            color: var(--accent);
+            margin-right: 8px;
+            white-space: nowrap;
+        }
+        #topBar .setting-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--btn-bg);
+            padding: 4px 10px;
+            border-radius: var(--radius-sm);
+        }
+        #topBar label {
+            font-size: 0.75em;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            font-weight: 500;
+        }
+        #topBar input[type="number"] {
+            width: 64px;
+            padding: 5px 8px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            color: var(--text);
+            font-size: 0.85em;
+            text-align: center;
+            transition: var(--transition);
+        }
+        #topBar input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(137, 180, 250, 0.1);
+        }
+        #topBar button {
+            padding: 7px 14px;
+            background: var(--accent);
+            color: #1e1e2e;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.82em;
+            transition: var(--transition);
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+        }
+        #topBar button:hover {
+            background: var(--accent-hover);
+            transform: translateY(-1px);
+        }
+        #topBar button.secondary {
+            background: var(--btn-bg);
+            color: var(--text);
+        }
+        #topBar button.secondary:hover {
+            background: var(--btn-hover);
+        }
+        #topBar button.danger {
+            background: var(--danger);
+            color: #1e1e2e;
+        }
+
+        /* === MAIN LAYOUT === */
+        #mainLayout {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* === LEFT PANEL - TOOLS === */
+        #leftPanel {
+            width: 64px;
+            background: var(--panel);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 0;
+            gap: 4px;
+            z-index: 90;
+            overflow-y: auto;
+        }
+        #leftPanel .tool-btn {
+            width: 46px;
+            height: 46px;
+            border-radius: var(--radius-sm);
+            background: transparent;
+            border: 2px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4em;
+            transition: var(--transition);
+            position: relative;
+            color: var(--text-secondary);
+        }
+        #leftPanel .tool-btn:hover {
+            background: var(--btn-hover);
+            color: var(--text);
+        }
+        #leftPanel .tool-btn.active {
+            background: var(--btn-bg);
+            border-color: var(--accent);
+            color: var(--accent);
+            box-shadow: 0 0 12px rgba(137, 180, 250, 0.25);
+        }
+        #leftPanel .tool-btn .tooltip {
+            position: absolute;
+            left: 58px;
+            background: #000;
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.7em;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 200;
+            font-weight: 500;
+        }
+        #leftPanel .tool-btn:hover .tooltip {
+            opacity: 1;
+        }
+        #leftPanel .divider {
+            width: 36px;
+            height: 1px;
+            background: var(--border);
+            margin: 6px 0;
+        }
+
+        /* === RIGHT PANEL === */
+        #rightPanel {
+            width: 240px;
+            background: var(--panel);
+            border-left: 1px solid var(--border);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            z-index: 90;
+            overflow-y: auto;
+        }
+        #rightPanel h4 {
+            font-size: 0.75em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-secondary);
+            margin-bottom: -4px;
+            font-weight: 600;
+        }
+        #rightPanel .param-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        #rightPanel label {
+            font-size: 0.7em;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        #rightPanel input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--border);
+            outline: none;
+            cursor: pointer;
+        }
+        #rightPanel input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent);
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+        #rightPanel .value-display {
+            font-size: 0.7em;
+            color: var(--accent);
+            text-align: right;
+            font-weight: 600;
+        }
+        #rightPanel input[type="color"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 36px;
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--border);
+            cursor: pointer;
+            background: transparent;
+            padding: 2px;
+        }
+        #rightPanel input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 0;
+        }
+        #rightPanel input[type="color"]::-webkit-color-swatch {
+            border-radius: 4px;
+            border: none;
+        }
+        #rightPanel .preset-colors {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        #rightPanel .preset-color {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: var(--transition);
+        }
+        #rightPanel .preset-color:hover {
+            border-color: #fff;
+            transform: scale(1.15);
+        }
+        #rightPanel .preset-color.active {
+            border-color: #fff;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        /* === CANVAS AREA === */
+        #canvasContainer {
+            flex: 1;
+            position: relative;
+            overflow: auto;
+            background: #1a1a24;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: crosshair;
+            padding: 20px;
+        }
+        #canvasWrapper {
+            position: relative;
+            box-shadow: var(--shadow);
+            border-radius: 2px;
+            flex-shrink: 0;
+        }
+        canvas {
+            display: block;
+            border-radius: 2px;
+        }
+        #mainCanvas {
+            background: #ffffff;
+            position: relative;
+            z-index: 1;
+        }
+        #overlayCanvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            pointer-events: none;
+            background: transparent;
+        }
+        #canvasContainer.ruler-interactive #overlayCanvas {
+            pointer-events: auto;
+        }
+        #canvasContainer.selection-mode {
+            cursor: crosshair;
+        }
+        #canvasContainer.knife-mode {
+            cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='4' fill='none' stroke='%23f38ba8' stroke-width='2.5'/%3E%3Cline x1='12' y1='8' x2='12' y2='2' stroke='%23f38ba8' stroke-width='2'/%3E%3C/svg%3E") 12 12, crosshair;
+        }
+
+        /* === RULER CONTROLS === */
+        #rulerBar {
+            display: flex;
+            gap: 8px;
+            padding: 6px 12px;
+            background: var(--panel);
+            border-top: 1px solid var(--border);
+            align-items: center;
+            flex-wrap: wrap;
+            min-height: 40px;
+            z-index: 100;
+        }
+        #rulerBar .ruler-btn {
+            padding: 5px 12px;
+            border-radius: var(--radius-sm);
+            background: var(--btn-bg);
+            border: 2px solid transparent;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 0.78em;
+            transition: var(--transition);
+            white-space: nowrap;
+            font-weight: 500;
+        }
+        #rulerBar .ruler-btn:hover {
+            background: var(--btn-hover);
+        }
+        #rulerBar .ruler-btn.active {
+            border-color: var(--warning);
+            background: #3d3520;
+            color: var(--warning);
+        }
+        #rulerBar .ruler-btn.knife-active {
+            border-color: var(--danger);
+            background: #3d2028;
+            color: var(--danger);
+        }
+        #rulerBar span {
+            font-size: 0.7em;
+            color: var(--text-secondary);
+            margin: 0 4px;
+        }
+        #rulerBar input[type="range"] {
+            width: 80px;
+            height: 4px;
+            cursor: pointer;
+        }
+
+        /* === TOAST === */
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000;
+            color: #fff;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            font-weight: 500;
+        }
+        #toast.show {
+            opacity: 0.9;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            #rightPanel {
+                width: 180px;
+                padding: 8px;
+                gap: 8px;
+            }
+            #leftPanel {
+                width: 48px;
+            }
+            #leftPanel .tool-btn {
+                width: 36px;
+                height: 36px;
+                font-size: 1.1em;
+            }
+            #topBar {
+                padding: 6px 8px;
+                gap: 6px;
+            }
+            #topBar input[type="number"] {
+                width: 48px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TOP BAR -->
+    <div id="topBar">
+        <span class="logo">🎨 Studio Vẽ</span>
+        <div class="setting-group">
+            <label>Rộng (px)</label>
+            <input type="number" id="canvasWidth" value="1200" min="200" max="6000" step="50">
+        </div>
+        <div class="setting-group">
+            <label>Cao (px)</label>
+            <input type="number" id="canvasHeight" value="800" min="200" max="6000" step="50">
+        </div>
+        <div class="setting-group">
+            <label>DPI</label>
+            <input type="number" id="canvasDPI" value="96" min="72" max="600" step="1">
+        </div>
+        <button id="btnNewCanvas" title="Tạo trang giấy mới">📄 Tạo Trang Mới</button>
+        <button class="secondary" id="btnUndo" title="Hoàn tác (Ctrl+Z)">↩ Undo</button>
+        <button class="secondary" id="btnClear" title="Xóa toàn bộ">🗑 Clear</button>
+        <button class="secondary" id="btnExport" title="Xuất ảnh PNG">💾 Xuất PNG</button>
+    </div>
+
+    <!-- MAIN LAYOUT -->
+    <div id="mainLayout">
+        <!-- LEFT PANEL - TOOLS -->
+        <div id="leftPanel">
+            <button class="tool-btn active" data-tool="pen" title="Bút mực">
+                ✒️<span class="tooltip">Bút mực</span>
+            </button>
+            <button class="tool-btn" data-tool="marker" title="Bút dạ">
+                🖍️<span class="tooltip">Bút dạ</span>
+            </button>
+            <button class="tool-btn" data-tool="pencil" title="Bút chì">
+                ✏️<span class="tooltip">Bút chì</span>
+            </button>
+            <button class="tool-btn" data-tool="brush" title="Bút lông">
+                🖌️<span class="tooltip">Bút lông</span>
+            </button>
+            <button class="tool-btn" data-tool="spray" title="Phun sơn">
+                🌫️<span class="tooltip">Phun sơn</span>
+            </button>
+            <button class="tool-btn" data-tool="eraser" title="Tẩy">
+                🧹<span class="tooltip">Tẩy</span>
+            </button>
+            <div class="divider"></div>
+            <button class="tool-btn" data-tool="picker" title="Hút màu">
+                💉<span class="tooltip">Hút màu</span>
+            </button>
+        </div>
+
+        <!-- CANVAS AREA -->
+        <div id="canvasContainer">
+            <div id="canvasWrapper">
+                <canvas id="mainCanvas"></canvas>
+                <canvas id="overlayCanvas"></canvas>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div id="rightPanel">
+            <h4>🖌️ Cài đặt bút</h4>
+            <div class="param-group">
+                <label>Kích thước: <span class="value-display" id="sizeVal">5 px</span></label>
+                <input type="range" id="brushSize" min="0.5" max="120" value="5" step="0.5">
+            </div>
+            <div class="param-group">
+                <label>Độ mờ (Opacity): <span class="value-display" id="opacityVal">100%</span></label>
+                <input type="range" id="brushOpacity" min="1" max="100" value="100" step="1">
+            </div>
+            <div class="param-group">
+                <label>Áp lực nhấn (mô phỏng): <span class="value-display" id="pressureVal">Tự động</span></label>
+                <input type="range" id="pressureSensitivity" min="0" max="100" value="70" step="1">
+            </div>
+            <h4>🎨 Màu sắc</h4>
+            <input type="color" id="colorPicker" value="#1e1e2e">
+            <div class="preset-colors" id="presetColors">
+                <span class="preset-color active" data-color="#1e1e2e" style="background:#1e1e2e;color:#1e1e2e;"></span>
+                <span class="preset-color" data-color="#d20f39" style="background:#d20f39;color:#d20f39;"></span>
+                <span class="preset-color" data-color="#fe640b" style="background:#fe640b;color:#fe640b;"></span>
+                <span class="preset-color" data-color="#df8e1d" style="background:#df8e1d;color:#df8e1d;"></span>
+                <span class="preset-color" data-color="#40a02b" style="background:#40a02b;color:#40a02b;"></span>
+                <span class="preset-color" data-color="#04a5e5" style="background:#04a5e5;color:#04a5e5;"></span>
+                <span class="preset-color" data-color="#1e66f5" style="background:#1e66f5;color:#1e66f5;"></span>
+                <span class="preset-color" data-color="#8839ef" style="background:#8839ef;color:#8839ef;"></span>
+                <span class="preset-color" data-color="#ffffff" style="background:#ffffff;color:#ffffff;"></span>
+                <span class="preset-color" data-color="#000000" style="background:#000000;color:#000000;"></span>
+            </div>
+            <h4>📐 Thông tin</h4>
+            <div style="font-size:0.7em;color:var(--text-secondary);line-height:1.5;" id="infoBox">
+                Chọn công cụ và bắt đầu vẽ.<br>Dùng thước để vẽ chính xác.
+            </div>
+        </div>
+    </div>
+
+    <!-- RULER BAR -->
+    <div id="rulerBar">
+        <span>📐 Thước:</span>
+        <button class="ruler-btn" data-ruler="none">❌ Tắt</button>
+        <button class="ruler-btn" data-ruler="straight">📏 Thẳng</button>
+        <button class="ruler-btn" data-ruler="circle">⭕ Tròn</button>
+        <button class="ruler-btn" data-ruler="perspective">🎯 Phối cảnh</button>
+        <span style="margin-left:12px;">🔪</span>
+        <button class="ruler-btn" data-ruler="selection" id="btnSelection">✂️ Vùng chọn</button>
+        <button class="ruler-btn danger-btn" id="btnClearSelection" style="background:#3d2028;color:#f38ba8;">🗑 Xóa trong vùng</button>
+        <span id="rulerInfo" style="margin-left:8px;font-size:0.7em;color:var(--text-secondary);"></span>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast"></div>
+
+    <script>
+        (function() {
+            // ==================== DOM ELEMENTS ====================
+            const mainCanvas = document.getElementById('mainCanvas');
+            const mainCtx = mainCanvas.getContext('2d');
+            const overlayCanvas = document.getElementById('overlayCanvas');
+            const overlayCtx = overlayCanvas.getContext('2d');
+            const canvasContainer = document.getElementById('canvasContainer');
+            const canvasWrapper = document.getElementById('canvasWrapper');
+            const toast = document.getElementById('toast');
+            const infoBox = document.getElementById('infoBox');
+            const rulerInfo = document.getElementById('rulerInfo');
+
+            // Inputs
+            const inputWidth = document.getElementById('canvasWidth');
+            const inputHeight = document.getElementById('canvasHeight');
+            const inputDPI = document.getElementById('canvasDPI');
+            const brushSizeSlider = document.getElementById('brushSize');
+            const brushOpacitySlider = document.getElementById('brushOpacity');
+            const pressureSensitivitySlider = document.getElementById('pressureSensitivity');
+            const colorPicker = document.getElementById('colorPicker');
+            const sizeValDisplay = document.getElementById('sizeVal');
+            const opacityValDisplay = document.getElementById('opacityVal');
+            const pressureValDisplay = document.getElementById('pressureVal');
+
+            // ==================== STATE ====================
+            let displayWidth = parseInt(inputWidth.value) || 1200;
+            let displayHeight = parseInt(inputHeight.value) || 800;
+            let dpi = parseInt(inputDPI.value) || 96;
+            let internalWidth, internalHeight, scaleFactor;
+
+            let currentTool = 'pen';
+            let brushSize = parseFloat(brushSizeSlider.value);
+            let brushOpacity = parseInt(brushOpacitySlider.value) / 100;
+            let pressureSensitivity = parseInt(pressureSensitivitySlider.value) / 100;
+            let currentColor = colorPicker.value;
+            let currentRuler = 'none'; // 'none' | 'straight' | 'circle' | 'perspective' | 'selection'
+
+            // Ruler data
+            let rulerData = {
+                straight: { x1: 0, y1: 0, x2: 0, y2: 0, angle: 0, active: false, placed: false },
+                circle: { cx: 0, cy: 0, radius: 150, active: false, placed: false },
+                perspective: { vx: 0, vy: 0, active: false, placed: false, lines: [] },
+                selection: { path: null, points: [], active: false, closed: false, maskCanvas: null,
+                maskCtx: null },
+            };
+
+            // Drawing state
+            let isDrawing = false;
+            let lastX = 0;
+            let lastY = 0;
+            let currentStrokePoints = [];
+            let undoHistory = [];
+            let maxUndo = 30;
+            let lastPressure = 0.5;
+            let lastTimestamp = 0;
+            let lastSpeed = 0;
+
+            // Selection mask offscreen canvas
+            let selectionMaskCanvas = null;
+            let selectionMaskCtx = null;
+
+            // ==================== FUNCTIONS ====================
+            function calculateDimensions() {
+                scaleFactor = dpi / 96;
+                internalWidth = Math.round(displayWidth * scaleFactor);
+                internalHeight = Math.round(displayHeight * scaleFactor);
+            }
+
+            function setupCanvases() {
+                calculateDimensions();
+                mainCanvas.width = internalWidth;
+                mainCanvas.height = internalHeight;
+                mainCanvas.style.width = displayWidth + 'px';
+                mainCanvas.style.height = displayHeight + 'px';
+
+                overlayCanvas.width = internalWidth;
+                overlayCanvas.height = internalHeight;
+                overlayCanvas.style.width = displayWidth + 'px';
+                overlayCanvas.style.height = displayHeight + 'px';
+
+                mainCtx.fillStyle = '#ffffff';
+                mainCtx.fillRect(0, 0, internalWidth, internalHeight);
+                mainCtx.setTransform(1, 0, 0, 1, 0, 0);
+                mainCtx.scale(scaleFactor, scaleFactor);
+
+                overlayCtx.setTransform(1, 0, 0, 1, 0, 0);
+                overlayCtx.scale(scaleFactor, scaleFactor);
+
+                clearOverlay();
+                undoHistory = [];
+                saveUndoState();
+            }
+
+            function clearOverlay() {
+                overlayCtx.save();
+                overlayCtx.setTransform(1, 0, 0, 1, 0, 0);
+                overlayCtx.clearRect(0, 0, internalWidth, internalHeight);
+                overlayCtx.restore();
+            }
+
+            function saveUndoState() {
+                const dataUrl = mainCanvas.toDataURL('image/png');
+                undoHistory.push(dataUrl);
+                if (undoHistory.length > maxUndo) {
+                    undoHistory.shift();
+                }
+            }
+
+            function undo() {
+                if (undoHistory.length <= 1) {
+                    showToast('Không còn bước để hoàn tác');
+                    return;
+                }
+                undoHistory.pop();
+                const previousState = undoHistory[undoHistory.length - 1];
+                const img = new Image();
+                img.onload = () => {
+                    mainCtx.setTransform(1, 0, 0, 1, 0, 0);
+                    mainCtx.clearRect(0, 0, internalWidth, internalHeight);
+                    mainCtx.drawImage(img, 0, 0);
+                    mainCtx.setTransform(1, 0, 0, 1, 0, 0);
+                    mainCtx.scale(scaleFactor, scaleFactor);
+                };
+                img.src = previousState;
+                showToast('↩ Đã hoàn tác');
+            }
+
+            function clearCanvas() {
+                mainCtx.setTransform(1, 0, 0, 1, 0, 0);
+                mainCtx.fillStyle = '#ffffff';
+                mainCtx.fillRect(0, 0, internalWidth, internalHeight);
+                mainCtx.setTransform(1, 0, 0, 1, 0, 0);
+                mainCtx.scale(scaleFactor, scaleFactor);
+                saveUndoState();
+                clearSelectionMask();
+                showToast('🗑 Đã xóa toàn bộ');
+            }
+
+            function exportPNG() {
+                const link = document.createElement('a');
+                link.download = `ve-tranh-${displayWidth}x${displayHeight}-${dpi}dpi.png`;
+                link.href = mainCanvas.toDataURL('image/png');
+                link.click();
+                showToast('💾 Đã xuất ảnh PNG');
+            }
+
+            function showToast(msg) {
+                toast.textContent = msg;
+                toast.classList.add('show');
+                clearTimeout(toast._timeout);
+                toast._timeout = setTimeout(() => toast.classList.remove('show'), 1800);
+            }
+
+            function updateInfoBox() {
+                let toolNames = {
+                    pen: 'Bút mực - Nét mượt, chính xác',
+                    marker: 'Bút dạ - Nét đậm, mềm',
+                    pencil: 'Bút chì - Texture hạt',
+                    brush: 'Bút lông - Nét uyển chuyển',
+                    spray: 'Phun sơn - Hiệu ứng phun',
+                    eraser: 'Tẩy - Xóa nét vẽ',
+                    picker: 'Hút màu - Lấy màu từ canvas',
+                };
+                infoBox.innerHTML =
+                    `Công cụ: <b>${toolNames[currentTool] || currentTool}</b><br>Kích thước: ${brushSize}px | Độ mờ: ${Math.round(brushOpacity*100)}%<br>Thước: ${currentRuler === 'none' ? 'Không' : currentRuler}`;
+            }
+
+            // ==================== BRUSH ENGINES ====================
+            function getAdjustedSize(baseSize, pressure) {
+                const p = Math.max(0.1, Math.min(1, pressure));
+                const minRatio = 0.25;
+                const ratio = minRatio + (1 - minRatio) * p;
+                return baseSize * ratio;
+            }
+
+            function getAdjustedOpacity(baseOpacity, pressure) {
+                const p = Math.max(0.1, Math.min(1, pressure));
+                const minRatio = 0.2;
+                return baseOpacity * (minRatio + (1 - minRatio) * p);
+            }
+
+            function drawPenStroke(ctx, x, y, size, opacity, color) {
+                ctx.globalAlpha = opacity;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = size;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+            }
+
+            function drawMarkerStroke(ctx, x, y, size, opacity, color) {
+                ctx.globalAlpha = opacity * 0.85;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = size;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.stroke();
+                // Thêm lớp trong đậm hơn
+                ctx.globalAlpha = opacity * 0.5;
+                ctx.strokeStyle = color;
+                ctx.lineWidth = size * 0.55;
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+            }
+
+            function drawPencilStroke(ctx, x, y, size, opacity, color) {
+                const numDots = Math.floor(size * 4);
+                ctx.fillStyle = color;
+                for (let i = 0; i < numDots; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = Math.random() * size * 0.7;
+                    const dx = Math.cos(angle) * dist;
+                    const dy = Math.sin(angle) * dist;
+                    const dotSize = Math.random() * size * 0.35 + 0.3;
+                    ctx.globalAlpha = opacity * (0.3 + Math.random() * 0.7);
+                    ctx.beginPath();
+                    ctx.arc(x + dx, y + dy, dotSize, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+            }
+
+            function drawBrushStroke(ctx, x, y, size, opacity, color) {
+                const layers = 5;
+                for (let i = layers; i >= 0; i--) {
+                    const layerSize = size * (0.4 + (i / layers) * 0.6);
+                    const layerOpacity = opacity * (0.15 + (i / layers) * 0.35);
+                    ctx.globalAlpha = layerOpacity;
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.arc(x, y, layerSize, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+            }
+
+            function drawSprayStroke(ctx, x, y, size, opacity, color) {
+                const density = Math.floor(size * 1.8);
+                ctx.fillStyle = color;
+                for (let i = 0; i < density; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = Math.random() * size;
+                    const dx = Math.cos(angle) * dist;
+                    const dy = Math.sin(angle) * dist;
+                    const dotSize = Math.random() * 1.8 + 0.3;
+                    ctx.globalAlpha = opacity * (0.4 + Math.random() * 0.6);
+                    ctx.beginPath();
+                    ctx.arc(x + dx, y + dy, dotSize, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.globalAlpha = 1;
+            }
+
+            function drawEraserStroke(ctx, x, y, size, opacity) {
+                ctx.save();
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.globalAlpha = opacity;
+                ctx.fillStyle = '#000000';
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            function getStrokePointsBetween(x1, y1, x2, y2, step = 1) {
+                const points = [];
+                const dx = x2 - x1;
+                const dy = y2 - y1;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const steps = Math.max(1, Math.floor(dist / step));
+                for (let i = 0; i <= steps; i++) {
+                    const t = i / steps;
+                    points.push({ x: x1 + dx * t, y: y1 + dy * t });
+                }
+                return points;
+            }
+
+            // ==================== RULER SNAP ====================
+            function snapToStraightRuler(x, y) {
+                const r = rulerData.straight;
+                if (!r.placed) return { x, y, snapped: false };
+                const dx = r.x2 - r.x1;
+                const dy = r.y2 - r.y1;
+                const len2 = dx * dx + dy * dy;
+                if (len2 === 0) return { x: r.x1, y: r.y1, snapped: true };
+                let t = ((x - r.x1) * dx + (y - r.y1) * dy) / len2;
+                t = Math.max(-0.5, Math.min(1.5, t));
+                return {
+                    x: r.x1 + t * dx,
+                    y: r.y1 + t * dy,
+                    snapped: true,
+                };
+            }
+
+            function snapToCircleRuler(x, y) {
+                const r = rulerData.circle;
+                if (!r.placed) return { x, y, snapped: false };
+                const dx = x - r.cx;
+                const dy = y - r.cy;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < 0.001) return { x: r.cx + r.radius, y: r.cy, snapped: true };
+                const nx = dx / dist;
+                const ny = dy / dist;
+                return {
+                    x: r.cx + nx * r.radius,
+                    y: r.cy + ny * r.radius,
+                    snapped: true,
+                };
+            }
+
+            function snapToPerspectiveRuler(x, y) {
+                const r = rulerData.perspective;
+                if (!r.placed || r.lines.length === 0) return { x, y, snapped: false };
+                let bestDist = Infinity;
+                let bestPoint = { x, y };
+                for (const line of r.lines) {
+                    const dx = line.ex - line.sx;
+                    const dy = line.ey - line.sy;
+                    const len2 = dx * dx + dy * dy;
+                    if (len2 < 0.001) continue;
+                    let t = ((x - line.sx) * dx + (y - line.sy) * dy) / len2;
+                    t = Math.max(0, Math.min(1, t));
+                    const px = line.sx + t * dx;
+                    const py = line.sy + t * dy;
+                    const dist = Math.hypot(x - px, y - py);
+                    if (dist < bestDist && dist < 30) {
+                        bestDist = dist;
+                        bestPoint = { x: px, y: py, snapped: true };
+                    }
+                }
+                if (bestDist < 30) return bestPoint;
+                return { x, y, snapped: false };
+            }
+
+            function snapPoint(x, y) {
+                switch (currentRuler) {
+                    case 'straight':
+                        return snapToStraightRuler(x, y);
+                    case 'circle':
+                        return snapToCircleRuler(x, y);
+                    case 'perspective':
+                        return snapToPerspectiveRuler(x, y);
+                    default:
+                        return { x, y, snapped: false };
+                }
+            }
+
+            function isInSelection(x, y) {
+                if (!selectionMaskCtx || !selectionMaskCanvas) return true;
+                if (!rulerData.selection.closed) return true;
+                try {
+                    const sx = Math.round(x * scaleFactor);
+                    const sy = Math.round(y * scaleFactor);
+                    if (sx < 0 || sy < 0 || sx >= internalWidth || sy >= internalHeight) return false;
+                    const pixel = selectionMaskCtx.getImageData(sx, sy, 1, 1).data;
+                    return pixel[3] > 20;
+                } catch (e) {
+                    return true;
+                }
+            }
+
+            // ==================== SELECTION MASK ====================
+            function createSelectionMask() {
+                const points = rulerData.selection.points;
+                if (points.length < 3) return;
+                selectionMaskCanvas = document.createElement('canvas');
+                selectionMaskCanvas.width = internalWidth;
+                selectionMaskCanvas.height = internalHeight;
+                selectionMaskCtx = selectionMaskCanvas.getContext('2d');
+                selectionMaskCtx.fillStyle = '#ffffff';
+                selectionMaskCtx.beginPath();
+                selectionMaskCtx.moveTo(points[0].x * scaleFactor, points[0].y * scaleFactor);
+                for (let i = 1; i < points.length; i++) {
+                    selectionMaskCtx.lineTo(points[i].x * scaleFactor, points[i].y * scaleFactor);
+                }
+                selectionMaskCtx.closePath();
+                selectionMaskCtx.fill();
+                rulerData.selection.closed = true;
+                rulerData.selection.maskCanvas = selectionMaskCanvas;
+                rulerData.selection.maskCtx = selectionMaskCtx;
+                drawSelectionOnOverlay();
+            }
+
+            function clearSelectionMask() {
+                selectionMaskCanvas = null;
+                selectionMaskCtx = null;
+                rulerData.selection.points = [];
+                rulerData.selection.closed = false;
+                rulerData.selection.path = null;
+                rulerData.selection.maskCanvas = null;
+                rulerData.selection.maskCtx = null;
+                rulerData.selection.active = false;
+                clearOverlay();
+                if (currentRuler === 'selection') {
+                    currentRuler = 'none';
+                    updateRulerButtons();
+                }
+            }
+
+            function clearInsideSelection() {
+                if (!selectionMaskCtx || !selectionMaskCanvas || !rulerData.selection.closed) {
+                    showToast('⚠️ Hãy tạo vùng chọn trước (vẽ đường khép kín)');
+                    return;
+                }
+                mainCtx.save();
+                mainCtx.setTransform(1, 0, 0, 1, 0, 0);
+                mainCtx.globalCompositeOperation = 'destination-out';
+                mainCtx.drawImage(selectionMaskCanvas, 0, 0);
+                mainCtx.restore();
+                mainCtx.setTransform(1, 0, 0, 1, 0, 0);
+                mainCtx.scale(scaleFactor, scaleFactor);
+                saveUndoState();
+                clearSelectionMask();
+                showToast('🗑 Đã xóa nội dung trong vùng chọn');
+            }
+
+            function drawSelectionOnOverlay() {
+                const points = rulerData.selection.points;
+                if (points.length < 2) return;
+                clearOverlay();
+                overlayCtx.save();
+                overlayCtx.strokeStyle = '#f38ba8';
+                overlayCtx.lineWidth = 2.5;
+                overlayCtx.setLineDash([8, 4]);
+                overlayCtx.lineCap = 'round';
+                overlayCtx.lineJoin = 'round';
+                overlayCtx.beginPath();
+                overlayCtx.moveTo(points[0].x, points[0].y);
+                for (let i = 1; i < points.length; i++) {
+                    overlayCtx.lineTo(points[i].x, points[i].y);
+                }
+                if (rulerData.selection.closed) {
+                    overlayCtx.closePath();
+                }
+                overlayCtx.stroke();
+                overlayCtx.setLineDash([]);
+                if (rulerData.selection.closed && selectionMaskCanvas) {
+                    overlayCtx.fillStyle = 'rgba(243,139,168,0.08)';
+                    overlayCtx.fill();
+                }
+                overlayCtx.restore();
+            }
+
+            // ==================== DRAW RULERS ON OVERLAY ====================
+            function drawRulersOnOverlay() {
+                clearOverlay();
+                if (currentRuler === 'selection') {
+                    drawSelectionOnOverlay();
+                    return;
+                }
+                overlayCtx.save();
+                overlayCtx.strokeStyle = '#fab387';
+                overlayCtx.lineWidth = 1.5;
+                overlayCtx.setLineDash([6, 3]);
+                overlayCtx.lineCap = 'round';
+
+                if (currentRuler === 'straight' && rulerData.straight.placed) {
+                    const r = rulerData.straight;
+                    overlayCtx.beginPath();
+                    overlayCtx.moveTo(r.x1, r.y1);
+                    overlayCtx.lineTo(r.x2, r.y2);
+                    overlayCtx.stroke();
+                    // Draw handles
+                    overlayCtx.setLineDash([]);
+                    overlayCtx.fillStyle = '#fab387';
+                    overlayCtx.beginPath();
+                    overlayCtx.arc(r.x1, r.y1, 7, 0, Math.PI * 2);
+                    overlayCtx.fill();
+                    overlayCtx.beginPath();
+                    overlayCtx.arc(r.x2, r.y2, 7, 0, Math.PI * 2);
+                    overlayCtx.fill();
+                    overlayCtx.strokeStyle = '#fff';
+                    overlayCtx.lineWidth = 2;
+                    overlayCtx.beginPath();
+                    overlayCtx.arc(r.x1, r.y1, 7, 0, Math.PI * 2);
+                    overlayCtx.stroke();
+                    overlayCtx.beginPath();
+                    overlayCtx.arc(r.x2, r.y2, 7, 0, Math.PI * 2);
+                    overlayCtx.stroke();
+                }
+
+                if (currentRuler === 'circle' && rulerData.circle.placed) {
+                    const r = rulerData.circle;
+                    overlayCtx.beginPath();
+                    overlayCtx.arc(r.cx, r.cy, r.radius, 0, Math.PI * 2);
+                    overlayCtx.stroke();
+                    overlayCtx.setLineDash([]);
+                    overlayCtx.fillStyle = '#fab387';
+                    overlayCtx.beginPath();
+                    overlayCtx.arc(r.cx, r.cy, 7, 0, Math.PI * 2);
+                    overlayCtx.fill();
+                    overlayCtx.strokeStyle = '#fff';
+                    overlayCtx.lineWidth = 2;
+                    overlayCtx.beginPath();
+                    overlayCtx.arc(r.cx, r.cy, 7, 0, Math.PI * 2);
+                    overlayCtx.stroke();
+                    // radius handle
+                    const hx = r.cx + r.radius;
+                    const hy = r.cy;
+                    overlayCtx.fillStyle = '#fab387';
+                    overlayCtx.beginPath();
+                    overlayCtx.arc(hx, hy, 6, 0, Math.PI * 2);
+                    overlayCtx.fill();
+                    overlayCtx.strokeStyle = '#fff';
+                    overlayCtx.lineWidth = 2;
+                    overlayCtx.beginPath();
+                    overlayCtx.arc(hx, hy, 6, 0, Math.PI * 2);
+                    overlayCtx.stroke();
+                }
+
+                if (currentRuler === 'perspective' && rulerData.perspective.placed) {
+                    const r = rulerData.perspective;
+                    overlayCtx.setLineDash([3, 5]);
+                    overlayCtx.strokeStyle = 'rgba(250,179,135,0.7)';
+                    overlayCtx.lineWidth = 1;
+                    for (const line of r.lines) {
+                        overlayCtx.beginPath();
+                        overlayCtx.moveTo(line.sx, line.sy);
+                        overlayCtx.lineTo(line.ex, line.ey);
+                        overlayCtx.stroke();
+                    }
+                    overlayCtx.setLineDash([]);
+                    overlayCtx.fillStyle = '#fab387';
+                    overlayCtx.beginPath();
+                    overlayCtx.arc(r.vx, r.vy, 9, 0, Math.PI * 2);
+                    overlayCtx.fill();
+                    overlayCtx.strokeStyle = '#fff';
+                    overlayCtx.lineWidth = 2.5;
+                    overlayCtx.beginPath();
+                    overlayCtx.arc(r.vx, r.vy, 9, 0, Math.PI * 2);
+                    overlayCtx.stroke();
+                }
+
+                overlayCtx.restore();
+            }
+
+            // ==================== PERSPECTIVE LINES ====================
+            function generatePerspectiveLines() {
+                const r = rulerData.perspective;
+                const lines = [];
+                const margin = 300;
+                const numLines = 24;
+                for (let i = 0; i < numLines; i++) {
+                    const angle = (i / numLines) * Math.PI * 2;
+                    const farDist = Math.max(displayWidth, displayHeight) * 2;
+                    const ex = r.vx + Math.cos(angle) * farDist;
+                    const ey = r.vy + Math.sin(angle) * farDist;
+                    const sx = r.vx + Math.cos(angle) * 3;
+                    const sy = r.vy + Math.sin(angle) * 3;
+                    lines.push({ sx, sy, ex, ey, angle });
+                }
+                r.lines = lines;
+            }
+
+            // ==================== PLACE RULER ====================
+            function placeRulerAt(x, y, isSecondPoint = false) {
+                switch (currentRuler) {
+                    case 'straight':
+                        if (!isSecondPoint) {
+                            rulerData.straight.x1 = x;
+                            rulerData.straight.y1 = y;
+                            rulerData.straight.x2 = x + 200;
+                            rulerData.straight.y2 = y;
+                            rulerData.straight.placed = true;
+                            rulerData.straight.active = true;
+                        } else {
+                            rulerData.straight.x2 = x;
+                            rulerData.straight.y2 = y;
+                            rulerData.straight.placed = true;
+                            rulerData.straight.active = true;
+                        }
+                        break;
+                    case 'circle':
+                        rulerData.circle.cx = x;
+                        rulerData.circle.cy = y;
+                        rulerData.circle.radius = 150;
+                        rulerData.circle.placed = true;
+                        rulerData.circle.active = true;
+                        break;
+                    case 'perspective':
+                        rulerData.perspective.vx = x;
+                        rulerData.perspective.vy = y;
+                        rulerData.perspective.placed = true;
+                        rulerData.perspective.active = true;
+                        generatePerspectiveLines();
+                        break;
+                }
+                drawRulersOnOverlay();
+                updateRulerInfo();
+            }
+
+            function updateRulerInfo() {
+                switch (currentRuler) {
+                    case 'straight':
+                        const r = rulerData.straight;
+                        const dx = r.x2 - r.x1;
+                        const dy = r.y2 - r.y1;
+                        const len = Math.round(Math.sqrt(dx * dx + dy * dy));
+                        const angle = Math.round(Math.atan2(dy, dx) * 180 / Math.PI);
+                        rulerInfo.textContent = `Dài: ${len}px | Góc: ${angle}°`;
+                        break;
+                    case 'circle':
+                        rulerInfo.textContent =
+                            `Tâm: (${Math.round(rulerData.circle.cx)}, ${Math.round(rulerData.circle.cy)}) | BK: ${Math.round(rulerData.circle.radius)}px`;
+                        break;
+                    case 'perspective':
+                        rulerInfo.textContent =
+                            `Tâm phối cảnh: (${Math.round(rulerData.perspective.vx)}, ${Math.round(rulerData.perspective.vy)})`;
+                        break;
+                    case 'selection':
+                        rulerInfo.textContent =
+                            `Vùng chọn: ${rulerData.selection.points.length} điểm${rulerData.selection.closed ? ' (đã đóng)' : ''}`;
+                        break;
+                    default:
+                        rulerInfo.textContent = '';
+                }
+            }
+
+            function updateRulerButtons() {
+                document.querySelectorAll('#rulerBar .ruler-btn[data-ruler]').forEach(btn => {
+                    btn.classList.remove('active', 'knife-active');
+                    if (btn.dataset.ruler === currentRuler && currentRuler !== 'selection') {
+                        btn.classList.add('active');
+                    }
+                });
+                const selBtn = document.getElementById('btnSelection');
+                if (selBtn) {
+                    selBtn.classList.toggle('active', currentRuler === 'selection');
+                }
+            }
+
+            // ==================== EVENT HANDLERS ====================
+            function getCanvasPos(e) {
+                const rect = mainCanvas.getBoundingClientRect();
+                return {
+                    x: (e.clientX - rect.left) * (displayWidth / rect.width),
+                    y: (e.clientY - rect.top) * (displayHeight / rect.height),
+                };
+            }
+
+            function getPressure(e) {
+                if (e.pressure !== undefined && e.pressure > 0 && e.pointerType === 'pen') {
+                    return e.pressure;
+                }
+                const now = performance.now();
+                const dt = now - lastTimestamp;
+                if (dt > 0 && lastTimestamp > 0) {
+                    const dx = e.clientX - lastX;
+                    const dy = e.clientY - lastY;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const speed = dist / dt;
+                    lastSpeed = speed;
+                    const maxSpeed = 3;
+                    const simulatedPressure = Math.max(0.05, Math.min(1, 1 - (speed / maxSpeed)));
+                    const sensitivity = pressureSensitivity;
+                    const blended = lastPressure * (1 - sensitivity) + simulatedPressure * sensitivity;
+                    lastPressure = blended;
+                    return blended;
+                }
+                lastTimestamp = now;
+                return lastPressure;
+            }
+
+            function onPointerDown(e) {
+                const pos = getCanvasPos(e);
+                lastX = e.clientX;
+                lastY = e.clientY;
+                lastTimestamp = performance.now();
+                lastPressure = 0.5;
+
+                // Nếu đang ở chế độ selection
+                if (currentRuler === 'selection') {
+                    rulerData.selection.points = [{ x: pos.x, y: pos.y }];
+                    rulerData.selection.closed = false;
+                    rulerData.selection.active = true;
+                    isDrawing = true;
+                    currentStrokePoints = [{ x: pos.x, y: pos.y }];
+                    clearSelectionMask();
+                    mainCanvas.setPointerCapture(e.pointerId);
+                    updateRulerInfo();
+                    return;
+                }
+
+                // Nếu có ruler active và chưa placed, place nó
+                if (currentRuler !== 'none' && currentRuler !== 'selection') {
+                    const rulerKey = currentRuler;
+                    const rd = rulerData[rulerKey];
+                    if (!rd.placed) {
+                        placeRulerAt(pos.x, pos.y);
+                        updateRulerInfo();
+                        return;
+                    }
+                    // Kiểm tra nếu click gần handle để điều chỉnh
+                    if (rulerKey === 'straight') {
+                        const d1 = Math.hypot(pos.x - rd.x1, pos.y - rd.y1);
+                        const d2 = Math.hypot(pos.x - rd.x2, pos.y - rd.y2);
+                        if (d1 < 18) { isDrawing = 'dragging_ruler_handle';
+                            currentStrokePoints = ['handle1']; } else if (d2 < 18) { isDrawing =
+                                'dragging_ruler_handle';
+                            currentStrokePoints = ['handle2']; }
+                    }
+                    if (rulerKey === 'circle') {
+                        const dc = Math.hypot(pos.x - rd.cx, pos.y - rd.cy);
+                        const dr = Math.abs(Math.hypot(pos.x - rd.cx, pos.y - rd.cy) - rd.radius);
+                        if (dc < 16) { isDrawing = 'dragging_circle_center';
+                            currentStrokePoints = ['center']; } else if (dr < 20) { isDrawing =
+                                'dragging_circle_radius';
+                            currentStrokePoints = ['radius']; }
+                    }
+                    if (rulerKey === 'perspective') {
+                        const dv = Math.hypot(pos.x - rd.vx, pos.y - rd.vy);
+                        if (dv < 18) { isDrawing = 'dragging_perspective';
+                            currentStrokePoints = ['vp']; }
+                    }
+                    if (isDrawing && typeof isDrawing === 'string') {
+                        mainCanvas.setPointerCapture(e.pointerId);
+                        return;
+                    }
+                }
+
+                // Bắt đầu vẽ
+                if (currentTool === 'picker') {
+                    pickColor(pos.x, pos.y);
+                    return;
+                }
+                isDrawing = true;
+                currentStrokePoints = [{ x: pos.x, y: pos.y }];
+                const snapped = snapPoint(pos.x, pos.y);
+                const pressure = getPressure(e);
+                const adjSize = getAdjustedSize(brushSize, pressure);
+                const adjOpacity = getAdjustedOpacity(brushOpacity, pressure);
+
+                mainCtx.save();
+                mainCtx.beginPath();
+                mainCtx.moveTo(snapped.x, snapped.y);
+
+                if (currentTool === 'eraser') {
+                    drawEraserStroke(mainCtx, snapped.x, snapped.y, adjSize, adjOpacity);
+                }
+                mainCanvas.setPointerCapture(e.pointerId);
+                updateInfoBox();
+            }
+
+            function onPointerMove(e) {
+                const pos = getCanvasPos(e);
+                const pressure = getPressure(e);
+                const adjSize = getAdjustedSize(brushSize, pressure);
+                const adjOpacity = getAdjustedOpacity(brushOpacity, pressure);
+
+                // Xử lý kéo ruler handle
+                if (isDrawing === 'dragging_ruler_handle') {
+                    const handle = currentStrokePoints[0];
+                    if (handle === 'handle1') {
+                        rulerData.straight.x1 = pos.x;
+                        rulerData.straight.y1 = pos.y;
+                    } else if (handle === 'handle2') {
+                        rulerData.straight.x2 = pos.x;
+                        rulerData.straight.y2 = pos.y;
+                    }
+                    drawRulersOnOverlay();
+                    updateRulerInfo();
+                    return;
+                }
+                if (isDrawing === 'dragging_circle_center') {
+                    rulerData.circle.cx = pos.x;
+                    rulerData.circle.cy = pos.y;
+                    drawRulersOnOverlay();
+                    updateRulerInfo();
+                    return;
+                }
+                if (isDrawing === 'dragging_circle_radius') {
+                    rulerData.circle.radius = Math.max(10, Math.hypot(pos.x - rulerData.circle.cx, pos.y - rulerData
+                        .circle.cy));
+                    drawRulersOnOverlay();
+                    updateRulerInfo();
+                    return;
+                }
+                if (isDrawing === 'dragging_perspective') {
+                    rulerData.perspective.vx = pos.x;
+                    rulerData.perspective.vy = pos.y;
+                    generatePerspectiveLines();
+                    drawRulersOnOverlay();
+                    updateRulerInfo();
+                    return;
+                }
+
+                // Selection mode
+                if (currentRuler === 'selection' && isDrawing === true) {
+                    rulerData.selection.points.push({ x: pos.x, y: pos.y });
+                    currentStrokePoints.push({ x: pos.x, y: pos.y });
+                    drawSelectionOnOverlay();
+                    updateRulerInfo();
+                    return;
+                }
+
+                // Drawing mode
+                if (isDrawing !== true) return;
+                if (currentTool === 'picker') return;
+
+                let snapped = snapPoint(pos.x, pos.y);
+                // Kiểm tra selection mask
+                if (selectionMaskCtx && rulerData.selection.closed && currentRuler !== 'selection') {
+                    if (!isInSelection(snapped.x, snapped.y)) {
+                        // Vẫn cập nhật vị trí nhưng không vẽ
+                        lastX = e.clientX;
+                        lastY = e.clientY;
+                        lastTimestamp = performance.now();
+                        currentStrokePoints.push({ x: snapped.x, y: snapped.y, skipped: true });
+                        return;
+                    }
+                }
+
+                const prevPoint = currentStrokePoints[currentStrokePoints.length - 1];
+                const prevSnapped = snapPoint(prevPoint.x, prevPoint.y);
+
+                currentStrokePoints.push({ x: snapped.x, y: snapped.y });
+                const interPoints = getStrokePointsBetween(prevSnapped.x, prevSnapped.y, snapped.x, snapped.y, 1.5);
+
+                mainCtx.save();
+                mainCtx.lineWidth = adjSize;
+                mainCtx.lineCap = 'round';
+                mainCtx.lineJoin = 'round';
+                mainCtx.strokeStyle = currentColor;
+
+                for (const pt of interPoints) {
+                    if (selectionMaskCtx && rulerData.selection.closed && currentRuler !== 'selection') {
+                        if (!isInSelection(pt.x, pt.y)) continue;
+                    }
+                    mainCtx.beginPath();
+                    mainCtx.moveTo(pt.x, pt.y);
+                    mainCtx.lineTo(pt.x + 0.01, pt.y + 0.01);
+                    switch (currentTool) {
+                        case 'pen':
+                            drawPenStroke(mainCtx, pt.x, pt.y, adjSize, adjOpacity, currentColor);
+                            break;
+                        case 'marker':
+                            drawMarkerStroke(mainCtx, pt.x, pt.y, adjSize, adjOpacity, currentColor);
+                            break;
+                        case 'pencil':
+                            drawPencilStroke(mainCtx, pt.x, pt.y, adjSize, adjOpacity, currentColor);
+                            break;
+                        case 'brush':
+                            drawBrushStroke(mainCtx, pt.x, pt.y, adjSize, adjOpacity, currentColor);
+                            break;
+                        case 'spray':
+                            drawSprayStroke(mainCtx, pt.x, pt.y, adjSize, adjOpacity, currentColor);
+                            break;
+                        case 'eraser':
+                            drawEraserStroke(mainCtx, pt.x, pt.y, adjSize, adjOpacity);
+                            break;
+                        default:
+                            drawPenStroke(mainCtx, pt.x, pt.y, adjSize, adjOpacity, currentColor);
+                    }
+                }
+                mainCtx.restore();
+
+                lastX = e.clientX;
+                lastY = e.clientY;
+                lastTimestamp = performance.now();
+            }
+
+            function onPointerUp(e) {
+                if (isDrawing === 'dragging_ruler_handle' || isDrawing === 'dragging_circle_center' ||
+                    isDrawing === 'dragging_circle_radius' || isDrawing === 'dragging_perspective') {
+                    isDrawing = false;
+                    currentStrokePoints = [];
+                    drawRulersOnOverlay();
+                    updateRulerInfo();
+                    mainCanvas.releasePointerCapture(e.pointerId);
+                    return;
+                }
+
+                if (currentRuler === 'selection' && isDrawing === true && rulerData.selection.points.length >= 3) {
+                    const first = rulerData.selection.points[0];
+                    const last = rulerData.selection.points[rulerData.selection.points.length - 1];
+                    const dist = Math.hypot(last.x - first.x, last.y - first.y);
+                    if (dist < 30) {
+                        rulerData.selection.points.push({ x: first.x, y: first.y });
+                        createSelectionMask();
+                        showToast('✅ Vùng chọn đã được tạo');
+                    } else if (rulerData.selection.points.length > 20) {
+                        createSelectionMask();
+                        showToast('✅ Vùng chọn đã được tạo (tự động đóng)');
+                    }
+                    updateRulerInfo();
+                }
+
+                if (isDrawing === true && currentTool !== 'picker' && currentRuler !== 'selection') {
+                    saveUndoState();
+                }
+
+                isDrawing = false;
+                currentStrokePoints = [];
+                if (e.pointerId !== undefined && mainCanvas.hasPointerCapture && mainCanvas.hasPointerCapture(e
+                        .pointerId)) {
+                    mainCanvas.releasePointerCapture(e.pointerId);
+                }
+                updateInfoBox();
+            }
+
+            function pickColor(x, y) {
+                try {
+                    const sx = Math.round(x * scaleFactor);
+                    const sy = Math.round(y * scaleFactor);
+                    const pixel = mainCtx.getImageData(sx, sy, 1, 1).data;
+                    if (pixel[3] > 0) {
+                        const hex = '#' + [pixel[0], pixel[1], pixel[2]].map(v => v.toString(16).padStart(2, '0'))
+                            .join('');
+                        currentColor = hex;
+                        colorPicker.value = hex;
+                        updatePresetColorActive();
+                        showToast(`💉 Đã lấy màu: ${hex}`);
+                    }
+                } catch (e) {
+                    // ignore
+                }
+            }
+
+            function updatePresetColorActive() {
+                document.querySelectorAll('#presetColors .preset-color').forEach(el => {
+                    el.classList.toggle('active', el.dataset.color.toLowerCase() === currentColor.toLowerCase());
+                });
+            }
+
+            // ==================== UI EVENT BINDINGS ====================
+            mainCanvas.addEventListener('pointerdown', onPointerDown);
+            mainCanvas.addEventListener('pointermove', onPointerMove);
+            mainCanvas.addEventListener('pointerup', onPointerUp);
+            mainCanvas.addEventListener('pointerleave', onPointerUp);
+            mainCanvas.addEventListener('pointercancel', onPointerUp);
+            mainCanvas.addEventListener('lostpointercapture', onPointerUp);
+
+            // Prevent default touch actions
+            mainCanvas.addEventListener('touchstart', e => e.preventDefault());
+            mainCanvas.addEventListener('touchmove', e => e.preventDefault());
+
+            // Tool buttons
+            document.querySelectorAll('#leftPanel .tool-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#leftPanel .tool-btn').forEach(b => b.classList
+                        .remove('active'));
+                    btn.classList.add('active');
+                    currentTool = btn.dataset.tool;
+                    if (currentTool === 'eraser') {
+                        colorPicker.value = '#ffffff';
+                        currentColor = '#ffffff';
+                    }
+                    updateInfoBox();
+                });
+            });
+
+            // Ruler buttons
+            document.querySelectorAll('#rulerBar .ruler-btn[data-ruler]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const rulerType = btn.dataset.ruler;
+                    if (rulerType === 'selection') {
+                        currentRuler = 'selection';
+                        rulerData.selection.active = true;
+                        rulerData.selection.points = [];
+                        rulerData.selection.closed = false;
+                        clearSelectionMask();
+                        clearOverlay();
+                    } else {
+                        currentRuler = rulerType;
+                        rulerData.selection.active = false;
+                        clearSelectionMask();
+                        // Reset ruler placed status
+                        if (rulerType === 'none') {
+                            Object.keys(rulerData).forEach(k => {
+                                if (rulerData[k].placed !== undefined) rulerData[k].placed =
+                                    false;
+                            });
+                        }
+                    }
+                    updateRulerButtons();
+                    drawRulersOnOverlay();
+                    updateRulerInfo();
+                    updateInfoBox();
+                });
+            });
+
+            // Clear selection button
+            document.getElementById('btnClearSelection').addEventListener('click', () => {
+                if (rulerData.selection.closed && selectionMaskCtx) {
+                    clearInsideSelection();
+                } else {
+                    clearSelectionMask();
+                    showToast('🗑 Đã hủy vùng chọn');
+                }
+            });
+
+            // Top bar buttons
+            document.getElementById('btnNewCanvas').addEventListener('click', () => {
+                displayWidth = parseInt(inputWidth.value) || 1200;
+                displayHeight = parseInt(inputHeight.value) || 800;
+                dpi = parseInt(inputDPI.value) || 96;
+                setupCanvases();
+                clearSelectionMask();
+                currentRuler = 'none';
+                updateRulerButtons();
+                Object.keys(rulerData).forEach(k => {
+                    if (rulerData[k].placed !== undefined) rulerData[k].placed = false;
+                });
+                drawRulersOnOverlay();
+                updateRulerInfo();
+                showToast(
+                    `📄 Trang mới: ${displayWidth}×${displayHeight}px @ ${dpi}DPI (thực: ${internalWidth}×${internalHeight}px)`
+                    );
+            });
+            document.getElementById('btnUndo').addEventListener('click', undo);
+            document.getElementById('btnClear').addEventListener('click', clearCanvas);
+            document.getElementById('btnExport').addEventListener('click', exportPNG);
+
+            // Right panel
+            brushSizeSlider.addEventListener('input', () => {
+                brushSize = parseFloat(brushSizeSlider.value);
+                sizeValDisplay.textContent = brushSize + ' px';
+                updateInfoBox();
+            });
+            brushOpacitySlider.addEventListener('input', () => {
+                brushOpacity = parseInt(brushOpacitySlider.value) / 100;
+                opacityValDisplay.textContent = Math.round(brushOpacity * 100) + '%';
+                updateInfoBox();
+            });
+            pressureSensitivitySlider.addEventListener('input', () => {
+                pressureSensitivity = parseInt(pressureSensitivitySlider.value) / 100;
+                pressureValDisplay.textContent = pressureSensitivity > 0.05 ? Math.round(
+                    pressureSensitivity * 100) + '%' : 'Tắt';
+            });
+            colorPicker.addEventListener('input', () => {
+                currentColor = colorPicker.value;
+                updatePresetColorActive();
+                updateInfoBox();
+            });
+
+            // Preset colors
+            document.getElementById('presetColors').addEventListener('click', (e) => {
+                const preset = e.target.closest('.preset-color');
+                if (!preset) return;
+                currentColor = preset.dataset.color;
+                colorPicker.value = currentColor;
+                updatePresetColorActive();
+                updateInfoBox();
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.key === 'z') {
+                    e.preventDefault();
+                    undo();
+                }
+                if (e.ctrlKey && e.key === 's') {
+                    e.preventDefault();
+                    exportPNG();
+                }
+                if (e.key === 'Delete' && rulerData.selection.closed) {
+                    e.preventDefault();
+                    clearInsideSelection();
+                }
+                if (e.key === 'Escape') {
+                    clearSelectionMask();
+                    currentRuler = 'none';
+                    updateRulerButtons();
+                    Object.keys(rulerData).forEach(k => {
+                        if (rulerData[k].placed !== undefined) rulerData[k].placed = false;
+                    });
+                    drawRulersOnOverlay();
+                    updateRulerInfo();
+                    updateInfoBox();
+                    showToast('🚫 Đã thoát chế độ thước/vùng chọn');
+                }
+            });
+
+            // ==================== INIT ====================
+            function init() {
+                calculateDimensions();
+                setupCanvases();
+                updateRulerButtons();
+                updateInfoBox();
+                updateRulerInfo();
+                updatePresetColorActive();
+                sizeValDisplay.textContent = brushSize + ' px';
+                opacityValDisplay.textContent = Math.round(brushOpacity * 100) + '%';
+                pressureValDisplay.textContent = Math.round(pressureSensitivity * 100) + '%';
+                showToast('✨ Sẵn sàng vẽ! Chọn công cụ và bắt đầu.');
+            }
+
+            init();
+
+            console.log('🎨 Studio Vẽ Tranh Chuyên Nghiệp đã sẵn sàng!');
+            console.log('   - Bút: mực, dạ, chì, lông, phun sơn, tẩy');
+            console.log('   - Thước: thẳng (xoay được), tròn, phối cảnh');
+            console.log('   - Dao: vùng chọn + xóa trong vùng');
+            console.log('   - Ctrl+Z: Undo | Ctrl+S: Xuất PNG | Esc: Thoát thước');
+            console.log('   - Áp lực: tự động mô phỏng từ tốc độ chuột (hỗ trợ stylus)');
+        })();
+    </script>
+</body>
+</html>
