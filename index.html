@@ -215,16 +215,16 @@
     /* ----- MASCOT: loại bỏ khung bao, tối ưu không gian ----- */
     .mascot-box {
       text-align: center;
-      border: none;                 /* loại bỏ khung viền */
-      padding: 0;                  /* loại bỏ padding để ảnh sát mép */
-      background: transparent;     /* nền trong suốt */
+      border: none;
+      padding: 0;
+      background: transparent;
       margin: 0;
     }
     
     .mascot-box img {
       max-width: 100%;
       height: auto;
-      max-height: 350px;           /* tăng chiều cao tối đa để hiển thị rõ hơn */
+      max-height: 500px;
       display: block;
       margin: 0 auto;
       border: none;
@@ -246,7 +246,7 @@
       color: var(--accent);
     }
 
-    /* MENU + DROPDOWN (giữ nguyên từ lần trước) */
+    /* ========== MENU - GIỮ NGUYÊN CƠ CHẾ DROPDOWN ========== */
     .menu {
       flex: 0.8;
       display: flex;
@@ -257,6 +257,31 @@
       align-self: flex-start;
     }
 
+    /* Nút menu thông thường */
+    .menu > a {
+      display: block;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 14px 16px;
+      background: var(--surface);
+      color: var(--text);
+      border: 2px solid var(--border-color);
+      text-decoration: none;
+      transition: all var(--transition);
+      letter-spacing: 0.5px;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+      text-transform: uppercase;
+    }
+    .menu > a:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+      transform: translate(1px, 1px);
+    }
+
+    /* Dropdown container */
     .dropdown {
       position: relative;
     }
@@ -285,6 +310,8 @@
       box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
       transform: translate(1px, 1px);
     }
+
+    /* Submenu - style đồng bộ với menu chính */
     .dropdown-content {
       display: none;
       position: absolute;
@@ -296,33 +323,14 @@
       box-shadow: var(--shadow-hard);
       z-index: 200;
       flex-direction: column;
-      margin-top: 4px;
-    }
-    .dropdown-content a {
-      display: block;
-      padding: 12px 16px;
-      text-align: center;
-      font-weight: 600;
-      font-size: 0.85rem;
-      text-transform: uppercase;
-      text-decoration: none;
-      color: var(--text);
-      border-bottom: 1px solid var(--border-light);
-      transition: all var(--transition);
-    }
-    .dropdown-content a:last-child {
-      border-bottom: none;
-    }
-    .dropdown-content a:hover {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
+      margin-top: 4px;  /* khoảng cách nhỏ giữa nút cha và submenu */
     }
     .dropdown.show .dropdown-content {
       display: flex;
     }
-
-    .menu a:not(.dropdown-btn) {
+    
+    /* Các mục con trong submenu phải cùng kiểu dáng và khoảng cách với nhau */
+    .dropdown-content a {
       display: block;
       text-align: center;
       font-weight: 700;
@@ -330,22 +338,28 @@
       padding: 14px 16px;
       background: var(--surface);
       color: var(--text);
-      border: 2px solid var(--border-color);
+      border-bottom: 2px solid var(--border-color);
       text-decoration: none;
       transition: all var(--transition);
       letter-spacing: 0.5px;
-      box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
       text-transform: uppercase;
+      margin: 0;
     }
-    .menu a:not(.dropdown-btn):hover {
+    /* Bỏ border-bottom cho phần tử cuối */
+    .dropdown-content a:last-child {
+      border-bottom: none;
+    }
+    .dropdown-content a:hover {
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
-      box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
       transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 1;
     }
 
-    /* MODAL */
+    /* MODAL (giữ nguyên) */
     .modal {
       display: none;
       position: fixed;
@@ -421,7 +435,7 @@
       border: 4px solid white;
     }
 
-    /* MOBILE */
+    /* ----- MOBILE: menu dưới cùng, dropdown mở lên ----- */
     @media (max-width: 768px) {
       header {
         padding: 8px 16px;
@@ -467,7 +481,7 @@
         top: auto;
         align-self: auto;
       }
-      .menu a, .dropdown {
+      .menu > a, .dropdown {
         flex: 1;
       }
       .dropdown-btn {
@@ -477,13 +491,14 @@
         box-shadow: none;
         border: 1.5px solid var(--border-color);
       }
-      .menu a:not(.dropdown-btn) {
+      .menu > a {
         font-size: 0.7rem;
         padding: 10px 2px;
         white-space: nowrap;
         box-shadow: none;
         border: 1.5px solid var(--border-color);
       }
+      /* Trên mobile: submenu mở lên trên */
       .dropdown-content {
         top: auto;
         bottom: 100%;
@@ -494,9 +509,14 @@
         left: 0;
         right: auto;
       }
+      .dropdown-content a {
+        padding: 10px 8px;
+        font-size: 0.75rem;
+        border-bottom: 1px solid var(--border-light);
+      }
     }
     @media (max-width: 480px) {
-      .menu a, .dropdown-btn {
+      .menu > a, .dropdown-btn {
         font-size: 0.6rem;
         padding: 8px 2px;
       }
@@ -582,7 +602,7 @@
       <a href="Comic.html" data-lang="menu2">Đọc Truyện Tranh</a>
       <a href="#" id="payment-btn" data-lang="menu4">Cổng Thanh Toán</a>
       
-      <!-- Dropdown "Tiện ích khác" -->
+      <!-- Dropdown "Tiện ích khác" - giữ cơ chế mở/đóng -->
       <div class="dropdown" id="utilDropdown">
         <div class="dropdown-btn" data-lang="menu6">Tiện ích khác <i class="fas fa-chevron-down" style="margin-left: 6px; font-size: 0.8rem;"></i></div>
         <div class="dropdown-content">
@@ -713,7 +733,7 @@
           .catch(() => prompt("Sao chép thủ công:", text));
       };
 
-      // Dropdown logic
+      // Dropdown logic (click để mở/đóng)
       const dropdown = document.getElementById("utilDropdown");
       const dropdownBtn = dropdown.querySelector(".dropdown-btn");
       
@@ -728,6 +748,7 @@
         e.stopPropagation();
         dropdown.classList.toggle("show");
         if (dropdown.classList.contains("show")) {
+          // Đóng khi click ra ngoài
           setTimeout(() => {
             document.addEventListener("click", closeDropdown);
           }, 0);
@@ -736,6 +757,7 @@
         }
       });
       
+      // Đóng dropdown khi click vào link bên trong
       const subLinks = dropdown.querySelectorAll(".dropdown-content a");
       subLinks.forEach(link => {
         link.addEventListener("click", () => {
