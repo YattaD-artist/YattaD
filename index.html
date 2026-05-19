@@ -118,7 +118,7 @@
       background: rgba(255,255,255,0.05);
     }
 
-    /* ----- MAIN: có padding 2 bên để dễ đọc, không quá sát lề ----- */
+    /* ----- MAIN: có padding 2 bên để dễ đọc ----- */
     main {
       flex: 1;
       display: flex;
@@ -151,7 +151,6 @@
       padding-bottom: 10px;
     }
 
-    /* Desktop: 2 cột, cột trái rộng hơn 1 chút */
     @media (min-width: 769px) {
       .info-grid {
         display: grid;
@@ -249,7 +248,7 @@
       color: var(--accent);
     }
 
-    /* MENU */
+    /* ========== MENU + DROPDOWN ========== */
     .menu {
       flex: 0.8;
       display: flex;
@@ -260,7 +259,76 @@
       align-self: flex-start;
     }
 
-    .menu a {
+    /* Nút dropdown (giống menu a) */
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 14px 16px;
+      background: var(--surface);
+      color: var(--text);
+      border: 2px solid var(--border-color);
+      text-decoration: none;
+      transition: all var(--transition);
+      letter-spacing: 0.5px;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: var(--font);
+    }
+    .dropdown-btn:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+      transform: translate(1px, 1px);
+    }
+
+    /* Submenu */
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 2px solid var(--border-color);
+      box-shadow: var(--shadow-hard);
+      z-index: 200;
+      flex-direction: column;
+      margin-top: 4px;
+    }
+    .dropdown-content a {
+      display: block;
+      padding: 12px 16px;
+      text-align: center;
+      font-weight: 600;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      text-decoration: none;
+      color: var(--text);
+      border-bottom: 1px solid var(--border-light);
+      transition: all var(--transition);
+    }
+    .dropdown-content a:last-child {
+      border-bottom: none;
+    }
+    .dropdown-content a:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+    .dropdown.show .dropdown-content {
+      display: flex;
+    }
+
+    /* Các menu thường (không dropdown) */
+    .menu a:not(.dropdown-btn) {
       display: block;
       text-align: center;
       font-weight: 700;
@@ -275,7 +343,7 @@
       box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
       text-transform: uppercase;
     }
-    .menu a:hover {
+    .menu a:not(.dropdown-btn):hover {
       background: var(--accent);
       color: #fff;
       border-color: var(--accent);
@@ -283,7 +351,7 @@
       transform: translate(1px, 1px);
     }
 
-    /* MODAL */
+    /* ========== MODAL ========== */
     .modal {
       display: none;
       position: fixed;
@@ -359,7 +427,7 @@
       border: 4px solid white;
     }
 
-    /* MOBILE: padding nhỏ hơn */
+    /* ----- MOBILE: menu fixed bottom, dropdown mở LÊN trên ----- */
     @media (max-width: 768px) {
       header {
         padding: 8px 16px;
@@ -405,19 +473,47 @@
         top: auto;
         align-self: auto;
       }
-      .menu a {
+      .menu a, .dropdown {
         flex: 1;
+      }
+      .dropdown-btn {
         font-size: 0.7rem;
         padding: 10px 2px;
         white-space: nowrap;
         box-shadow: none;
         border: 1.5px solid var(--border-color);
       }
+      .menu a:not(.dropdown-btn) {
+        font-size: 0.7rem;
+        padding: 10px 2px;
+        white-space: nowrap;
+        box-shadow: none;
+        border: 1.5px solid var(--border-color);
+      }
+      /* Trên mobile, submenu mở LÊN trên */
+      .dropdown-content {
+        top: auto;
+        bottom: 100%;
+        margin-bottom: 4px;
+        margin-top: 0;
+        width: 100%;
+        min-width: 160px;
+        left: 0;
+        right: auto;
+      }
+      /* Đảm bảo submenu không bị tràn màn hình */
+      .dropdown {
+        position: relative;
+      }
     }
     @media (max-width: 480px) {
-      .menu a {
+      .menu a, .dropdown-btn {
         font-size: 0.6rem;
         padding: 8px 2px;
+      }
+      .dropdown-content a {
+        font-size: 0.7rem;
+        padding: 8px 8px;
       }
     }
   </style>
@@ -493,7 +589,18 @@
       <a href="Art.html" data-lang="menu1">Xưởng Tranh Vẽ</a>
       <a href="Comic.html" data-lang="menu2">Đọc Truyện Tranh</a>
       <a href="#" id="payment-btn" data-lang="menu4">Cổng Thanh Toán</a>
-      <a href="Game.html" data-lang="menu6">Tiện ích khác</a>
+      
+      <!-- Dropdown "Tiện ích khác" -->
+      <div class="dropdown" id="utilDropdown">
+        <div class="dropdown-btn" data-lang="menu6">Tiện ích khác <i class="fas fa-chevron-down" style="margin-left: 6px; font-size: 0.8rem;"></i></div>
+        <div class="dropdown-content">
+          <a href="Study.html" data-lang="util1">Tự Học Truyện Tranh</a>
+          <a href="Sketchy.html" data-lang="util2">Vẽ Nhăng Vẽ Cuội</a>
+          <a href="Random.html" data-lang="util3">Những Điều Ngẫu Nhiên</a>
+          <a href="Game.html" data-lang="util4">Rảnh Thì Chơi Games</a>
+          <a href="#" id="external-link" data-lang="util5">Thăm Khám Chữa Bệnh</a>
+        </div>
+      </div>
     </nav>
   </main>
 
@@ -526,6 +633,7 @@
           jobLabel: "Công việc", jobValue: "Freelancer <strong>Artist</strong> · <span class='highlight'>Trợ giảng</span> khóa truyện tranh cơ bản tại <span class='highlight'>Comia</span>",
           expLabel: "Kinh nghiệm", expValue: "Làm nghề từ <strong>năm 2020</strong>",
           menu1: "Xưởng Tranh Vẽ", menu2: "Đọc Truyện Tranh", menu4: "Cổng Thanh Toán", menu6: "Tiện ích khác",
+          util1: "Tự Học Truyện Tranh", util2: "Vẽ Nhăng Vẽ Cuội", util3: "Những Điều Ngẫu Nhiên", util4: "Rảnh Thì Chơi Games", util5: "Thăm Khám Chữa Bệnh",
           payTitle: "Quét mã dưới đây để thanh toán", payNote: "Nhấn vào hình để phóng to mã", closeBtn: "Đóng"
         },
         en: {
@@ -538,6 +646,7 @@
           jobLabel: "Occupation", jobValue: "Freelancer <strong>Artist</strong> · <span class='highlight'>Teaching Assistant</span> for basic comics course at <span class='highlight'>Comia</span>",
           expLabel: "Experience", expValue: "Working since <strong>2020</strong>",
           menu1: "Art Workshop", menu2: "Read Comics", menu4: "Payment Gateway", menu6: "Utilities",
+          util1: "Self-study Comics", util2: "Scribble & Doodle", util3: "Random Things", util4: "Play Games", util5: "Medical Visit",
           payTitle: "Scan the QR codes below to pay", payNote: "Click on an image to enlarge", closeBtn: "Close"
         }
       };
@@ -549,7 +658,17 @@
         document.querySelectorAll("[data-lang]").forEach(el => {
           const key = el.getAttribute("data-lang");
           if (translations[currentLang] && translations[currentLang][key] !== undefined) {
-            el.innerHTML = translations[currentLang][key];
+            // Nếu là dropdown-btn thì cần giữ icon
+            if (el.classList && el.classList.contains('dropdown-btn')) {
+              const span = document.createElement('span');
+              span.innerHTML = translations[currentLang][key];
+              const icon = el.querySelector('i');
+              el.innerHTML = '';
+              el.appendChild(span);
+              if (icon) el.appendChild(icon);
+            } else {
+              el.innerHTML = translations[currentLang][key];
+            }
           }
         });
         localStorage.setItem("lang", currentLang);
@@ -603,6 +722,49 @@
           .catch(() => prompt("Sao chép thủ công:", text));
       };
 
+      // Dropdown logic
+      const dropdown = document.getElementById("utilDropdown");
+      const dropdownBtn = dropdown.querySelector(".dropdown-btn");
+      
+      function closeDropdown(e) {
+        if (!dropdown.contains(e.target)) {
+          dropdown.classList.remove("show");
+          document.removeEventListener("click", closeDropdown);
+        }
+      }
+      
+      dropdownBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle("show");
+        if (dropdown.classList.contains("show")) {
+          // Thêm listener đóng khi click ra ngoài
+          setTimeout(() => {
+            document.addEventListener("click", closeDropdown);
+          }, 0);
+        } else {
+          document.removeEventListener("click", closeDropdown);
+        }
+      });
+      
+      // Đóng dropdown khi click vào một link bên trong (tuỳ chọn)
+      const subLinks = dropdown.querySelectorAll(".dropdown-content a");
+      subLinks.forEach(link => {
+        link.addEventListener("click", () => {
+          dropdown.classList.remove("show");
+          document.removeEventListener("click", closeDropdown);
+        });
+      });
+      
+      // Xử lý link external (tạm thời alert)
+      const externalLink = document.getElementById("external-link");
+      if (externalLink) {
+        externalLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          alert("Link sẽ được cập nhật sau!");
+        });
+      }
+
+      // Modal thanh toán
       const paymentModal = document.getElementById("payment-modal");
       const paymentBtn = document.getElementById("payment-btn");
       const closePayment = document.getElementById("close-payment-modal");
