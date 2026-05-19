@@ -476,7 +476,9 @@
 </head>
 <body>
 <header>
-  <div class="left"><a href="index.html" class="icon-btn" title="Trang chủ"><i class="fas fa-home"></i></a></div>
+   <div class="left">
+    <a href="#" class="icon-btn" id="homeBtn" title="Trang chủ"><i class="fas fa-home"></i></a>
+  </div>
   <div class="center-title" id="title">TIÊU CHUẨN</div>
   <div class="right">
     <button class="icon-btn" id="theme-toggle" title="Đổi chế độ"><i class="fas fa-adjust"></i></button>
@@ -719,6 +721,11 @@ abcdStartBtn.addEventListener('click',()=>{
 });
 abcdOverlay.addEventListener('click',(e)=>{if(e.target===abcdOverlay) closeABCD();});
 document.getElementById('menu3').addEventListener('click', showABCD);
+
+  document.getElementById('homeBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    location.href = 'index.html?nocache=' + Date.now();
+});
 </script>
 </body>
 </html>
