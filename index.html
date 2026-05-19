@@ -57,7 +57,7 @@
       display: flex;
       flex-direction: column;
       transition: background var(--transition), color var(--transition);
-      line-height: 1.5;
+      line-height: 1.4; /* giảm nhẹ để tiết kiệm chiều cao */
     }
 
     /* ----- HEADER ----- */
@@ -65,7 +65,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 28px;
+      padding: 10px 28px;
       background: var(--surface);
       border-bottom: 3px solid var(--border-color);
       position: sticky;
@@ -74,18 +74,18 @@
       box-shadow: 0 2px 0 var(--border-color);
       transition: background var(--transition), border-color var(--transition);
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
     }
 
     .header-left,
     .header-right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .center-title {
-      font-size: 1.9rem;
+      font-size: 1.8rem;
       font-weight: 700;
       letter-spacing: 2px;
       color: var(--accent);
@@ -96,10 +96,10 @@
     .icon-btn {
       background: none;
       border: 2px solid transparent;
-      font-size: 1.1rem;
+      font-size: 1rem;
       color: var(--text);
-      width: 36px;
-      height: 36px;
+      width: 34px;
+      height: 34px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -123,19 +123,19 @@
     main {
       flex: 1;
       display: flex;
-      gap: 28px;
-      padding: 32px 28px 40px;
-      max-width: 1200px;
+      gap: 24px;
+      padding: 20px 28px 28px;
+      max-width: 1300px;
       width: 100%;
       margin: 0 auto;
     }
 
     /* ----- INFO SECTION ----- */
     .info {
-      flex: 2.2;
+      flex: 2.4;
       background: var(--surface);
       border: 3px solid var(--border-color);
-      padding: 28px 28px 24px;
+      padding: 20px 24px 20px;
       box-shadow: var(--shadow-hard);
       transition: background var(--transition), border-color var(--transition);
       display: flex;
@@ -143,35 +143,35 @@
     }
 
     .info h2 {
-      font-size: 1.5rem;
+      font-size: 1.35rem;
       font-weight: 700;
       color: var(--accent);
-      margin-bottom: 24px;
+      margin-bottom: 18px;
       letter-spacing: 0.5px;
       display: flex;
       align-items: center;
       gap: 8px;
       border-bottom: 2px dashed var(--border-color);
-      padding-bottom: 10px;
+      padding-bottom: 8px;
     }
 
-    /* Desktop: bố cục 2 cột: cột trái (thông tin, học vấn, công việc), cột phải (mascot) */
+    /* Desktop: 2 cột rõ ràng */
     @media (min-width: 769px) {
       .info-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 28px 36px;
+        grid-template-columns: 1fr 0.9fr;
+        gap: 24px 32px;
         align-items: start;
       }
       .info-left {
         display: flex;
         flex-direction: column;
-        gap: 28px;
+        gap: 20px;
       }
       .info-right {
         display: flex;
         flex-direction: column;
-        gap: 28px;
+        gap: 20px;
       }
     }
 
@@ -181,13 +181,13 @@
     }
 
     .group-title {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 1.2px;
+      letter-spacing: 1px;
       color: var(--text-secondary);
-      margin-bottom: 14px;
-      padding: 4px 8px;
+      margin-bottom: 10px;
+      padding: 4px 6px;
       border-left: 4px solid var(--accent);
       background: rgba(0,0,0,0.02);
     }
@@ -197,19 +197,19 @@
 
     .info-table {
       display: grid;
-      grid-template-columns: 130px 1fr;
-      gap: 12px 16px;
+      grid-template-columns: 115px 1fr;
+      gap: 8px 12px;
     }
 
     .info-label {
       font-weight: 600;
       color: var(--text);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
     }
 
     .info-value {
       color: var(--text-secondary);
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       word-break: break-word;
     }
     .info-value strong,
@@ -218,14 +218,13 @@
       font-weight: 600;
     }
 
-    /* Mascot - Ảnh lớn, rõ, không viền, không shadow, hover phóng to + nghiêng */
+    /* Mascot - không shadow, không viền ảnh, hover phóng to + nghiêng */
     .mascot-box {
-      margin-top: 8px;
+      margin-top: 4px;
       text-align: center;
       border: 2px solid var(--border-color);
-      padding: 16px;
+      padding: 12px 12px;
       background: rgba(0,0,0,0.01);
-      transition: box-shadow 0.2s;
     }
     body.dark .mascot-box {
       background: rgba(255,255,255,0.02);
@@ -234,37 +233,36 @@
     .mascot-box img {
       max-width: 100%;
       height: auto;
-      max-height: 260px;
+      max-height: 200px;
       display: block;
       margin: 0 auto;
       border: none;
-      box-shadow: none;        /* Loại bỏ shadow */
+      box-shadow: none;
       transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       cursor: pointer;
     }
     
-    /* Hover: phóng to + nghiêng nhẹ */
     .mascot-box img:hover {
       transform: scale(1.05) rotate(1deg);
     }
     
     .mascot-label {
       font-weight: 700;
-      margin-bottom: 10px;
-      font-size: 0.8rem;
+      margin-bottom: 8px;
+      font-size: 0.75rem;
       text-transform: uppercase;
       letter-spacing: 0.8px;
       color: var(--accent);
     }
 
-    /* ----- MENU (Desktop: vertical) ----- */
+    /* ----- MENU (Desktop: vertical, vừa tầm) ----- */
     .menu {
-      flex: 0.9;
+      flex: 0.85;
       display: flex;
       flex-direction: column;
       gap: 12px;
       position: sticky;
-      top: 100px;
+      top: 90px;
       align-self: flex-start;
     }
 
@@ -272,8 +270,8 @@
       display: block;
       text-align: center;
       font-weight: 700;
-      font-size: 1rem;
-      padding: 14px 16px;
+      font-size: 0.95rem;
+      padding: 12px 14px;
       background: var(--surface);
       color: var(--text);
       border: 2px solid var(--border-color);
@@ -307,8 +305,8 @@
     .modal-content {
       background: var(--surface);
       border: 3px solid var(--border-color);
-      padding: 24px 20px;
-      max-width: 380px;
+      padding: 20px 18px;
+      max-width: 360px;
       width: 100%;
       text-align: center;
       box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
@@ -319,8 +317,8 @@
 
     .modal-content h2 {
       font-weight: 700;
-      font-size: 1.3rem;
-      margin-bottom: 10px;
+      font-size: 1.2rem;
+      margin-bottom: 8px;
       color: var(--accent);
     }
 
@@ -328,16 +326,16 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 16px;
-      margin: 16px 0 12px;
+      gap: 14px;
+      margin: 12px 0 8px;
     }
     .qr-item p {
       font-weight: 600;
       margin-bottom: 4px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
     }
     .qr-item img {
-      width: 95px;
+      width: 85px;
       border: 2px solid var(--border-color);
       cursor: pointer;
       transition: opacity 0.2s;
@@ -347,13 +345,13 @@
     }
 
     .close-btn {
-      margin-top: 14px;
+      margin-top: 12px;
       background: var(--accent);
       border: 2px solid var(--border-color);
       color: white;
       font-weight: 700;
-      padding: 8px 22px;
-      font-size: 0.9rem;
+      padding: 6px 20px;
+      font-size: 0.85rem;
       cursor: pointer;
       transition: background var(--transition);
       text-transform: uppercase;
@@ -377,13 +375,13 @@
       border: 4px solid white;
     }
 
-    /* ----- MOBILE OPTIMIZATION ----- */
+    /* ----- MOBILE: giữ menu bottom, không đổi gì thêm ----- */
     @media (max-width: 768px) {
       header {
-        padding: 10px 14px;
+        padding: 8px 14px;
       }
       .center-title {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
       }
       
       .header-right {
@@ -392,20 +390,19 @@
       
       main {
         flex-direction: column;
-        padding: 20px 16px 90px;
-        gap: 20px;
+        padding: 16px 16px 80px;
+        gap: 18px;
       }
 
       .info {
-        padding: 20px 16px 16px;
+        padding: 16px 14px 14px;
       }
 
       .info-table {
-        grid-template-columns: 110px 1fr;
-        gap: 8px 10px;
+        grid-template-columns: 105px 1fr;
+        gap: 6px 8px;
       }
       
-      /* Bỏ grid 2 cột trên mobile, chuyển thành block */
       .info-grid {
         display: block;
       }
@@ -413,7 +410,7 @@
         display: block;
       }
       .info-left .info-group, .info-right .info-group {
-        margin-bottom: 28px;
+        margin-bottom: 20px;
       }
       .info-right .info-group:last-child {
         margin-bottom: 0;
@@ -429,8 +426,8 @@
         border-top: 3px solid var(--border-color);
         box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
         z-index: 150;
-        gap: 6px;
-        padding: 8px 12px;
+        gap: 5px;
+        padding: 6px 10px;
         justify-content: space-between;
         top: auto;
         align-self: auto;
@@ -440,54 +437,43 @@
       .menu a {
         flex: 1;
         text-align: center;
-        font-size: 0.75rem;
-        padding: 10px 4px;
+        font-size: 0.7rem;
+        padding: 8px 3px;
         box-shadow: none;
         border: 1.5px solid var(--border-color);
         white-space: normal;
-        word-break: keep-all;
-        line-height: 1.3;
+        line-height: 1.2;
       }
       
       .menu a:hover {
         transform: translateY(-2px);
-        background: var(--accent);
-        border-color: var(--accent);
       }
 
       .mascot-box img {
-        max-height: 200px;
+        max-height: 180px;
       }
     }
 
     @media (max-width: 480px) {
       .header-left .icon-btn,
       .header-right .icon-btn {
-        width: 32px;
-        height: 32px;
-        font-size: 0.95rem;
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
       }
       .center-title {
         font-size: 1.2rem;
       }
       .menu {
-        padding: 6px 8px;
-        gap: 4px;
+        padding: 5px 6px;
+        gap: 3px;
       }
-      .menu a {
-        font-size: 0.65rem;
-        padding: 8px 2px;
-        font-weight: 600;
-      }
-      .mascot-box img {
-        max-height: 180px;
-      }
-    }
-
-    @media (max-width: 380px) {
       .menu a {
         font-size: 0.6rem;
-        padding: 6px 1px;
+        padding: 6px 2px;
+      }
+      .mascot-box img {
+        max-height: 150px;
       }
     }
   </style>
@@ -511,60 +497,48 @@
     <section class="info">
       <h2><i class="fas fa-address-card"></i> <span data-lang="infoTitle">Thông tin cá nhân</span></h2>
       
-      <!-- Desktop: 2 cột rõ ràng: bên trái thông tin, bên phải mascot -->
+      <!-- Bố cục 2 cột: trái (thông tin, học vấn, công việc) - phải (mascot) -->
       <div class="info-grid">
-        <!-- Cột trái: 3 nhóm thông tin -->
         <div class="info-left">
-          <!-- NHÓM I: Cơ bản -->
           <div class="info-group">
             <div class="group-title" data-lang="group1">Thông tin cơ bản</div>
             <div class="info-table">
               <span class="info-label" data-lang="nameLabel">Họ và Tên</span>
               <span class="info-value" data-lang="nameValue">Ngô Xuân Đạt</span>
-
               <span class="info-label" data-lang="birthLabel">Ngày sinh</span>
               <span class="info-value" data-lang="birthValue">07 / 05 / 1998</span>
-
               <span class="info-label" data-lang="genderLabel">Giới tính</span>
               <span class="info-value" data-lang="genderValue">Nam</span>
-
               <span class="info-label" data-lang="nationLabel">Quốc tịch</span>
               <span class="info-value" data-lang="nationValue">Việt Nam</span>
-
               <span class="info-label" data-lang="addressLabel">Địa chỉ</span>
               <span class="info-value" data-lang="addressValue">Thanh Oai, Hà Nội</span>
-
               <span class="info-label" data-lang="hobbyLabel">Sở thích</span>
               <span class="info-value" data-lang="hobbyValue">Vẽ, Kể Chuyện, Học hỏi điều mới, Ngủ, Màu <span class='highlight'>Đỏ</span></span>
             </div>
           </div>
 
-          <!-- NHÓM II: Học vấn & Khả năng -->
           <div class="info-group">
             <div class="group-title" data-lang="group2">Học vấn & Khả năng</div>
             <div class="info-table">
               <span class="info-label" data-lang="eduLabel">Học vấn</span>
               <span class="info-value" data-lang="eduValue">Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong></span>
-
               <span class="info-label" data-lang="skillLabel">Khả năng</span>
               <span class="info-value" data-lang="skillValue">Vẽ Minh họa, Thiết kế nhân vật, <span class='highlight'>Vẽ truyện tranh</span>, Sáng tạo nội dung</span>
             </div>
           </div>
 
-          <!-- NHÓM III: Công việc & Kinh nghiệm -->
           <div class="info-group">
             <div class="group-title" data-lang="group3">Công việc & Kinh nghiệm</div>
             <div class="info-table">
               <span class="info-label" data-lang="jobLabel">Công việc</span>
               <span class="info-value" data-lang="jobValue">Freelancer <strong>Artist</strong> · <span class='highlight'>Trợ giảng</span> khóa truyện tranh cơ bản tại <span class='highlight'>Comia</span></span>
-
               <span class="info-label" data-lang="expLabel">Kinh nghiệm</span>
               <span class="info-value" data-lang="expValue">Làm nghề từ <strong>năm 2020</strong></span>
             </div>
           </div>
         </div>
 
-        <!-- Cột phải: chỉ mascot -->
         <div class="info-right">
           <div class="info-group">
             <div class="group-title" data-lang="group4">Mascot</div>
