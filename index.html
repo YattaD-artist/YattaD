@@ -57,15 +57,15 @@
       display: flex;
       flex-direction: column;
       transition: background var(--transition), color var(--transition);
-      line-height: 1.4; /* giảm nhẹ để tiết kiệm chiều cao */
+      line-height: 1.4;
     }
 
-    /* ----- HEADER ----- */
+    /* ----- HEADER: full width, không lề thừa ----- */
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 28px;
+      padding: 10px 24px;
       background: var(--surface);
       border-bottom: 3px solid var(--border-color);
       position: sticky;
@@ -73,19 +73,18 @@
       z-index: 100;
       box-shadow: 0 2px 0 var(--border-color);
       transition: background var(--transition), border-color var(--transition);
-      flex-wrap: wrap;
-      gap: 8px;
+      width: 100%;
     }
 
     .header-left,
     .header-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
     }
 
     .center-title {
-      font-size: 1.8rem;
+      font-size: 1.9rem;
       font-weight: 700;
       letter-spacing: 2px;
       color: var(--accent);
@@ -98,8 +97,8 @@
       border: 2px solid transparent;
       font-size: 1rem;
       color: var(--text);
-      width: 34px;
-      height: 34px;
+      width: 36px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -115,27 +114,22 @@
     body.dark .icon-btn:hover {
       background: rgba(255,255,255,0.05);
     }
-    a.icon-btn, a.icon-btn:visited, a.icon-btn:hover, a.icon-btn:active, a.icon-btn:focus {
-      text-decoration: none;
-    }
 
-    /* ----- MAIN ----- */
+    /* ----- MAIN: full width, không max-width, chỉ padding nhẹ 2 bên ----- */
     main {
       flex: 1;
       display: flex;
-      gap: 24px;
-      padding: 20px 28px 28px;
-      max-width: 1300px;
+      gap: 28px;
+      padding: 24px 24px 32px;
       width: 100%;
-      margin: 0 auto;
     }
 
-    /* ----- INFO SECTION ----- */
+    /* ----- INFO SECTION: co giãn linh hoạt, chiếm phần lớn không gian ----- */
     .info {
-      flex: 2.4;
+      flex: 3;
       background: var(--surface);
       border: 3px solid var(--border-color);
-      padding: 20px 24px 20px;
+      padding: 24px 28px;
       box-shadow: var(--shadow-hard);
       transition: background var(--transition), border-color var(--transition);
       display: flex;
@@ -143,35 +137,33 @@
     }
 
     .info h2 {
-      font-size: 1.35rem;
+      font-size: 1.5rem;
       font-weight: 700;
       color: var(--accent);
-      margin-bottom: 18px;
-      letter-spacing: 0.5px;
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
       gap: 8px;
       border-bottom: 2px dashed var(--border-color);
-      padding-bottom: 8px;
+      padding-bottom: 10px;
     }
 
-    /* Desktop: 2 cột rõ ràng */
+    /* Desktop: bố cục 2 cột: trái (thông tin) và phải (mascot) */
     @media (min-width: 769px) {
       .info-grid {
         display: grid;
-        grid-template-columns: 1fr 0.9fr;
-        gap: 24px 32px;
+        grid-template-columns: 1fr 0.7fr;
+        gap: 32px 40px;
         align-items: start;
       }
       .info-left {
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 24px;
       }
       .info-right {
         display: flex;
         flex-direction: column;
-        gap: 20px;
       }
     }
 
@@ -181,13 +173,13 @@
     }
 
     .group-title {
-      font-size: 0.75rem;
+      font-size: 0.8rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 1px;
       color: var(--text-secondary);
-      margin-bottom: 10px;
-      padding: 4px 6px;
+      margin-bottom: 12px;
+      padding: 4px 8px;
       border-left: 4px solid var(--accent);
       background: rgba(0,0,0,0.02);
     }
@@ -197,19 +189,19 @@
 
     .info-table {
       display: grid;
-      grid-template-columns: 115px 1fr;
-      gap: 8px 12px;
+      grid-template-columns: 130px 1fr;
+      gap: 10px 16px;
     }
 
     .info-label {
       font-weight: 600;
       color: var(--text);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
     }
 
     .info-value {
       color: var(--text-secondary);
-      font-size: 0.85rem;
+      font-size: 0.9rem;
       word-break: break-word;
     }
     .info-value strong,
@@ -218,13 +210,13 @@
       font-weight: 600;
     }
 
-    /* Mascot - không shadow, không viền ảnh, hover phóng to + nghiêng */
+    /* Mascot: không shadow, ảnh to và rõ, hover phóng to + nghiêng */
     .mascot-box {
-      margin-top: 4px;
       text-align: center;
       border: 2px solid var(--border-color);
-      padding: 12px 12px;
+      padding: 20px 16px;
       background: rgba(0,0,0,0.01);
+      margin-top: 8px;
     }
     body.dark .mascot-box {
       background: rgba(255,255,255,0.02);
@@ -233,7 +225,7 @@
     .mascot-box img {
       max-width: 100%;
       height: auto;
-      max-height: 200px;
+      max-height: 280px;
       display: block;
       margin: 0 auto;
       border: none;
@@ -248,19 +240,19 @@
     
     .mascot-label {
       font-weight: 700;
-      margin-bottom: 8px;
-      font-size: 0.75rem;
+      margin-bottom: 10px;
+      font-size: 0.85rem;
       text-transform: uppercase;
       letter-spacing: 0.8px;
       color: var(--accent);
     }
 
-    /* ----- MENU (Desktop: vertical, vừa tầm) ----- */
+    /* ----- MENU: bên phải, kích thước hợp lý, không bị ép ----- */
     .menu {
-      flex: 0.85;
+      flex: 0.8;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
       position: sticky;
       top: 90px;
       align-self: flex-start;
@@ -270,8 +262,8 @@
       display: block;
       text-align: center;
       font-weight: 700;
-      font-size: 0.95rem;
-      padding: 12px 14px;
+      font-size: 1rem;
+      padding: 14px 16px;
       background: var(--surface);
       color: var(--text);
       border: 2px solid var(--border-color);
@@ -280,6 +272,7 @@
       letter-spacing: 0.5px;
       box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
       text-transform: uppercase;
+      white-space: nowrap;
     }
     .menu a:hover {
       background: var(--accent);
@@ -305,20 +298,18 @@
     .modal-content {
       background: var(--surface);
       border: 3px solid var(--border-color);
-      padding: 20px 18px;
-      max-width: 360px;
+      padding: 24px 20px;
+      max-width: 380px;
       width: 100%;
       text-align: center;
       box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
       color: var(--text);
-      max-height: 85vh;
-      overflow-y: auto;
     }
 
     .modal-content h2 {
       font-weight: 700;
-      font-size: 1.2rem;
-      margin-bottom: 8px;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
       color: var(--accent);
     }
 
@@ -326,16 +317,16 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 14px;
-      margin: 12px 0 8px;
+      gap: 16px;
+      margin: 16px 0 12px;
     }
     .qr-item p {
       font-weight: 600;
       margin-bottom: 4px;
-      font-size: 0.8rem;
+      font-size: 0.85rem;
     }
     .qr-item img {
-      width: 85px;
+      width: 95px;
       border: 2px solid var(--border-color);
       cursor: pointer;
       transition: opacity 0.2s;
@@ -345,13 +336,13 @@
     }
 
     .close-btn {
-      margin-top: 12px;
+      margin-top: 14px;
       background: var(--accent);
       border: 2px solid var(--border-color);
       color: white;
       font-weight: 700;
-      padding: 6px 20px;
-      font-size: 0.85rem;
+      padding: 8px 22px;
+      font-size: 0.9rem;
       cursor: pointer;
       transition: background var(--transition);
       text-transform: uppercase;
@@ -375,47 +366,44 @@
       border: 4px solid white;
     }
 
-    /* ----- MOBILE: giữ menu bottom, không đổi gì thêm ----- */
+    /* ----- MOBILE: menu dưới đáy, bố cục dọc, vẫn full width ----- */
     @media (max-width: 768px) {
       header {
-        padding: 8px 14px;
+        padding: 8px 16px;
       }
       .center-title {
         font-size: 1.4rem;
       }
-      
-      .header-right {
-        margin-left: auto;
+      .header-left .icon-btn,
+      .header-right .icon-btn {
+        width: 34px;
+        height: 34px;
       }
-      
       main {
         flex-direction: column;
-        padding: 16px 16px 80px;
-        gap: 18px;
+        padding: 16px 16px 85px;
+        gap: 20px;
       }
-
       .info {
-        padding: 16px 14px 14px;
+        padding: 18px 16px;
       }
-
       .info-table {
-        grid-template-columns: 105px 1fr;
-        gap: 6px 8px;
+        grid-template-columns: 110px 1fr;
+        gap: 8px 12px;
       }
-      
       .info-grid {
         display: block;
       }
-      .info-left, .info-right {
-        display: block;
-      }
-      .info-left .info-group, .info-right .info-group {
-        margin-bottom: 20px;
+      .info-left .info-group,
+      .info-right .info-group {
+        margin-bottom: 24px;
       }
       .info-right .info-group:last-child {
         margin-bottom: 0;
       }
-      
+      .mascot-box img {
+        max-height: 200px;
+      }
       .menu {
         position: fixed;
         bottom: 0;
@@ -426,54 +414,32 @@
         border-top: 3px solid var(--border-color);
         box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
         z-index: 150;
-        gap: 5px;
-        padding: 6px 10px;
+        gap: 6px;
+        padding: 8px 12px;
         justify-content: space-between;
         top: auto;
         align-self: auto;
-        backdrop-filter: blur(12px);
       }
-      
       .menu a {
         flex: 1;
-        text-align: center;
+        white-space: nowrap;
         font-size: 0.7rem;
-        padding: 8px 3px;
+        padding: 10px 2px;
         box-shadow: none;
         border: 1.5px solid var(--border-color);
-        white-space: normal;
-        line-height: 1.2;
       }
-      
       .menu a:hover {
         transform: translateY(-2px);
-      }
-
-      .mascot-box img {
-        max-height: 180px;
       }
     }
 
     @media (max-width: 480px) {
-      .header-left .icon-btn,
-      .header-right .icon-btn {
-        width: 30px;
-        height: 30px;
-        font-size: 0.9rem;
-      }
-      .center-title {
-        font-size: 1.2rem;
-      }
-      .menu {
-        padding: 5px 6px;
-        gap: 3px;
-      }
       .menu a {
         font-size: 0.6rem;
-        padding: 6px 2px;
+        padding: 8px 2px;
       }
       .mascot-box img {
-        max-height: 150px;
+        max-height: 160px;
       }
     }
   </style>
@@ -497,7 +463,6 @@
     <section class="info">
       <h2><i class="fas fa-address-card"></i> <span data-lang="infoTitle">Thông tin cá nhân</span></h2>
       
-      <!-- Bố cục 2 cột: trái (thông tin, học vấn, công việc) - phải (mascot) -->
       <div class="info-grid">
         <div class="info-left">
           <div class="info-group">
