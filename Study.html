@@ -390,7 +390,8 @@
     let currentMode = 'FLOW';
     let images = [];
     let currentIndex = 0;
-    let currentImage = null;
+let currentImage = null;
+let scale = 1, offsetX = 0, offsetY = 0;
     let usingManualFiles = false;
 
     // View transform
@@ -739,30 +740,26 @@
     }
 
     // Ảnh, canvas, modes... giữ nguyên như trước, chỉ cập nhật screenToWorld
-    async function loadImagesFromGitHub() {
-        const info = getGitHubRepoInfo();
-        if (!info) { document.getElementById('manga-title').innerText='Không có ảnh'; return; }
-        try {
-            const res = await fetch(`https://api.github.com/repos/${info.owner}/${info.repo}/contents/images`);
-            if (!res.ok) throw new Error('GitHub API');
-            const data = await res.json();
-            const exts = ['.png','.jpg','.jpeg','.webp'];
-            const files = Array.isArray(data) ? data.filter(f=>f.type==='file'&&exts.some(e=>f.name.toLowerCase().endsWith(e))).map(f=>f.name) : [];
-            if (!files.length) { document.getElementById('manga-title').innerText='Không có ảnh'; return; }
-            images = files; usingManualFiles = false;
-            currentIndex = Math.floor(Math.random()*images.length);
-            loadImage();
-        } catch(e) { console.error(e); document.getElementById('manga-title').innerText='Lỗi tải ảnh'; }
+   async function loadImagesFromGitHub() {
+    // Không dùng API nữa, đọc file danh sách ảnh tĩnh
+    try {
+        const response = await fetch('./images/images.json');
+        if (!response.ok) throw new Error('Không tìm thấy file images/images.json');
+        const files = await response.json();
+        if (!files.length) {
+            document.getElementById('manga-title').innerText = 'Không có ảnh trong danh sách';
+            return;
+        }
+        images = files;
+        usingManualFiles = false;
+        currentIndex = Math.floor(Math.random() * images.length);
+        loadImage(); // hàm loadImage dùng chung (đã có sẵn)
+    } catch (err) {
+        console.error(err);
+        document.getElementById('manga-title').innerText = 'Lỗi: thiếu file images/images.json';
     }
-    function getGitHubRepoInfo() {
-        const host = window.location.hostname;
-        if (!host.endsWith('github.io')) return null;
-        const parts = window.location.pathname.split('/').filter(p=>p);
-        const owner = host.startsWith('www.') ? host.split('.')[1] : host.split('.')[0];
-        const repo = parts.length ? parts[0] : `${owner}.github.io`;
-        return { owner, repo };
-    }
-    function loadImage() {
+}
+       function loadImage() {
         if (!images.length) return;
         const file = images[currentIndex];
         let filename, url;
