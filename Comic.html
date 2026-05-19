@@ -2,190 +2,311 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>YattaD - Truyện Tranh</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes" />
+<title>YattaD · Truyện Tranh</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
+<!-- Font & Icons theo phong cách YattaD -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 <style>
-* { box-sizing: border-box; }
-body {
+  /* ========== RESET & BIẾN ========== */
+  * {
     margin: 0;
-    font-family: 'Saira', sans-serif;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  :root {
+    --bg: #f5f5f5;
+    --surface: #ffffff;
+    --text: #1a1a1a;
+    --text-secondary: #444444;
+    --accent: #c62828;
+    --accent-light: #e53935;
+    --border-color: #222;
+    --border-light: #ccc;
+    --shadow-hard: 4px 4px 0 rgba(0,0,0,0.1);
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --transition: 0.2s ease;
+  }
+
+  body.dark {
+    --bg: #121212;
+    --surface: #1e1e1e;
+    --text: #e8e8e8;
+    --text-secondary: #b0b0b0;
+    --accent: #ef4444;
+    --accent-light: #f87171;
+    --border-color: #555;
+    --border-light: #333;
+    --shadow-hard: 4px 4px 0 rgba(0,0,0,0.4);
+  }
+
+  body {
+    font-family: var(--font);
     background-color: var(--bg);
     color: var(--text);
+    min-height: 100vh;
+    transition: background var(--transition), color var(--transition);
+    line-height: 1.5;
+  }
 
-    --bg: #ede9eb;
-    --text: #1a2129;
-    --accent: #e32630;
-}
+  /* ========== HEADER (giống hệt trang chính) ========== */
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 28px;
+    background: var(--surface);
+    border-bottom: 3px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 0 var(--border-color);
+    transition: background var(--transition), border-color var(--transition);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
 
-body.dark {
-    --bg: #1b1b1b;
-    --text: #f5f5f5;
-    --accent: #1cd9cf;
-}
+  /* Căn chỉnh lại cấu trúc header (giữ đúng các phần tử) */
+  header > div:first-child {
+    width: 40px; /* để cân bằng với bên phải có 2 nút */
+  }
+  .center-title {
+    font-size: 1.9rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--accent);
+    text-transform: uppercase;
+    text-shadow: 1px 1px 0 var(--border-color);
+  }
+  header > div:last-child {
+    display: flex;
+    gap: 10px;
+  }
 
-header {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:12px 24px;
-    border-bottom:1px solid #ccc;
-    position:sticky;
-    top:0;
-    background:var(--bg);
-}
+  .icon-btn {
+    background: none;
+    border: 2px solid transparent;
+    font-size: 1.1rem;
+    color: var(--text);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    border-radius: 0;
+  }
+  .icon-btn:hover {
+    color: var(--accent);
+    border-color: var(--border-color);
+    background: rgba(0,0,0,0.03);
+  }
+  body.dark .icon-btn:hover {
+    background: rgba(255,255,255,0.05);
+  }
 
-.center-title {
-    flex:1;
-    text-align:center;
-    font-weight:800;
-    font-size:2rem;
-    color:var(--accent);
-}
+  /* ========== MAIN ========== */
+  main {
+    max-width: 1300px;
+    margin: 0 auto;
+    padding: 32px 28px 60px;
+    width: 100%;
+  }
 
-.icon-btn {
-    background:none;
-    border:none;
-    cursor:pointer;
-    font-size:1.2rem;
-    color:var(--text);
-}
+  /* ========== MENU GRID - CARD TRUYỆN ========== */
+  .menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 28px;
+  }
 
-main {
-    padding:30px;
-}
+  .menuItem {
+    display: block;
+    background: var(--surface);
+    border: 2px solid var(--border-color);
+    box-shadow: var(--shadow-hard);
+    text-decoration: none;
+    color: var(--text);
+    transition: all var(--transition);
+    overflow: hidden;
+  }
 
-.menu {
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:20px;
-}
+  .menuItem:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
+    border-color: var(--accent);
+  }
 
-.menuItem {
-    text-decoration:none;
-    color:inherit;
-    border:2px solid var(--text);
-    border-radius:12px;
-    padding:10px;
-    text-align:center;
-    transition:0.25s;
-}
+  /* Ảnh bìa */
+  .menuItem img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+    border-bottom: 2px solid var(--border-color);
+    transition: transform 0.25s ease;
+  }
+  .menuItem:hover img {
+    transform: scale(1.02);
+  }
 
-.menuItem img {
-    width:100%;
-    border-radius:8px;
-}
+  /* Tiêu đề truyện */
+  .menuItem p {
+    padding: 16px 14px;
+    font-weight: 700;
+    font-size: 1rem;
+    text-align: center;
+    letter-spacing: 0.3px;
+    color: var(--text);
+    background: var(--surface);
+    margin: 0;
+    border-top: 1px solid var(--border-light);
+  }
 
-.menuItem:hover {
-    transform:translateY(-4px);
-    border-color:var(--accent);
-    box-shadow:0 6px 12px rgba(0,0,0,0.15);
-}
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 768px) {
+    header {
+      padding: 10px 16px;
+    }
+    .center-title {
+      font-size: 1.5rem;
+    }
+    header > div:first-child {
+      width: auto;
+    }
+    main {
+      padding: 20px 16px 40px;
+    }
+    .menu {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 18px;
+    }
+    .menuItem p {
+      padding: 12px 10px;
+      font-size: 0.85rem;
+    }
+  }
 
-@media(max-width:768px){
-    main{padding:15px;}
-}
+  @media (max-width: 480px) {
+    .menu {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+    .menuItem p {
+      font-size: 0.9rem;
+    }
+  }
 </style>
 </head>
-
 <body>
 
 <header>
-    <div></div>
-    <div class="center-title" id="title">YattaD</div>
-    <div>
-        <button class="icon-btn" id="theme-toggle"><i class="fas fa-adjust"></i></button>
-        <button class="icon-btn" id="lang-toggle"><i class="fa-solid fa-language"></i></button>
-    </div>
+  <div></div>
+  <div class="center-title" id="title">YattaD</div>
+  <div>
+    <button class="icon-btn" id="theme-toggle"><i class="fas fa-adjust"></i></button>
+    <button class="icon-btn" id="lang-toggle"><i class="fa-solid fa-language"></i></button>
+  </div>
 </header>
 
 <main>
-<div class="menu">
+  <div class="menu">
 
-<a class="menuItem" href="comics/Thi/Thi.html" target="_blank">
-    <img src="comics/placeholder.jpg">
-    <p id="menu1">Bộ truyện ngắn dự thi PunkgaMe</p>
-</a>
+    <a class="menuItem" href="comics/Thi/Thi.html" target="_blank">
+      <img src="comics/placeholder.jpg" alt="Bìa truyện">
+      <p id="menu1">Bộ truyện ngắn dự thi PunkgaMe</p>
+    </a>
 
-<a class="menuItem" href="comics/PunkgaMerch/PunkgaMerch.html" target="_blank">
-    <img src="comics/PunkgaMerch/00.webp">
-    <p id="menu2">Bộ Áo mới của nhà vua</p>
-</a>
+    <a class="menuItem" href="comics/PunkgaMerch/PunkgaMerch.html" target="_blank">
+      <img src="comics/PunkgaMerch/00.webp" alt="Bìa truyện">
+      <p id="menu2">Bộ Áo mới của nhà vua</p>
+    </a>
 
-<a class="menuItem" href="comics/Vuot/Vuot.html" target="_blank">
-    <img src="comics/Vuot/Cover.jpg">
-    <p id="menu3">Vượt</p>
-</a>
+    <a class="menuItem" href="comics/Vuot/Vuot.html" target="_blank">
+      <img src="comics/Vuot/Cover.jpg" alt="Bìa truyện">
+      <p id="menu3">Vượt</p>
+    </a>
 
-<a class="menuItem" href="comics/StillComeTrue/StillComeTrue.html" target="_blank">
-    <img src="comics/StillComeTrue/00.webp">
-    <p id="menu4">Vẫn đúng</p>
-</a>
+    <a class="menuItem" href="comics/StillComeTrue/StillComeTrue.html" target="_blank">
+      <img src="comics/StillComeTrue/00.webp" alt="Bìa truyện">
+      <p id="menu4">Vẫn đúng</p>
+    </a>
 
-<a class="menuItem" href="comics/Red&Ruby.html" target="_blank">
-    <img src="comics/Red&Ruby/00.webp">
-    <p id="menu5">Red và Ruby</p>
-</a>
+    <a class="menuItem" href="comics/Red&Ruby.html" target="_blank">
+      <img src="comics/Red&Ruby/00.webp" alt="Bìa truyện">
+      <p id="menu5">Red và Ruby</p>
+    </a>
 
-<a class="menuItem" href="comics/ThuanThien.html" target="_blank">
-    <img src="comics/placeholder.jpg">
-    <p id="menu6">Thuận Thiên</p>
-</a>
+    <a class="menuItem" href="comics/ThuanThien.html" target="_blank">
+      <img src="comics/placeholder.jpg" alt="Bìa truyện">
+      <p id="menu6">Thuận Thiên</p>
+    </a>
 
-</div>
+  </div>
 </main>
 
 <script>
-// Theme
-const themeBtn=document.getElementById('theme-toggle');
-themeBtn.onclick=()=>{
+  // ========== THEME TOGGLE ==========
+  const themeBtn = document.getElementById('theme-toggle');
+  themeBtn.addEventListener('click', () => {
     document.body.classList.toggle('dark');
-    localStorage.setItem('theme',document.body.classList.contains('dark')?'dark':'light');
-};
-if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark');
+    localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+  });
+  if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
 
-// Language
-const langBtn=document.getElementById('lang-toggle');
-let currentLang=localStorage.getItem('lang')||'vi';
+  // ========== LANGUAGE TOGGLE ==========
+  const langBtn = document.getElementById('lang-toggle');
+  let currentLang = localStorage.getItem('lang') || 'vi';
 
-const translations={
-vi:{
-title:"YattaD",
-menu1:"Bộ truyện ngắn dự thi PunkgaMe",
-menu2:"Bộ Áo mới của nhà vua",
-menu3:"Vượt",
-menu4:"Vẫn đúng",
-menu5:"Red và Ruby",
-menu6:"Thuận Thiên"
-},
-en:{
-title:"YattaD",
-menu1:"PunkgaMe Short Stories",
-menu2:"The Emperor's New Clothes",
-menu3:"Overcome",
-menu4:"Still True",
-menu5:"Red & Ruby",
-menu6:"Thuan Thien"
-}
-};
-
-function switchLanguage(){
-    currentLang=currentLang==='vi'?'en':'vi';
-    localStorage.setItem('lang',currentLang);
-
-    for(const key in translations[currentLang]){
-        const el=document.getElementById(key);
-        if(el) el.textContent=translations[currentLang][key];
+  const translations = {
+    vi: {
+      title: "YattaD",
+      menu1: "Bộ truyện ngắn dự thi PunkgaMe",
+      menu2: "Bộ Áo mới của nhà vua",
+      menu3: "Vượt",
+      menu4: "Vẫn đúng",
+      menu5: "Red và Ruby",
+      menu6: "Thuận Thiên"
+    },
+    en: {
+      title: "YattaD",
+      menu1: "PunkgaMe Short Stories",
+      menu2: "The Emperor's New Clothes",
+      menu3: "Overcome",
+      menu4: "Still True",
+      menu5: "Red & Ruby",
+      menu6: "Thuan Thien"
     }
-}
+  };
 
-langBtn.onclick=switchLanguage;
+  function switchLanguage() {
+    currentLang = currentLang === 'vi' ? 'en' : 'vi';
+    localStorage.setItem('lang', currentLang);
 
-if(currentLang==='en') switchLanguage();
+    // Cập nhật nội dung các phần tử có id
+    for (const key in translations[currentLang]) {
+      const el = document.getElementById(key);
+      if (el) el.textContent = translations[currentLang][key];
+    }
+    // Cập nhật title ở header (id="title")
+    const titleEl = document.getElementById('title');
+    if (titleEl) titleEl.textContent = translations[currentLang].title;
+  }
+
+  langBtn.addEventListener('click', switchLanguage);
+
+  // Khởi tạo ngôn ngữ lần đầu
+  if (currentLang === 'en') {
+    switchLanguage();
+  } else {
+    // Đảm bảo tiêu đề đúng tiếng Việt
+    document.getElementById('title').textContent = translations.vi.title;
+  }
 </script>
-
 </body>
 </html>
