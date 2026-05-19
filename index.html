@@ -1,582 +1,659 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<!-- Logo chính -->
-<link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon32.png">
-<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon192.png">
-<link rel="apple-touch-icon" href="assets/icons/icon192.png">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2c3642">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>YattaD • Portfolio</title>
 
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>YattaD</title>
-<link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-<style>
-* {
-    box-sizing: border-box;
-}
+  <!-- Favicon & PWA -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon192.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#111111">
 
-html, body {
-    max-width: 100%;
-    overflow-x: hidden; /* Chặn cuộn ngang */
-}
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Saira:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-body {
-    height: 100%;
-    margin: 0;
-    font-family: 'Saira', sans-serif;
-    background-color: var(--bg);
-    color: var(--text);
-    overflow: hidden;
-    --bg: #ede9eb;
-    --text: #1a2129;
-    --accent: #e32630;
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
-}
-body.dark {
-    --bg: #1b1b1b;
-    --text: #f5f5f5;
-    --accent: #1cd9cf;
-}
-
-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 24px;
-    border-bottom: 1px solid #ccc;
-    background-color: var(--bg);
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transition: background-color 0.3s, border-color 0.3s, box-shadow 0.3s;
-}
-
-.center-title {
-    flex: 1;
-    text-align: center;
-    font-weight: 800;
-    font-size: 2.5rem;
-    letter-spacing: 1px;
-    color: var(--accent);
-}
-
-.left, .right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-}
-
-.icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.3rem;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 38px;
-    height: 38px;
-    border-radius: 50%;
-    transition: transform 0.25s ease, color 0.25s ease, background-color 0.25s ease;
-}
-.icon-btn:hover {
-    transform: scale(1.15);
-    color: var(--accent);
-    background-color: rgba(0,0,0,0.05);
-}
-
-a {
-    text-decoration: none;
-}
-
-a:hover,
-a:focus {
-    text-decoration: none;
-}
-
-main {
-    display: flex;
-    flex: 1;
-    min-height: calc(100vh - 70px);
-    gap: 30px;
-    padding: 30px;
-}
-
-.info {
-    flex: 2;
-    padding: 32px;
-    background-color: var(--bg);
-    border-radius: 12px;
-    border: 1px solid rgba(0,0,0,0.1);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    overflow-y: auto;
-    transition: background-color 0.3s, box-shadow 0.3s, border-color 0.3s;
-}
-.info h2 {
-    font-size: 2rem;
-    margin-bottom: 16px;
-    font-weight: 700;
-    color: var(--accent);
-    border-bottom: 3px solid var(--accent);
-    display: inline-block;
-    padding-bottom: 5px;
-}
-.info h3 {
-    font-size: 1.15rem;
-    margin: 10px 0;
-    line-height: 1.5;
-}
-.info strong {
-    font-weight: 700;
-    color: var(--accent);
-}
-
-.menu {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-    margin-top: 48px;
-    animation: slideIn 0.6s ease-out forwards;
-    opacity: 0;
-    min-height: auto;
-}
-.menu a {
-    display: block;
-    padding: 14px;
-    text-align: center;
-    font-weight: 700;
-    font-size: 1.2rem;
-    text-decoration: none;
-    color: var(--text);
-    background-color: var(--bg);
-    border: 2px solid var(--text);
-    border-radius: 12px;
-    transition: all 0.25s ease;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-}
-.menu a:hover {
-    background-color: var(--accent);
-    color: var(--bg);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(40px);
-        opacity: 0;
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
-    to {
-        transform: translateX(0);
-        opacity: 1;
+
+    :root {
+      --bg: #f8f8f8;
+      --surface: #ffffff;
+      --text: #121212;
+      --text-secondary: #3a3a3a;
+      --accent: #c62828;
+      --accent-hover: #b71c1c;
+      --border: #e0e0e0;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+      --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --radius-lg: 20px;
+      --radius-sm: 12px;
     }
-}
 
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 200;
-    left: 0; top: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(53, 63, 69, 0.7);
-    justify-content: center;
-    align-items: center;
-}
-.modal-content {
-    background-color: var(--bg);
-    padding: 15px;
-    border-radius: 12px;
-    max-width: 380px;   /* Giới hạn chiều rộng tối đa nhỏ hơn */
-    max-height: 50vh;
-    width: 90%;
-    text-align: center;
-    color: var(--text);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-    transition: background-color 0.3s, color 0.3s;
-}
+    body.dark {
+      --bg: #0f0f0f;
+      --surface: #1c1c1c;
+      --text: #ededed;
+      --text-secondary: #b0b0b0;
+      --accent: #e53935;
+      --accent-hover: #ef5350;
+      --border: #2c2c2c;
+      --shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+    }
 
-.qr-list {
-    display: flex;
-    gap: 20px;
-    flex-wrap: nowrap;
-    justify-content: center;
-}
-.qr-item img {
-    width: 150px;
-    border: 2px solid var(--text);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-.qr-item img:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 15px rgba(0,0,0,0.25);
-}
-
-.close-btn {
-    margin-top: 20px;
-    padding: 10px 20px;
-    border: none;
-    background-color: var(--accent);
-    color: var(--bg);
-    cursor: pointer;
-    font-weight: bold;
-    border-radius: 6px;
-    transition: background-color 0.25s ease, transform 0.25s ease;
-}
-.close-btn:hover {
-    transform: translateY(-1px);
-    background-color: #14b0ab;
-}
-
-.image-modal {
-    display: none;
-    position: fixed;
-    z-index: 300;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(53, 63, 69, 0.8);
-    justify-content: center;
-    align-items: center;
-}
-.image-modal img {
-    max-width: 90%;
-    max-height: 90%;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(53, 63, 69, 0.5);
-}
-
-/* MOBILE */
-/* Phiên bản Mobile */
-/* Mobile Layout */
-/* Mobile Layout */
-/* Mobile Layout */
-@media (max-width: 768px) {
     body {
-        overflow: auto;
-        padding-bottom: 60px; /* chừa chỗ cho menu cố định */
+      font-family: 'Saira', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background var(--transition), color var(--transition);
+      line-height: 1.5;
     }
 
-    /* Header giữ chữ ở giữa, icon hai bên */
+    /* ===== HEADER ===== */
     header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 28px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+      position: sticky;
+      top: 0;
+      z-index: 110;
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.85);
+      transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+    }
+    body.dark header {
+      background: rgba(20,20,20,0.9);
+      backdrop-filter: blur(12px);
+    }
+
+    .header-left,
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .center-title {
-        font-size: 1.6rem;
-        text-align: center;
-        flex: 1;
+      font-size: 2.6rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      user-select: none;
     }
 
-    .left, .right {
-        flex-direction: row;
-        gap: 8px;
+    .icon-btn {
+      background: transparent;
+      border: none;
+      font-size: 1.25rem;
+      color: var(--text);
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      position: relative;
+    }
+    .icon-btn:hover {
+      color: var(--accent);
+      background: rgba(0,0,0,0.04);
+      transform: translateY(-1px);
+    }
+    body.dark .icon-btn:hover {
+      background: rgba(255,255,255,0.08);
     }
 
-.floating-controls {
-        display: flex;
-        flex-direction: row; /* Xếp ngang */
-        gap: 8px;            /* Khoảng cách giữa 2 nút */
-        margin-bottom: 10px; /* Cách phần nội dung dưới */
-    }
-
-    /* Info chiếm toàn bộ chiều ngang */
+    /* ===== MAIN LAYOUT ===== */
     main {
-        flex-direction: column;
-        padding: 10px;
-        gap: 10px;
+      flex: 1;
+      display: flex;
+      gap: 32px;
+      padding: 32px 28px;
+      max-width: 1300px;
+      width: 100%;
+      margin: 0 auto;
+      align-items: flex-start;
     }
 
+    /* info card */
     .info {
-        width: 100%;
-        padding: 16px;
-        padding-bottom: 32px;
+      flex: 2;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
     }
 
-    /* Menu ngang luôn hiển thị ở đáy */
-     @media (max-width: 768px) {
+    .info h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--accent);
+      border-bottom: 3px solid var(--accent);
+      display: inline-block;
+      padding-bottom: 6px;
+      margin-bottom: 24px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px 28px;
+      margin-top: 8px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .info-label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-secondary);
+    }
+
+    .info-value {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .info-value strong {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .update-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 20px;
+      margin-left: 8px;
+      letter-spacing: 0.4px;
+      vertical-align: middle;
+    }
+
+    /* menu bên phải (desktop) */
     .menu {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: sticky;
+      top: 110px;
+    }
+
+    .menu a,
+    .menu .menu-btn {
+      display: block;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.15rem;
+      padding: 16px 18px;
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      text-decoration: none;
+      transition: all var(--transition);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+      cursor: pointer;
+      letter-spacing: 0.3px;
+      white-space: normal;
+      word-break: break-word;
+    }
+
+    .menu a:hover,
+    .menu .menu-btn:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 20px rgba(198, 40, 40, 0.25);
+    }
+
+    /* ===== MODAL ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-content {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 30px 50px rgba(0,0,0,0.4);
+      color: var(--text);
+      max-height: 85vh;
+      overflow-y: auto;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    .modal-content h2 {
+      margin-bottom: 16px;
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: var(--accent);
+    }
+
+    .qr-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      margin: 20px 0 16px;
+    }
+
+    .qr-item p {
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-secondary);
+    }
+
+    .qr-item img {
+      width: 120px;
+      height: auto;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s;
+    }
+    .qr-item img:hover {
+      transform: scale(1.04);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.2);
+    }
+
+    .close-btn {
+      margin-top: 16px;
+      background: var(--accent);
+      border: none;
+      color: white;
+      font-weight: 700;
+      padding: 10px 24px;
+      border-radius: 40px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: background var(--transition), transform 0.2s;
+      letter-spacing: 0.3px;
+    }
+    .close-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    /* modal phóng to ảnh */
+    .image-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .image-modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border-radius: 12px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.7);
+    }
+
+    /* ===== FOOTER (mobile menu) ===== */
+    @media (max-width: 768px) {
+      header {
+        padding: 10px 16px;
+      }
+      .center-title {
+        font-size: 1.9rem;
+      }
+      .header-left, .header-right {
+        gap: 6px;
+      }
+
+      main {
+        flex-direction: column;
+        padding: 16px;
+        gap: 20px;
+      }
+
+      .info {
+        padding: 24px 18px;
+      }
+
+      .menu {
         position: fixed;
         bottom: 0;
         left: 0;
         width: 100%;
         flex-direction: row;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.06);
+        z-index: 150;
+        gap: 6px;
+        padding: 8px 8px;
         justify-content: space-around;
-        background-color: var(--bg);
-        padding: 6px 4px; /* Giảm padding ngang */
-        gap: 4px;
-        border-top: 1px solid #ccc;
-        box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-        z-index: 200;
-    }
+        border-radius: 0;
+      }
 
-    .menu a {
+      .menu a,
+      .menu .menu-btn {
         flex: 1;
-        padding: 8px 4px;
-        font-size: 0.95rem;
-        white-space: normal; /* Cho phép xuống hàng */
-        line-height: 1.2;
-        text-align: center;
-        word-break: break-word;
-    }
-}
+        font-size: 0.8rem;
+        padding: 10px 4px;
+        border-radius: 30px;
+        border: 1px solid var(--border);
+        box-shadow: none;
+      }
 
-}
+      body {
+        padding-bottom: 80px;
+      }
 
-    /* Popup full màn hình */
-    .modal-content {
-        width: 95%;
-        max-width: none;
-        height: 100%;
-        overflow-y: auto;
-        padding-top: 0px;
+      .modal-content {
+        max-width: 100%;
+        margin: 0 8px;
+      }
     }
 
-    .qr-item img {
-        width: 100px;
+    @media (max-width: 400px) {
+      .menu a, .menu .menu-btn {
+        font-size: 0.7rem;
+        padding: 8px 2px;
+      }
     }
-
-}
-
-</style>
+  </style>
 </head>
 <body>
-<header>
-    <div class="left">
-        <button class="icon-btn" id="theme-toggle" title="Đổi chế đố"><i class="fas fa-adjust"></i></button>
-        <button class="icon-btn" id="lang-toggle" title="Đổi ngôn ngữ"><i class="fa-solid fa-language"></i></button>
+  <header>
+    <div class="header-left">
+      <button class="icon-btn" id="theme-toggle" title="Giao diện tối/sáng"><i class="fas fa-adjust"></i></button>
+      <button class="icon-btn" id="lang-toggle" title="Ngôn ngữ"><i class="fa-solid fa-language"></i></button>
     </div>
     <div class="center-title" data-lang="title">YattaD</div>
-    <div class="right">
-        <a href="https://www.facebook.com/Fb.YattaD/" target="_blank" class="icon-btn"><i class="fab fa-facebook-f"></i></a>
-        <a href="https://www.instagram.com/yattad.art/" target="_blank" class="icon-btn"><i class="fab fa-instagram"></i></a>
-        <button class="icon-btn" onclick="copyToClipboard('YattaD')" title="Copy Discord"><i class="fab fa-discord"></i></button>
-        <button class="icon-btn" onclick="copyToClipboard('Yattadwork@gmail.com')" title="Copy Gmail"><i class="fas fa-envelope"></i></button>
+    <div class="header-right">
+      <a href="https://www.facebook.com/Fb.YattaD/" target="_blank" class="icon-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://www.instagram.com/yattad.art/" target="_blank" class="icon-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      <button class="icon-btn" onclick="copyToClipboard('YattaD')" title="Copy Discord"><i class="fab fa-discord"></i></button>
+      <button class="icon-btn" onclick="copyToClipboard('Yattadwork@gmail.com')" title="Copy Gmail"><i class="fas fa-envelope"></i></button>
     </div>
-</header>
+  </header>
 
-<main>
-    <div class="info">
-        <h2 data-lang="infoTitle">Thông tin cá nhân</h2>
-        <p data-lang="infoNote">(Còn cập nhật thêm)</p>
-        <h3><strong data-lang="nameLabel">Họ và Tên:</strong> <span data-lang="nameValue">Ngô Xuân Đạt</span></h3>   
-        <h3><strong data-lang="birthLabel">Năm sinh:</strong> <span data-lang="birthValue">1998</span></h3>
-        <h3><strong data-lang="genderLabel">Giới tính:</strong> <span data-lang="genderValue">Nam</span></h3>
-        <h3><strong data-lang="nationLabel">Quốc tịch:</strong> <span data-lang="nationValue">Việt Nam</span></h3>
-        <h3><strong data-lang="hobbyLabel">Sở thích:</strong> <span data-lang="hobbyValue">Mĩ Thuật, Biên Kịch, Học hỏi điều mới</span></h3>
-        <h3><strong data-lang="jobLabel">Công việc:</strong> <span data-lang="jobValue">Freelancer <strong>Artist</strong></span></h3>
-        <h3><strong data-lang="eduLabel">Học vấn:</strong> <span data-lang="eduValue">Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong></span></h3>
-        <h3><strong data-lang="expLabel">Kinh Nghiệm:</strong> <span data-lang="expValue">Làm nghề từ <strong>năm 2020</strong></span></h3>
-        <h3><strong data-lang="skillLabel">Khả năng:</strong> <span data-lang="skillValue">Vẽ Minh họa, Thiết kế nhân vật, Vẽ truyện tranh, <strong>Sáng tạo nội dung</strong></span></h3>
-    </div>
-    <div class="menu">
-    <a href="Art.html" data-lang="menu1">Xưởng Tranh Vẽ</a>
-    <a href="Comic.html" data-lang="menu2">Đọc Truyện Tranh</a>
-    <a id="payment-btn" data-lang="menu4">Cổng Thanh Toán</a>
-    <a href="Random.html" data-lang="menu5">Điều Ngẫu Nhiên</a>
-    <a href="Game.html" data-lang="menu3">Phát Triển Game</a>
-</div>
-</main>
+  <main>
+    <!-- THÔNG TIN CÁ NHÂN -->
+    <section class="info">
+      <h2 data-lang="infoTitle">Thông tin cá nhân</h2>
+      <span class="update-badge" data-lang="infoNote">cập nhật thêm</span>
 
-<div id="payment-modal" class="modal">
-    <div class="modal-content">
-        <h2 data-lang="payTitle">Quét mã dưới đây để thanh toán</h2>
-        <p data-lang="payNote">Nhấn vào hình để phóng to mã</p>
-        <div class="qr-list">
-            <div class="qr-item">
-                <p><strong>BIDV</strong></p>
-                <img src="QR/BIDV.webp" alt="QR BIDV">
-            </div>
-            <div class="qr-item">
-                <p><strong>MoMo</strong></p>
-                <img src="QR/MOMO.webp" alt="QR MoMo">
-            </div>
-            <div class="qr-item">
-                <p><strong>PayPal</strong></p>
-                <img src="QR/PayPal.webp" alt="QR PayPal">
-            </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label" data-lang="nameLabel">Họ và Tên</span>
+          <span class="info-value" data-lang="nameValue">Ngô Xuân Đạt</span>
         </div>
-                <button class="close-btn" id="close-modal" data-lang="closeBtn">Đóng</button>
+        <div class="info-item">
+          <span class="info-label" data-lang="birthLabel">Năm sinh</span>
+          <span class="info-value" data-lang="birthValue">1998</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label" data-lang="genderLabel">Giới tính</span>
+          <span class="info-value" data-lang="genderValue">Nam</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label" data-lang="nationLabel">Quốc tịch</span>
+          <span class="info-value" data-lang="nationValue">Việt Nam</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label" data-lang="hobbyLabel">Sở thích</span>
+          <span class="info-value" data-lang="hobbyValue">Mĩ Thuật, Biên Kịch, Học hỏi điều mới</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label" data-lang="jobLabel">Công việc</span>
+          <span class="info-value" data-lang="jobValue">Freelancer <strong>Artist</strong></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label" data-lang="eduLabel">Học vấn</span>
+          <span class="info-value" data-lang="eduValue">Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label" data-lang="expLabel">Kinh nghiệm</span>
+          <span class="info-value" data-lang="expValue">Làm nghề từ <strong>năm 2020</strong></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label" data-lang="skillLabel">Khả năng</span>
+          <span class="info-value" data-lang="skillValue">Vẽ Minh họa, Thiết kế nhân vật, Vẽ truyện tranh, <strong>Sáng tạo nội dung</strong></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- MENU ĐIỀU HƯỚNG -->
+    <nav class="menu">
+      <a href="Art.html" data-lang="menu1">Xưởng Tranh Vẽ</a>
+      <a href="Comic.html" data-lang="menu2">Đọc Truyện Tranh</a>
+      <span class="menu-btn" id="payment-btn" data-lang="menu4">Cổng Thanh Toán</span>
+      <!-- ĐÃ SỬA: "Tiện ích khác" giờ dẫn đến Game.html -->
+      <a href="Game.html" data-lang="menu6">Tiện ích khác</a>
+    </nav>
+  </main>
+
+  <!-- MODAL THANH TOÁN -->
+  <div id="payment-modal" class="modal">
+    <div class="modal-content">
+      <h2 data-lang="payTitle">Quét mã dưới đây để thanh toán</h2>
+      <p data-lang="payNote">Nhấn vào hình để phóng to mã</p>
+      <div class="qr-list">
+        <div class="qr-item">
+          <p><strong>BIDV</strong></p>
+          <img src="QR/BIDV.webp" alt="QR BIDV">
+        </div>
+        <div class="qr-item">
+          <p><strong>MoMo</strong></p>
+          <img src="QR/MOMO.webp" alt="QR MoMo">
+        </div>
+        <div class="qr-item">
+          <p><strong>PayPal</strong></p>
+          <img src="QR/PayPal.webp" alt="QR PayPal">
+        </div>
+      </div>
+      <button class="close-btn" id="close-payment-modal" data-lang="closeBtn">Đóng</button>
     </div>
-    <!-- Modal phóng to QR -->
-<div id="image-modal" class="image-modal">
-    <img id="large-image" src="" alt="QR Large">
-</div>
-</div>
+  </div>
 
+  <!-- MODAL PHÓNG TO ẢNH QR -->
+  <div id="image-modal" class="image-modal">
+    <img id="large-image" src="" alt="QR lớn">
+  </div>
 
-<script>
-    const translations = {
+  <script>
+    (function() {
+      /* ---------- ĐA NGÔN NGỮ ---------- */
+      const translations = {
         vi: {
-            title: "YattaD",
-            infoTitle: "Thông tin cá nhân",
-            infoNote: "(Còn cập nhật thêm)",
-            nameLabel: "Họ và Tên:",
-            nameValue: "Ngô Xuân Đạt",
-            birthLabel: "Năm sinh:",
-            birthValue: "1998",
-            genderLabel: "Giới tính:",
-            genderValue: "Nam",
-            nationLabel: "Quốc tịch:",
-            nationValue: "Việt Nam",
-            hobbyLabel: "Sở thích:",
-            hobbyValue: "Mĩ Thuật, Biên Kịch, Học hỏi điều mới",
-            jobLabel: "Công việc:",
-            jobValue: "Freelancer <strong>Artist</strong>",
-            eduLabel: "Học vấn:",
-            eduValue: "Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong>",
-            expLabel: "Kinh Nghiệm:",
-    expValue: "Làm nghề từ <strong>năm 2020</strong>",
-    skillLabel: "Khả năng:",
-    skillValue: "Vẽ Minh họa, Thiết kế nhân vật, Vẽ truyện tranh, <strong>Sáng tạo nội dung</strong>",
-            menu1: "Xưởng Tranh Vẽ",
-            menu2: "Đọc Truyện Tranh",
-            menu3: "Phát Triển Game",
-            menu4: "Cổng Thanh Toán",
-            menu5: "Điều Ngẫu Nhiên",
-            payTitle: "Quét mã dưới đây để thanh toán",
-            payNote: "Nhấn vào hình để phóng to mã",
-            closeBtn: "Đóng"
+          title: "YattaD",
+          infoTitle: "Thông tin cá nhân",
+          infoNote: "cập nhật thêm",
+          nameLabel: "Họ và Tên",
+          nameValue: "Ngô Xuân Đạt",
+          birthLabel: "Năm sinh",
+          birthValue: "1998",
+          genderLabel: "Giới tính",
+          genderValue: "Nam",
+          nationLabel: "Quốc tịch",
+          nationValue: "Việt Nam",
+          hobbyLabel: "Sở thích",
+          hobbyValue: "Mĩ Thuật, Biên Kịch, Học hỏi điều mới",
+          jobLabel: "Công việc",
+          jobValue: "Freelancer <strong>Artist</strong>",
+          eduLabel: "Học vấn",
+          eduValue: "Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong>",
+          expLabel: "Kinh nghiệm",
+          expValue: "Làm nghề từ <strong>năm 2020</strong>",
+          skillLabel: "Khả năng",
+          skillValue: "Vẽ Minh họa, Thiết kế nhân vật, Vẽ truyện tranh, <strong>Sáng tạo nội dung</strong>",
+          menu1: "Xưởng Tranh Vẽ",
+          menu2: "Đọc Truyện Tranh",
+          menu4: "Cổng Thanh Toán",
+          menu6: "Tiện ích khác",
+          payTitle: "Quét mã dưới đây để thanh toán",
+          payNote: "Nhấn vào hình để phóng to mã",
+          closeBtn: "Đóng"
         },
         en: {
-            title: "YattaD",
-            infoTitle: "Personal Information",
-            infoNote: "(Updating...)",
-            nameLabel: "Full Name:",
-            nameValue: "Ngo Xuan Dat",
-            birthLabel: "Year of Birth:",
-            birthValue: "1998",
-            genderLabel: "Gender:",
-            genderValue: "Male",
-            nationLabel: "Nationality:",
-            nationValue: "Vietnam",
-            hobbyLabel: "Hobbies:",
-            hobbyValue: "Fine Arts, Screenwriting, Learning new things",
-            jobLabel: "Occupation:",
-            jobValue: "Freelancer <strong>Artist</strong>",
-            eduLabel: "Education:",
-            eduValue: "Graduated in Planning Department at <strong>Hanoi Architectural University</strong>",
-            expLabel: "Experience:",
-    expValue: "Working since <strong>2020</strong>",
-    skillLabel: "Skills:",
-    skillValue: "Illustration, Character Design, Comics, <strong>Content Creation</strong>",
-            menu1: "Art Work&shy;shop",
-            menu2: "Read Comics",
-            menu3: "Game Deve&shy;lop&shy;ment",
-            menu4: "Pay&shy;ment Gate&shy;way",
-            menu5: "Random Stuff",
-            payTitle: "Scan the QR codes below to pay",
-            payNote: "Click on an image to enlarge",
-            closeBtn: "Close"
+          title: "YattaD",
+          infoTitle: "Personal Information",
+          infoNote: "updating",
+          nameLabel: "Full Name",
+          nameValue: "Ngo Xuan Dat",
+          birthLabel: "Year of Birth",
+          birthValue: "1998",
+          genderLabel: "Gender",
+          genderValue: "Male",
+          nationLabel: "Nationality",
+          nationValue: "Vietnam",
+          hobbyLabel: "Hobbies",
+          hobbyValue: "Fine Arts, Screenwriting, Learning new things",
+          jobLabel: "Occupation",
+          jobValue: "Freelancer <strong>Artist</strong>",
+          eduLabel: "Education",
+          eduValue: "Graduated in Planning Department at <strong>Hanoi Architectural University</strong>",
+          expLabel: "Experience",
+          expValue: "Working since <strong>2020</strong>",
+          skillLabel: "Skills",
+          skillValue: "Illustration, Character Design, Comics, <strong>Content Creation</strong>",
+          menu1: "Art Workshop",
+          menu2: "Read Comics",
+          menu4: "Payment Gateway",
+          menu6: "Utilities",
+          payTitle: "Scan the QR codes below to pay",
+          payNote: "Click on an image to enlarge",
+          closeBtn: "Close"
         }
-    };
+      };
 
-    let currentLang = localStorage.getItem("lang") || "vi";
-    let darkMode = localStorage.getItem("theme") === "dark";
+      let currentLang = localStorage.getItem("lang") || "vi";
+      let darkMode = localStorage.getItem("theme") === "dark";
 
-    function applyLanguage() {
+      function applyLanguage() {
         document.querySelectorAll("[data-lang]").forEach(el => {
-            const key = el.getAttribute("data-lang");
-            if (translations[currentLang][key]) {
-                el.innerHTML = translations[currentLang][key];
-            }
+          const key = el.getAttribute("data-lang");
+          if (translations[currentLang] && translations[currentLang][key]) {
+            el.innerHTML = translations[currentLang][key];
+          }
         });
         localStorage.setItem("lang", currentLang);
-    }
+      }
 
-    function applyTheme() {
+      function applyTheme() {
         document.body.classList.toggle("dark", darkMode);
         localStorage.setItem("theme", darkMode ? "dark" : "light");
-    }
+      }
 
-    document.getElementById("lang-toggle").addEventListener("click", () => {
+      document.getElementById("lang-toggle").addEventListener("click", () => {
         currentLang = currentLang === "vi" ? "en" : "vi";
         applyLanguage();
-    });
+      });
 
-    document.getElementById('theme-toggle').addEventListener('click', () => {
+      document.getElementById("theme-toggle").addEventListener("click", () => {
         darkMode = !darkMode;
         applyTheme();
-    });
+      });
 
-    function copyToClipboard(text) {
+      /* ---------- COPY TO CLIPBOARD ---------- */
+      window.copyToClipboard = function(text) {
         navigator.clipboard.writeText(text).then(() => {
-            alert(`Đã copy: ${text}`);
+          alert(`Đã copy: ${text}`);
+        }).catch(() => {
+          prompt("Sao chép thủ công:", text);
         });
-    }
+      };
 
-    const modal = document.getElementById('payment-modal');
-    const openBtn = document.getElementById('payment-btn');
-    const closeBtn = document.getElementById('close-modal');
-    openBtn.addEventListener('click', () => modal.style.display = 'flex');
-    closeBtn.addEventListener('click', () => modal.style.display = 'none');
-    window.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
+      /* ---------- MODAL THANH TOÁN ---------- */
+      const paymentModal = document.getElementById("payment-modal");
+      const paymentBtn = document.getElementById("payment-btn");
+      const closePayment = document.getElementById("close-payment-modal");
 
-const qrImages = document.querySelectorAll('.qr-item img');
-const imageModal = document.getElementById('image-modal');
-const largeImage = document.getElementById('large-image');
+      paymentBtn.addEventListener("click", () => paymentModal.style.display = "flex");
+      closePayment.addEventListener("click", () => paymentModal.style.display = "none");
+      paymentModal.addEventListener("click", (e) => {
+        if (e.target === paymentModal) paymentModal.style.display = "none";
+      });
 
-qrImages.forEach(img => {
-    img.addEventListener('click', () => {
-        largeImage.src = img.src;
-        imageModal.style.display = 'flex';
-    });
-});
+      /* ---------- PHÓNG TO ẢNH QR ---------- */
+      const qrImages = document.querySelectorAll(".qr-item img");
+      const imageModal = document.getElementById("image-modal");
+      const largeImage = document.getElementById("large-image");
 
-imageModal.addEventListener('click', () => {
-    imageModal.style.display = 'none';
-    largeImage.src = '';
-});
+      qrImages.forEach(img => {
+        img.addEventListener("click", () => {
+          largeImage.src = img.src;
+          imageModal.style.display = "flex";
+        });
+      });
+      imageModal.addEventListener("click", () => {
+        imageModal.style.display = "none";
+        largeImage.src = "";
+      });
 
-    // Áp dụng khi load trang
-    applyTheme();
-    applyLanguage();
+      /* ---------- KHỞI ĐỘNG ---------- */
+      applyTheme();
+      applyLanguage();
 
-    // MOBILE
+      /* ---------- PWA ---------- */
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("service-worker.js")
+          .then(() => console.log("Service Worker đã đăng ký"))
+          .catch(err => console.error("SW lỗi:", err));
+      }
 
-    if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.register("service-worker.js")
-    .then(() => console.log("Service Worker đã đăng ký"))
-    .catch(err => console.error("SW lỗi:", err));
-}
-    // MOBILE
-    // MOBILE
-function adjustMobileLayout() {
-    if (window.innerWidth <= 768) {
-        // Tạo nút trong info
-        if (!document.querySelector(".floating-controls")) {
-            const controls = document.createElement("div");
-            controls.className = "floating-controls";
-            const themeBtn = document.getElementById("theme-toggle");
-            const langBtn = document.getElementById("lang-toggle");
-            controls.appendChild(themeBtn);
-            controls.appendChild(langBtn);
-            document.querySelector(".info").prepend(controls);
-        }
-
-        // Chuyển icon FB & IG sang trái
-        const leftArea = document.querySelector("header .left");
-        const fbIcon = document.querySelector('header .right a[href*="facebook"]');
-        const igIcon = document.querySelector('header .right a[href*="instagram"]');
-        if (fbIcon && igIcon) {
+      /* ---------- MOBILE: chuyển icon mạng xã hội sang trái nếu cần ---------- */
+      function adjustMobileLayout() {
+        if (window.innerWidth <= 768) {
+          const leftArea = document.querySelector(".header-left");
+          const fbIcon = document.querySelector('.header-right a[href*="facebook"]');
+          const igIcon = document.querySelector('.header-right a[href*="instagram"]');
+          if (fbIcon && igIcon && leftArea && !document.querySelector(".header-left .fab.fa-facebook-f")) {
             leftArea.appendChild(fbIcon);
             leftArea.appendChild(igIcon);
+          }
         }
-    }
-}
-
-window.addEventListener("resize", adjustMobileLayout);
-window.addEventListener("load", adjustMobileLayout);
-
-</script>
+      }
+      window.addEventListener("resize", adjustMobileLayout);
+      window.addEventListener("load", adjustMobileLayout);
+    })();
+  </script>
 </body>
 </html>
