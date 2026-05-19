@@ -52,7 +52,7 @@
     line-height: 1.5;
   }
 
-  /* ========== HEADER (giống hệt trang chính) ========== */
+  /* ========== HEADER ========== */
   header {
     display: flex;
     align-items: center;
@@ -69,9 +69,8 @@
     gap: 10px;
   }
 
-  /* Căn chỉnh lại cấu trúc header (giữ đúng các phần tử) */
   header > div:first-child {
-    width: 40px; /* để cân bằng với bên phải có 2 nút */
+    width: 40px;
   }
   .center-title {
     font-size: 1.9rem;
@@ -142,13 +141,15 @@
     border-color: var(--accent);
   }
 
-  /* Ảnh bìa */
+  /* Ảnh bìa: giữ nguyên tỷ lệ gốc, không cắt, hiển thị toàn bộ */
   .menuItem img {
     width: 100%;
-    aspect-ratio: 16 / 9;
-    object-fit: cover;
+    height: auto;
+    aspect-ratio: auto;          /* bỏ tỷ lệ ép buộc, lấy theo ảnh gốc */
+    object-fit: contain;         /* giữ toàn bộ ảnh, không cắt */
     display: block;
     border-bottom: 2px solid var(--border-color);
+    background-color: var(--bg); /* nền phụ nếu ảnh trong suốt */
     transition: transform 0.25s ease;
   }
   .menuItem:hover img {
@@ -288,23 +289,19 @@
     currentLang = currentLang === 'vi' ? 'en' : 'vi';
     localStorage.setItem('lang', currentLang);
 
-    // Cập nhật nội dung các phần tử có id
     for (const key in translations[currentLang]) {
       const el = document.getElementById(key);
       if (el) el.textContent = translations[currentLang][key];
     }
-    // Cập nhật title ở header (id="title")
     const titleEl = document.getElementById('title');
     if (titleEl) titleEl.textContent = translations[currentLang].title;
   }
 
   langBtn.addEventListener('click', switchLanguage);
 
-  // Khởi tạo ngôn ngữ lần đầu
   if (currentLang === 'en') {
     switchLanguage();
   } else {
-    // Đảm bảo tiêu đề đúng tiếng Việt
     document.getElementById('title').textContent = translations.vi.title;
   }
 </script>
