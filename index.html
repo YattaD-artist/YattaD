@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
   <title>YattaD · Portfolio</title>
 
   <!-- Favicon & PWA -->
@@ -73,6 +73,8 @@
       z-index: 100;
       box-shadow: 0 2px 0 var(--border-color);
       transition: background var(--transition), border-color var(--transition);
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     .header-left,
@@ -199,25 +201,36 @@
       font-weight: 600;
     }
 
-    /* Mascot */
+    /* Mascot - Ảnh lớn, rõ, không viền, hover phóng to + nghiêng nhẹ */
     .mascot-box {
       margin-top: 20px;
       text-align: center;
       border: 2px solid var(--border-color);
       padding: 16px;
       background: rgba(0,0,0,0.01);
+      transition: box-shadow 0.2s;
     }
     body.dark .mascot-box {
       background: rgba(255,255,255,0.02);
     }
+    
     .mascot-box img {
       max-width: 100%;
       height: auto;
-      max-height: 200px;
+      max-height: 280px;
       display: block;
       margin: 0 auto;
-      border: 1px solid var(--border-light);
+      border: none;             /* Xóa khung viền ảnh */
+      transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
+    
+    /* Hover: phóng to + nghiêng nhẹ */
+    .mascot-box img:hover {
+      transform: scale(1.05) rotate(1deg);
+    }
+    
     .mascot-label {
       font-weight: 700;
       margin-bottom: 10px;
@@ -227,7 +240,7 @@
       color: var(--accent);
     }
 
-    /* ----- MENU ----- */
+    /* ----- MENU (Desktop: vertical, Mobile: fixed bottom) ----- */
     .menu {
       flex: 0.9;
       display: flex;
@@ -347,7 +360,7 @@
       border: 4px solid white;
     }
 
-    /* ----- MOBILE ----- */
+    /* ----- MOBILE OPTIMIZATION: menu cố định dưới cùng, hiển thị ĐẦY ĐỦ ----- */
     @media (max-width: 768px) {
       header {
         padding: 10px 14px;
@@ -355,9 +368,15 @@
       .center-title {
         font-size: 1.5rem;
       }
+      
+      /* header-right luôn bên phải */
+      .header-right {
+        margin-left: auto;
+      }
+      
       main {
         flex-direction: column;
-        padding: 20px 16px;
+        padding: 20px 16px 90px;  /* khoảng trống dưới để menu không che nội dung */
         gap: 20px;
       }
 
@@ -369,7 +388,8 @@
         grid-template-columns: 110px 1fr;
         gap: 8px 10px;
       }
-
+      
+      /* MENU FIXED BOTTOM - ĐẢM BẢO HIỂN THỊ TẤT CẢ 4 MỤC */
       .menu {
         position: fixed;
         bottom: 0;
@@ -378,20 +398,68 @@
         flex-direction: row;
         background: var(--surface);
         border-top: 3px solid var(--border-color);
-        box-shadow: 0 -2px 0 var(--border-color);
+        box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
         z-index: 150;
-        gap: 4px;
-        padding: 8px 8px;
+        gap: 6px;
+        padding: 8px 12px;
+        justify-content: space-between;
+        top: auto;
+        align-self: auto;
+        backdrop-filter: blur(12px);
+        background: var(--surface);
       }
+      
       .menu a {
         flex: 1;
-        font-size: 0.7rem;
+        text-align: center;
+        font-size: 0.75rem;
         padding: 10px 4px;
         box-shadow: none;
-        border: 1px solid var(--border-color);
+        border: 1.5px solid var(--border-color);
+        white-space: normal;
+        word-break: keep-all;
+        line-height: 1.3;
       }
-      body {
-        padding-bottom: 80px;
+      
+      .menu a:hover {
+        transform: translateY(-2px);
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+    }
+
+    /* Điều chỉnh cho màn hình rất nhỏ (dưới 450px) - menu vẫn full */
+    @media (max-width: 480px) {
+      .header-left .icon-btn,
+      .header-right .icon-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.95rem;
+      }
+      .center-title {
+        font-size: 1.2rem;
+      }
+      .menu {
+        padding: 6px 8px;
+        gap: 4px;
+      }
+      .menu a {
+        font-size: 0.65rem;
+        padding: 8px 2px;
+        letter-spacing: 0;
+        font-weight: 600;
+      }
+      .mascot-box img {
+        max-height: 200px;
+      }
+    }
+
+    /* Đảm bảo trên màn hình siêu nhỏ (dưới 380px) không bị tràn, chữ có thể xuống dòng nhẹ */
+    @media (max-width: 380px) {
+      .menu a {
+        font-size: 0.6rem;
+        padding: 6px 1px;
+        white-space: normal;
       }
     }
   </style>
@@ -404,6 +472,7 @@
     </div>
     <div class="center-title" data-lang="title">YattaD</div>
     <div class="header-right">
+      <!-- Các icon mạng xã hội đúng bên phải chữ YattaD -->
       <a href="https://www.facebook.com/Fb.YattaD/" target="_blank" class="icon-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
       <a href="https://www.instagram.com/yattad.art/" target="_blank" class="icon-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
       <button class="icon-btn" onclick="copyToClipboard('YattaD')" title="Copy Discord"><i class="fab fa-discord"></i></button>
@@ -463,12 +532,12 @@
         </div>
       </div>
 
-      <!-- NHÓM IV: Mascot -->
+      <!-- NHÓM IV: Mascot Tiêu (ảnh to, rõ, không viền, hover phóng to + nghiêng) -->
       <div class="info-group">
         <div class="group-title" data-lang="group4">Mascot</div>
         <div class="mascot-box">
           <div class="mascot-label" data-lang="mascotName">Tiêu</div>
-          <img src="assets/01.png" alt="Mascot Tiêu">
+          <img src="assets/01.png" alt="Mascot Tiêu - YattaD">
         </div>
       </div>
     </section>
@@ -521,7 +590,7 @@
           addressLabel: "Địa chỉ",
           addressValue: "Thanh Oai, Hà Nội",
           hobbyLabel: "Sở thích",
-          hobbyValue: "Vẽ, Kể Chuyện, Học hỏi điều mới, Ngủ, Màu <span class='highlight'>Đỏ</span>,...",
+          hobbyValue: "Vẽ, Kể Chuyện, Học hỏi điều mới, Ngủ, Màu <span class='highlight'>Đỏ</span>",
           eduLabel: "Học vấn",
           eduValue: "Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong>",
           skillLabel: "Khả năng",
@@ -557,7 +626,7 @@
           addressLabel: "Address",
           addressValue: "Thanh Oai, Hanoi",
           hobbyLabel: "Hobbies",
-          hobbyValue: "Drawing, Storytelling, Learning new things, Sleeping, Color <span class='highlight'>Red</span>,...",
+          hobbyValue: "Drawing, Storytelling, Learning new things, Sleeping, Color <span class='highlight'>Red</span>",
           eduLabel: "Education",
           eduValue: "Graduated in Planning Department at <strong>Hanoi Architectural University</strong>",
           skillLabel: "Skills",
@@ -612,6 +681,7 @@
         });
       };
 
+      // Modal thanh toán
       const paymentModal = document.getElementById("payment-modal");
       const paymentBtn = document.getElementById("payment-btn");
       const closePayment = document.getElementById("close-payment-modal");
@@ -625,6 +695,7 @@
         if (e.target === paymentModal) paymentModal.style.display = "none";
       });
 
+      // Phóng to QR
       const qrImages = document.querySelectorAll(".qr-item img");
       const imageModal = document.getElementById("image-modal");
       const largeImage = document.getElementById("large-image");
@@ -640,28 +711,16 @@
         largeImage.src = "";
       });
 
+      // Áp dụng theme & ngôn ngữ
       applyTheme();
       applyLanguage();
 
+      // Service Worker (PWA)
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("service-worker.js")
           .then(() => console.log("SW registered"))
           .catch(err => console.error("SW error:", err));
       }
-
-      function adjustMobileLayout() {
-        if (window.innerWidth <= 768) {
-          const leftArea = document.querySelector(".header-left");
-          const fbIcon = document.querySelector('.header-right a[href*="facebook"]');
-          const igIcon = document.querySelector('.header-right a[href*="instagram"]');
-          if (fbIcon && igIcon && leftArea && !document.querySelector(".header-left .fab.fa-facebook-f")) {
-            leftArea.appendChild(fbIcon);
-            leftArea.appendChild(igIcon);
-          }
-        }
-      }
-      window.addEventListener("resize", adjustMobileLayout);
-      window.addEventListener("load", adjustMobileLayout);
     })();
   </script>
 </body>
