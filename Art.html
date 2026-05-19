@@ -351,9 +351,9 @@
 <body>
 
 <header>
-    <div class="left">
-        <a href="index.html" class="icon-btn" title="Trang chủ"><i class="fas fa-home"></i></a>
-    </div>
+     <div class="left">
+    <a href="#" class="icon-btn" id="homeBtn" title="Trang chủ"><i class="fas fa-home"></i></a>
+  </div>
     <div class="center-title" id="title">YattaD</div>
     <div class="right">
         <button class="icon-btn" id="theme-toggle" title="Đổi chế độ"><i class="fas fa-adjust"></i></button>
@@ -550,6 +550,11 @@ overlay.addEventListener('click', (e) => {
 
 // Load mặc định
 loadCategory('MinhHoa');
+
+  document.getElementById('homeBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    location.href = 'index.html?nocache=' + Date.now();
+});
 </script>
 </body>
 </html>
