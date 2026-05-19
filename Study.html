@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title>Manga Study Workspace</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    :root {
+        --bg: #121212;
+        --surface: #1e1e1e;
+        --text: #e8e8e8;
+        --text-secondary: #b0b0b0;
+        --accent: #ef4444;
+        --accent-light: #f87171;
+        --border-color: #555;
+        --border-light: #333;
+        --shadow-hard: 4px 4px 0 rgba(0,0,0,0.4);
+        --transition: 0.2s ease;
+        /* giữ nguyên màu tag */
+        --transition-tag: #2196f3;
+        --camera-tag: #ff9800;
+        --layout-tag: #9c27b0;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+        width: 100%; height: 100%; margin: 0; overflow: hidden;
+        background: var(--bg);
+        color: var(--text);
+        font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+    }
+
+    button, input, select, textarea { font-family: inherit; }
+
+    .app {
+        width: 100%; height: 100%;
+        display: grid;
+        grid-template-columns: 250px 1fr 300px;
+        grid-template-rows: 54px 1fr;
+    }
+
+    /* ----- Topbar ----- */
+    .topbar {
+        grid-column: 1 / 4;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 0 14px;
+        background: var(--surface);
+        border-bottom: 2px solid var(--border-color);
+        box-shadow: 0 2px 0 var(--border-color);
+    }
+
+    .info {
+        flex: 1;
+        font-size: 13px;
+        color: var(--text-secondary);
+        font-weight: 500;
+    }
+    .info strong { color: var(--text); font-weight: 700; }
+
+    /* ----- Buttons chung ----- */
+    .btn {
+        border: 2px solid var(--border-color);
+        background: var(--surface);
+        color: var(--text);
+        padding: 8px 14px;
+        border-radius: 0; /* vuông như portfolio */
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all var(--transition);
+        box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+    }
+    .btn:hover {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+        box-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+        transform: translate(1px, 1px);
+    }
+    .btn.primary {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+    }
+    .btn.primary:hover {
+        background: var(--accent-light);
+    }
+
+    .btn-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    /* ----- Sidebars ----- */
+    .sidebar {
+        background: var(--surface);
+        overflow: auto;
+        padding: 14px;
+    }
+    .left {
+        border-right: 2px solid var(--border-color);
+    }
+    .right {
+        border-left: 2px solid var(--border-color);
+    }
+
+    .section-title {
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-secondary);
+        margin-bottom: 12px;
+        padding: 4px 8px;
+        border-left: 4px solid var(--accent);
+        background: rgba(255,255,255,0.03);
+    }
+
+    /* Mode buttons */
+    .mode-btn {
+        width: 100%;
+        border: 2px solid var(--border-color);
+        padding: 12px;
+        margin-bottom: 8px;
+        border-radius: 0;
+        background: var(--surface);
+        color: var(--text);
+        text-align: left;
+        cursor: pointer;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 13px;
+        transition: all var(--transition);
+        box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    }
+    .mode-btn:hover {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+    }
+    .mode-btn.active {
+        background: var(--accent);
+        color: white;
+        font-weight: 700;
+    }
+
+    /* ----- Control panel ----- */
+    .control {
+        background: var(--surface);
+        border: 2px solid var(--border-color);
+        border-radius: 0;
+        padding: 12px;
+        margin-bottom: 16px;
+        box-shadow: var(--shadow-hard);
+    }
+    .control label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .control input, .control select {
+        width: 100%;
+        margin-bottom: 12px;
+        background: #2a2a2a;
+        border: 1px solid var(--border-color);
+        color: var(--text);
+        padding: 6px;
+        border-radius: 0;
+        font-size: 13px;
+    }
+
+    .small {
+        font-size: 12px;
+        color: var(--text-secondary);
+        line-height: 1.5;
+    }
+
+    /* ----- Workspace ----- */
+    .workspace {
+        position: relative;
+        overflow: hidden;
+        background: #050505;
+    }
+    #viewport {
+        position: absolute;
+        top: 0; left: 0;
+        transform-origin: 0 0;
+        width: 100%; height: 100%;
+        will-change: transform;
+    }
+    #canvas {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        pointer-events: none;
+    }
+
+    /* ----- Tags ----- */
+    .tag {
+        position: absolute;
+        padding: 6px 10px;
+        border-radius: 0;
+        color: white;
+        font-size: 12px;
+        font-weight: 700;
+        user-select: none;
+        cursor: move;
+        white-space: nowrap;
+        box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+        z-index: 10;
+        border: 1px solid rgba(255,255,255,0.2);
+        text-transform: uppercase;
+    }
+
+    /* ----- Textbox ----- */
+    .textbox-container {
+        position: absolute;
+        z-index: 10;
+        user-select: none;
+    }
+    .textbox-content {
+        min-width: 50px;
+        min-height: 30px;
+        padding: 6px 8px;
+        outline: none;
+        background: transparent;
+        color: #000;
+        text-align: center;
+        font-size: 14px;
+        font-weight: normal;
+        font-style: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: pre-wrap;
+        border: 1px solid transparent;
+        cursor: move;
+        transition: border-color 0.2s;
+        width: 100%; height: 100%;
+        font-family: inherit;
+    }
+    .textbox-container.editing .textbox-content {
+        cursor: text;
+        user-select: text;
+        border: 1px dashed var(--accent);
+        background: rgba(255,255,255,0.05);
+    }
+    .textbox-container.selected .textbox-content {
+        border: 1px dashed var(--text-secondary);
+    }
+    .textbox-container.hide-border .textbox-content {
+        border-color: transparent !important;
+    }
+    .textbox-container.hide-border .resize-handle {
+        display: none !important;
+    }
+    .resize-handle {
+        position: absolute;
+        bottom: 0; right: 0;
+        width: 14px; height: 14px;
+        background: var(--accent);
+        clip-path: polygon(100% 0, 100% 100%, 0 100%);
+        cursor: nwse-resize;
+        display: none;
+    }
+    .textbox-container.selected .resize-handle,
+    .textbox-container.editing .resize-handle {
+        display: block;
+    }
+
+    .drag-preview {
+        position: absolute;
+        border: 2px dashed var(--accent);
+        pointer-events: none;
+        z-index: 20;
+    }
+
+    /* Tag list trong settings */
+    .tag-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+    .tag-btn {
+        border: 2px solid var(--border-color);
+        background: var(--surface);
+        color: var(--text);
+        padding: 6px 8px;
+        border-radius: 0;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        transition: all var(--transition);
+        box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    }
+    .tag-btn:hover {
+        background: var(--accent);
+        color: white;
+        border-color: var(--accent);
+    }
+
+    /* Format group */
+    .format-group {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+    .format-group button {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+        background: var(--surface);
+        border: 2px solid var(--border-color);
+        color: var(--text);
+        border-radius: 0;
+        cursor: pointer;
+        font-weight: 700;
+        transition: all var(--transition);
+    }
+    .format-group button.active {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+    }
+
+    /* Loại bỏ border-radius mặc định của input range */
+    input[type="range"] {
+        -webkit-appearance: none;
+        background: #333;
+        height: 4px;
+        border-radius: 0;
+    }
+</style>
+</head>
+<body>
+<div class="app">
+    <div class="topbar">
+        <div class="info">Manga: <strong id="manga-title">Đang tải...</strong> — Tác giả: <strong id="manga-author">Chưa rõ</strong></div>
+        <input type="file" id="file-input" multiple accept=".png,.jpg,.jpeg,.webp" hidden />
+        <button class="btn btn-icon" id="undo-btn" title="Hoàn tác (Ctrl+Z)">↩</button>
+        <button class="btn btn-icon" id="redo-btn" title="Làm lại (Ctrl+Y)">↪</button>
+        <button class="btn" id="load-btn" title="Tải ảnh từ máy">📁 Tải thủ công</button>
+        <button class="btn primary" id="random-btn" title="Chọn ngẫu nhiên một ảnh">🎲 Ngẫu Nhiên</button>
+        <button class="btn" id="export-btn" title="Xuất workspace thành PNG">📤 Xuất PNG</button>
+    </div>
+    <aside class="sidebar left">
+        <div class="section-title">Chế độ luyện tập</div>
+        <button class="mode-btn active" data-mode="FLOW">1. Dòng chảy (Flow)</button>
+        <button class="mode-btn" data-mode="TEXT">2. Hội thoại (Dialogue)</button>
+        <button class="mode-btn" data-mode="TRANSITION">3. Chuyển cảnh (Transition)</button>
+        <button class="mode-btn" data-mode="CAMERA">4. Góc máy & Cỡ cảnh</button>
+        <button class="mode-btn" data-mode="LAYOUT">5. Bố cục khung</button>
+    </aside>
+    <div class="workspace" id="workspace">
+        <div id="viewport">
+            <canvas id="canvas"></canvas>
+        </div>
+    </div>
+    <aside class="sidebar right">
+        <div class="section-title">Cài đặt công cụ</div>
+        <div id="settings"></div>
+    </aside>
+</div>
+
+<script>
+(function() {
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    const workspace = document.getElementById('workspace');
+    const viewport = document.getElementById('viewport');
+
+    let currentMode = 'FLOW';
+    let images = [];
+    let currentIndex = 0;
+    let currentImage = null;
+    let usingManualFiles = false;
+
+    // View transform
+    let appZoom = 1;
+    let appPanX = 0;
+    let appPanY = 0;
+
+    let isDrawing = false, currentTool = 'brush';
+    let brushColor = '#ff0000', brushSize = 5, brushOpacity = 1;
+    let drawings = [];
+
+    let activeTextbox = null;
+    let isDraggingNewText = false;
+    let dragStartX = 0, dragStartY = 0;
+    let dragPreview = null;
+    let showBorders = true;
+
+    let spacePanEnabled = false, isPanning = false;
+    let panStartClientX = 0, panStartClientY = 0;
+    let panStartPanX = 0, panStartPanY = 0;
+
+    const MAX_HISTORY = 50;
+    let historyStack = [], historyIndex = -1, elementIdCounter = 0;
+
+    const tags = {
+        TRANSITION: ['Khoảnh khắc sang Khoảnh khắc','Hành động sang Hành động','Chủ thể sang Chủ thể','Cảnh sang Cảnh','Chi tiết sang Chi tiết','Phi logic (Non-Sequitur)'],
+        CAMERA: ['Ngang tầm mắt','Góc cao','Góc thấp','Nhìn từ trên cao','Nhìn từ dưới lên','Góc nghiêng','Qua vai','Toàn cảnh rất xa','Toàn cảnh','Toàn thân','Trung cảnh rộng','Trung cảnh','Cận trung cảnh','Cận cảnh','Cận đặc tả','Cảnh nhóm'],
+        LAYOUT: ['Khung dọc','Khung ngang','Trang đơn','Trang đôi','Nhiều khung nhỏ','Khung chéo','Khung chồng','Khung trung tâm']
+    };
+
+    function init() {
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+        setupToolbar();
+        setupModes();
+        setupWorkspaceEvents();
+        setupPanZoom();
+        setupUndoRedo();
+        updateSettings();
+        loadImagesFromGitHub();
+        saveHistory();
+    }
+
+    // Undo/Redo giữ nguyên
+    function setupUndoRedo() {
+        document.getElementById('undo-btn').onclick = undo;
+        document.getElementById('redo-btn').onclick = redo;
+        window.addEventListener('keydown', e => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); }
+            else if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); }
+        });
+    }
+    function getSnapshot() {
+        const tb = []; viewport.querySelectorAll('.textbox-container').forEach(el => {
+            const c = el.querySelector('.textbox-content');
+            tb.push({ type:'textbox', id:el.dataset.id, left:el.style.left, top:el.style.top, width:el.style.width, height:el.style.height, text:c.textContent, fontSize:c.style.fontSize, fontWeight:c.style.fontWeight, fontStyle:c.style.fontStyle, borderHidden:el.classList.contains('hide-border'), mode:el.dataset.mode, editing:el.classList.contains('editing') });
+        });
+        const tg = []; viewport.querySelectorAll('.tag').forEach(el => {
+            tg.push({ type:'tag', id:el.dataset.id, left:el.style.left, top:el.style.top, background:el.style.background, text:el.innerText, mode:el.dataset.mode });
+        });
+        return { drawings: JSON.parse(JSON.stringify(drawings)), textboxes:tb, tags:tg, activeTextboxId: activeTextbox?.dataset.id };
+    }
+    function restoreSnapshot(s) {
+        viewport.querySelectorAll('.textbox-container,.tag').forEach(e=>e.remove());
+        activeTextbox=null; drawings=s.drawings;
+        s.textboxes.forEach(t=>{
+            const d=document.createElement('div'); d.className='textbox-container'; d.style.left=t.left; d.style.top=t.top; d.style.width=t.width; d.style.height=t.height; d.dataset.mode=t.mode; d.dataset.id=t.id;
+            if(t.borderHidden) d.classList.add('hide-border');
+            const c=document.createElement('div'); c.className='textbox-content'; c.textContent=t.text; c.style.fontSize=t.fontSize; c.style.fontWeight=t.fontWeight; c.style.fontStyle=t.fontStyle; c.contentEditable='false'; d.appendChild(c);
+            const h=document.createElement('div'); h.className='resize-handle'; d.appendChild(h);
+            viewport.appendChild(d); setupTextboxEvents(d);
+            if(t.editing) enterEditing(d); else if(s.activeTextboxId===t.id){ d.classList.add('selected'); activeTextbox=d; }
+        });
+        s.tags.forEach(t=>{
+            const d=document.createElement('div'); d.className='tag'; d.innerText=t.text; d.dataset.mode=t.mode; d.dataset.id=t.id; d.style.left=t.left; d.style.top=t.top; d.style.background=t.background;
+            viewport.appendChild(d); makeTagDraggable(d); d.ondblclick=()=>{d.remove();saveHistory();};
+        });
+        draw(); updateTextSettingsUI();
+    }
+    function saveHistory() {
+        const snap=getSnapshot(); if(historyIndex<historyStack.length-1) historyStack=historyStack.slice(0,historyIndex+1);
+        historyStack.push(snap); if(historyStack.length>MAX_HISTORY) historyStack.shift(); else historyIndex++;
+        updateUndoRedoButtons();
+    }
+    function undo() { if(historyIndex<=0) return; historyIndex--; restoreSnapshot(historyStack[historyIndex]); updateUndoRedoButtons(); }
+    function redo() { if(historyIndex>=historyStack.length-1) return; historyIndex++; restoreSnapshot(historyStack[historyIndex]); updateUndoRedoButtons(); }
+    function updateUndoRedoButtons() {
+        document.getElementById('undo-btn').style.opacity = historyIndex>0?1:0.4;
+        document.getElementById('redo-btn').style.opacity = historyIndex<historyStack.length-1?1:0.4;
+    }
+
+    /* ===== SỬA ZOOM & PAN ===== */
+    function setupPanZoom() {
+        workspace.addEventListener('wheel', e => {
+            e.preventDefault();
+            const rect = workspace.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left;
+            const mouseY = e.clientY - rect.top;
+            // world = (screen - pan) / zoom
+            const worldX = (mouseX - appPanX) / appZoom;
+            const worldY = (mouseY - appPanY) / appZoom;
+            const newZoom = Math.min(5, Math.max(0.1, appZoom * (e.deltaY > 0 ? 0.9 : 1.1)));
+            appPanX = mouseX - worldX * newZoom;
+            appPanY = mouseY - worldY * newZoom;
+            appZoom = newZoom;
+            updateTransform();
+        }, { passive: false });
+
+        document.addEventListener('keydown', e => {
+            if (e.code === 'Space' && !e.repeat) {
+                if (document.activeElement?.contentEditable === 'true' || ['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)) return;
+                e.preventDefault();
+                spacePanEnabled = true;
+                workspace.style.cursor = 'grab';
+            }
+        });
+        document.addEventListener('keyup', e => {
+            if (e.code === 'Space') { spacePanEnabled = false; if (!isPanning) workspace.style.cursor = getCurrentCursor(); isPanning = false; }
+        });
+    }
+
+    function getCurrentCursor() {
+        if (currentMode === 'FLOW') return 'crosshair';
+        if (currentMode === 'TEXT') return 'text';
+        return 'default';
+    }
+
+    function updateTransform() {
+        viewport.style.transform = `translate(${appPanX}px, ${appPanY}px) scale(${appZoom})`;
+    }
+
+    // SỬA screenToWorld
+    function screenToWorld(clientX, clientY) {
+        const rect = workspace.getBoundingClientRect();
+        return {
+            x: (clientX - rect.left - appPanX) / appZoom,
+            y: (clientY - rect.top - appPanY) / appZoom
+        };
+    }
+
+    /* ===== WORKSPACE EVENTS ===== */
+    function setupWorkspaceEvents() {
+        workspace.addEventListener('mousedown', e => {
+            if (e.button !== 0) return;
+            if (spacePanEnabled) {
+                e.preventDefault();
+                isPanning = true;
+                panStartClientX = e.clientX;
+                panStartClientY = e.clientY;
+                panStartPanX = appPanX;
+                panStartPanY = appPanY;
+                workspace.style.cursor = 'grabbing';
+                return;
+            }
+            if (isPanning) return;
+
+            if (currentMode === 'FLOW') {
+                isDrawing = true;
+                const { x, y } = screenToWorld(e.clientX, e.clientY);
+                drawings.push({ tool: currentTool, color: brushColor, size: brushSize, opacity: brushOpacity, points: [{ x, y }] });
+                e.preventDefault();
+                return;
+            }
+            if (currentMode === 'TEXT') {
+                if (e.target.closest('.textbox-container')) return;
+                const { x, y } = screenToWorld(e.clientX, e.clientY);
+                dragStartX = x; dragStartY = y;
+                isDraggingNewText = true;
+                dragPreview = document.createElement('div');
+                dragPreview.className = 'drag-preview';
+                dragPreview.style.left = x + 'px';
+                dragPreview.style.top = y + 'px';
+                viewport.appendChild(dragPreview);
+                e.preventDefault();
+            }
+        });
+
+        window.addEventListener('mousemove', e => {
+            if (isPanning) {
+                // Pan không chia zoom
+                const dx = e.clientX - panStartClientX;
+                const dy = e.clientY - panStartClientY;
+                appPanX = panStartPanX + dx;
+                appPanY = panStartPanY + dy;
+                updateTransform();
+                return;
+            }
+            if (isDrawing) {
+                const { x, y } = screenToWorld(e.clientX, e.clientY);
+                drawings[drawings.length-1].points.push({ x, y });
+                draw();
+                return;
+            }
+            if (isDraggingNewText && dragPreview) {
+                const { x, y } = screenToWorld(e.clientX, e.clientY);
+                const left = Math.min(dragStartX, x);
+                const top = Math.min(dragStartY, y);
+                dragPreview.style.left = left + 'px';
+                dragPreview.style.top = top + 'px';
+                dragPreview.style.width = Math.abs(x - dragStartX) + 'px';
+                dragPreview.style.height = Math.abs(y - dragStartY) + 'px';
+            }
+        });
+
+        window.addEventListener('mouseup', e => {
+            if (isPanning) { isPanning = false; workspace.style.cursor = spacePanEnabled ? 'grab' : getCurrentCursor(); return; }
+            if (isDrawing) { isDrawing = false; saveHistory(); return; }
+            if (isDraggingNewText) {
+                isDraggingNewText = false;
+                if (dragPreview) { dragPreview.remove(); dragPreview = null; }
+                const { x: endX, y: endY } = screenToWorld(e.clientX, e.clientY);
+                const dx = endX - dragStartX, dy = endY - dragStartY;
+                if (Math.hypot(dx, dy) >= 5) {
+                    const left = Math.min(dragStartX, endX);
+                    const top = Math.min(dragStartY, endY);
+                    if (activeTextbox) exitEditing(activeTextbox);
+                    createTextboxWithSize(left, top, Math.max(50, Math.abs(dx)), Math.max(30, Math.abs(dy)));
+                    saveHistory();
+                } else {
+                    if (activeTextbox) exitEditing(activeTextbox);
+                }
+            }
+        });
+    }
+
+    function createTextboxWithSize(x, y, w, h) {
+        const container = document.createElement('div');
+        container.className = 'textbox-container';
+        container.style.left = x + 'px'; container.style.top = y + 'px';
+        container.style.width = w + 'px'; container.style.height = h + 'px';
+        container.dataset.mode = 'TEXT'; container.dataset.id = ++elementIdCounter;
+        if (!showBorders) container.classList.add('hide-border');
+        const content = document.createElement('div'); content.className = 'textbox-content';
+        content.textContent = 'Nhập văn bản...'; content.contentEditable = 'false';
+        container.appendChild(content);
+        const handle = document.createElement('div'); handle.className = 'resize-handle';
+        container.appendChild(handle);
+        viewport.appendChild(container);
+        enterEditing(container);
+        setupTextboxEvents(container);
+    }
+
+    window.createTextbox = function() {
+        const { x, y } = screenToWorld(workspace.getBoundingClientRect().left + 150, workspace.getBoundingClientRect().top + 150);
+        createTextboxWithSize(x, y, 200, 60);
+        saveHistory();
+    };
+
+    function setupTextboxEvents(container) {
+        const content = container.querySelector('.textbox-content');
+        const handle = container.querySelector('.resize-handle');
+        container.addEventListener('dblclick', () => { if (content.contentEditable === 'false') enterEditing(container); });
+
+        let dragging = false, startLeft, startTop, startClientX, startClientY;
+        container.addEventListener('mousedown', e => {
+            if (e.button !== 0 || spacePanEnabled || isPanning) return;
+            if (e.target === handle) return;
+            if (content.contentEditable === 'true') return;
+            e.preventDefault(); dragging = true;
+            startClientX = e.clientX; startClientY = e.clientY;
+            startLeft = parseFloat(container.style.left); startTop = parseFloat(container.style.top);
+            window.addEventListener('mousemove', onDrag); window.addEventListener('mouseup', stopDrag);
+        });
+        function onDrag(e) {
+            const dx = (e.clientX - startClientX) / appZoom;
+            const dy = (e.clientY - startClientY) / appZoom;
+            container.style.left = (startLeft + dx) + 'px';
+            container.style.top = (startTop + dy) + 'px';
+        }
+        function stopDrag() { if(dragging){dragging=false;saveHistory();} window.removeEventListener('mousemove',onDrag); window.removeEventListener('mouseup',stopDrag); }
+
+        let resizing=false, startW, startH, startX2, startY2;
+        handle.addEventListener('mousedown', e => {
+            if (spacePanEnabled||isPanning) return;
+            e.preventDefault(); e.stopPropagation(); resizing=true;
+            startX2=e.clientX; startY2=e.clientY; startW=container.offsetWidth; startH=container.offsetHeight;
+            window.addEventListener('mousemove',onResize); window.addEventListener('mouseup',stopResize);
+        });
+        function onResize(e) {
+            const dx=(e.clientX-startX2)/appZoom, dy=(e.clientY-startY2)/appZoom;
+            container.style.width = Math.max(50, startW+dx)+'px';
+            container.style.height = Math.max(30, startH+dy)+'px';
+        }
+        function stopResize() { if(resizing){resizing=false;saveHistory();} window.removeEventListener('mousemove',onResize); window.removeEventListener('mouseup',stopResize); }
+
+        container.addEventListener('keydown', e => {
+            if (e.key==='Delete' && !container.classList.contains('editing')) { e.preventDefault(); container.remove(); if(activeTextbox===container)activeTextbox=null; saveHistory(); }
+        });
+        container.tabIndex=0;
+    }
+
+    function enterEditing(container) {
+        if(activeTextbox && activeTextbox!==container) exitEditing(activeTextbox);
+        activeTextbox=container; container.classList.add('editing'); container.classList.remove('selected');
+        const content=container.querySelector('.textbox-content'); content.contentEditable='true'; content.focus();
+        document.execCommand('selectAll',false,null); updateTextSettingsUI();
+    }
+    function exitEditing(container) {
+        if(!container) return;
+        container.querySelector('.textbox-content').contentEditable='false';
+        container.classList.remove('editing'); container.classList.add('selected');
+        if(activeTextbox===container) activeTextbox=null;
+        updateTextSettingsUI();
+    }
+
+    window.clearTextboxes = () => { viewport.querySelectorAll('.textbox-container').forEach(c=>c.remove()); activeTextbox=null; saveHistory(); };
+    window.clearCurrentModeTags = () => { viewport.querySelectorAll(`.tag[data-mode="${currentMode}"]`).forEach(t=>t.remove()); saveHistory(); };
+    window.clearDrawings = () => { drawings=[]; draw(); saveHistory(); };
+
+    window.spawnTag = function(text) {
+        const div=document.createElement('div'); div.className='tag'; div.innerText=text; div.dataset.mode=currentMode; div.dataset.id=++elementIdCounter;
+        div.style.background = currentMode==='TRANSITION'?'var(--transition)':currentMode==='CAMERA'?'var(--camera)':'var(--layout)';
+        div.style.left='220px'; div.style.top='220px'; viewport.appendChild(div);
+        makeTagDraggable(div); div.ondblclick=()=>{div.remove();saveHistory();};
+    };
+    function makeTagDraggable(el) {
+        let dragging=false,startLeft,startTop,startClientX,startClientY;
+        el.addEventListener('mousedown', e => {
+            if(e.button!==0||spacePanEnabled||isPanning) return;
+            e.preventDefault(); dragging=true; startClientX=e.clientX; startClientY=e.clientY;
+            startLeft=parseFloat(el.style.left); startTop=parseFloat(el.style.top);
+            window.addEventListener('mousemove',onDrag); window.addEventListener('mouseup',stopDrag);
+        });
+        function onDrag(e) {
+            const dx=(e.clientX-startClientX)/appZoom, dy=(e.clientY-startClientY)/appZoom;
+            el.style.left=(startLeft+dx)+'px'; el.style.top=(startTop+dy)+'px';
+        }
+        function stopDrag(){ if(dragging){dragging=false;saveHistory();} window.removeEventListener('mousemove',onDrag); window.removeEventListener('mouseup',stopDrag); }
+    }
+
+    window.toggleTextBorders = () => {
+        showBorders=!showBorders; viewport.querySelectorAll('.textbox-container').forEach(c=>c.classList.toggle('hide-border',!showBorders));
+        const btn=document.getElementById('toggle-border-btn'); if(btn) btn.textContent=showBorders?'👁 Ẩn khung':'👁 Hiện khung';
+    };
+
+    function getActiveContent() { return activeTextbox?.querySelector('.textbox-content'); }
+    function updateTextSettingsUI() {
+        if(currentMode!=='TEXT') return;
+        const fi=document.getElementById('font-size'), bb=document.getElementById('bold-btn'), ib=document.getElementById('italic-btn');
+        const content=getActiveContent();
+        if(!content){ if(fi)fi.value=14; if(bb)bb.classList.remove('active'); if(ib)ib.classList.remove('active'); return; }
+        const style=window.getComputedStyle(content);
+        if(fi) fi.value=parseInt(style.fontSize);
+        if(bb) bb.classList.toggle('active', style.fontWeight==='bold'||parseInt(style.fontWeight)>=700);
+        if(ib) ib.classList.toggle('active', style.fontStyle==='italic');
+    }
+
+    // Ảnh, canvas, modes... giữ nguyên như trước, chỉ cập nhật screenToWorld
+    async function loadImagesFromGitHub() {
+        const info = getGitHubRepoInfo();
+        if (!info) { document.getElementById('manga-title').innerText='Không có ảnh'; return; }
+        try {
+            const res = await fetch(`https://api.github.com/repos/${info.owner}/${info.repo}/contents/images`);
+            if (!res.ok) throw new Error('GitHub API');
+            const data = await res.json();
+            const exts = ['.png','.jpg','.jpeg','.webp'];
+            const files = Array.isArray(data) ? data.filter(f=>f.type==='file'&&exts.some(e=>f.name.toLowerCase().endsWith(e))).map(f=>f.name) : [];
+            if (!files.length) { document.getElementById('manga-title').innerText='Không có ảnh'; return; }
+            images = files; usingManualFiles = false;
+            currentIndex = Math.floor(Math.random()*images.length);
+            loadImage();
+        } catch(e) { console.error(e); document.getElementById('manga-title').innerText='Lỗi tải ảnh'; }
+    }
+    function getGitHubRepoInfo() {
+        const host = window.location.hostname;
+        if (!host.endsWith('github.io')) return null;
+        const parts = window.location.pathname.split('/').filter(p=>p);
+        const owner = host.startsWith('www.') ? host.split('.')[1] : host.split('.')[0];
+        const repo = parts.length ? parts[0] : `${owner}.github.io`;
+        return { owner, repo };
+    }
+    function loadImage() {
+        if (!images.length) return;
+        const file = images[currentIndex];
+        let filename, url;
+        if (usingManualFiles) { filename = file.name; url = URL.createObjectURL(file); }
+        else { filename = file; url = './images/' + file; }
+        const parsed = parseFilename(filename);
+        document.getElementById('manga-title').innerText = parsed.title;
+        document.getElementById('manga-author').innerText = parsed.author;
+        const img = new Image();
+        img.onload = () => { currentImage = img; fitImage(); clearWorkspace(false); };
+        img.onerror = () => alert('Không thể tải ảnh: ' + filename);
+        img.src = url;
+    }
+    function parseFilename(name) {
+        const clean = name.replace(/\.[^/.]+$/, '');
+        const [title, author] = clean.split('__');
+        return { title: title ? title.replaceAll('-',' ') : 'Không rõ', author: author ? author.replaceAll('-',' ') : 'Không rõ' };
+    }
+    function pickRandomImage() {
+        if (!images.length) { alert('Chưa có ảnh.'); return; }
+        let newIdx;
+        do { newIdx = Math.floor(Math.random()*images.length); } while (newIdx===currentIndex && images.length>1);
+        currentIndex = newIdx; loadImage();
+    }
+    function resizeCanvas() { canvas.width = workspace.clientWidth; canvas.height = workspace.clientHeight; draw(); }
+    function fitImage() {
+        if (!currentImage) return;
+        scale = Math.min(canvas.width/currentImage.width, canvas.height/currentImage.height) * 0.9;
+        offsetX = (canvas.width - currentImage.width*scale)/2;
+        offsetY = (canvas.height - currentImage.height*scale)/2;
+        draw();
+    }
+    function draw() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        if (currentImage) ctx.drawImage(currentImage, offsetX, offsetY, currentImage.width*scale, currentImage.height*scale);
+        drawings.forEach(line => {
+            ctx.save(); ctx.globalAlpha = line.opacity;
+            ctx.strokeStyle = line.tool==='eraser' ? '#000000' : line.color;
+            ctx.lineWidth = line.size; ctx.lineCap = 'round';
+            ctx.beginPath(); line.points.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
+            ctx.stroke(); ctx.restore();
+        });
+    }
+    function clearWorkspace(redraw=true) {
+        drawings = []; viewport.querySelectorAll('.textbox-container,.tag').forEach(e=>e.remove());
+        activeTextbox = null; if (redraw||currentImage) draw(); updateTextSettingsUI(); saveHistory();
+    }
+    function setupModes() {
+        document.querySelectorAll('.mode-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
+                btn.classList.add('active'); currentMode = btn.dataset.mode;
+                workspace.style.cursor = getCurrentCursor(); updateSettings();
+            };
+        });
+    }
+    function updateSettings() {
+        const panel = document.getElementById('settings'); let html = '';
+        if (currentMode === 'FLOW') {
+            html = `<div class="control"><label>Công cụ</label><select id="tool-select"><option value="brush">Bút vẽ</option><option value="eraser">Tẩy</option></select><label>Màu bút</label><input type="color" id="brush-color" value="#ff0000"><label>Kích thước</label><input type="range" id="brush-size" min="1" max="50" value="5"><label>Độ mờ</label><input type="range" id="brush-opacity" min="0.1" max="1" step="0.1" value="1"><button class="btn" onclick="window.clearDrawings()">🗑 Xóa nét vẽ</button></div>`;
+        } else if (currentMode === 'TEXT') {
+            html = `<div class="control"><div class="small">✨ Kéo để tạo khung, double-click sửa.<br>Space + kéo để di chuyển, cuộn chuột zoom.</div><div class="format-group"><label>Cỡ chữ</label><input type="number" id="font-size" value="14" min="8" max="80" style="width:60px;"><button id="bold-btn"><b>B</b></button><button id="italic-btn"><i>I</i></button></div><button class="btn" id="toggle-border-btn" onclick="window.toggleTextBorders()">👁 Ẩn khung</button><button class="btn" onclick="window.clearTextboxes()" style="margin-top:8px;">🗑 Xóa tất cả hộp thoại</button></div>`;
+        } else if (tags[currentMode]) {
+            html = `<div class="control"><div class="small">Bấm thẻ để tạo nhãn kéo thả.</div><div class="tag-list">${tags[currentMode].map(t=>`<button class="tag-btn" onclick="window.spawnTag('${t.replace(/'/g,"\\'")}')">${t}</button>`).join('')}</div><button class="btn" onclick="window.clearCurrentModeTags()">🗑 Xóa thẻ của chế độ này</button></div>`;
+        }
+        panel.innerHTML = html;
+        if (currentMode==='FLOW') setupFlowSettings();
+        if (currentMode==='TEXT') { setupTextSettings(); updateTextSettingsUI(); const btn=document.getElementById('toggle-border-btn'); if(btn) btn.textContent=showBorders?'👁 Ẩn khung':'👁 Hiện khung'; }
+    }
+    function setupFlowSettings() {
+        document.getElementById('tool-select')?.addEventListener('change', e => currentTool=e.target.value);
+        document.getElementById('brush-color')?.addEventListener('input', e => brushColor=e.target.value);
+        document.getElementById('brush-size')?.addEventListener('input', e => brushSize=+e.target.value);
+        document.getElementById('brush-opacity')?.addEventListener('input', e => brushOpacity=+e.target.value);
+    }
+    function setupTextSettings() {
+        document.getElementById('font-size')?.addEventListener('input', e => { const c=getActiveContent(); if(c) c.style.fontSize=e.target.value+'px'; });
+        document.getElementById('bold-btn')?.addEventListener('click', () => { const c=getActiveContent(); if(!c) return; c.style.fontWeight=c.style.fontWeight==='bold'?'normal':'bold'; document.getElementById('bold-btn').classList.toggle('active', c.style.fontWeight==='bold'); });
+        document.getElementById('italic-btn')?.addEventListener('click', () => { const c=getActiveContent(); if(!c) return; c.style.fontStyle=c.style.fontStyle==='italic'?'normal':'italic'; document.getElementById('italic-btn').classList.toggle('active', c.style.fontStyle==='italic'); });
+    }
+    function setupToolbar() {
+        document.getElementById('random-btn').onclick = pickRandomImage;
+        document.getElementById('load-btn').onclick = () => document.getElementById('file-input').click();
+        document.getElementById('file-input').addEventListener('change', e => { usingManualFiles=true; images=[...e.target.files]; if(images.length){ currentIndex=0; loadImage(); } });
+        document.getElementById('export-btn').onclick = async () => {
+            if (!currentImage && !drawings.length && !viewport.querySelector('.textbox-container,.tag')) { alert('Chưa có nội dung.'); return; }
+            try {
+                const captured = await html2canvas(workspace, { backgroundColor:'#050505', scale:1, useCORS:true });
+                const a = document.createElement('a'); a.download='manga-study.png'; a.href=captured.toDataURL('image/png'); a.click();
+            } catch(err) { alert('Xuất ảnh thất bại.'); }
+        };
+    }
+
+    init();
+})();
+</script>
+</body>
+</html>
