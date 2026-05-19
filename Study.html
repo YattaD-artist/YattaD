@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>Manga Study Workspace</title>
+    <title>YattaD · Manga Study Workspace</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    /* ========== RESET & BIẾN ========== */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
     :root {
         --bg: #121212;
@@ -19,16 +25,16 @@
         --border-light: #333;
         --shadow-hard: 4px 4px 0 rgba(0,0,0,0.4);
         --transition: 0.2s ease;
-        /* giữ nguyên màu tag */
         --transition-tag: #2196f3;
         --camera-tag: #ff9800;
         --layout-tag: #9c27b0;
     }
 
-    * { box-sizing: border-box; }
-
     html, body {
-        width: 100%; height: 100%; margin: 0; overflow: hidden;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
         background: var(--bg);
         color: var(--text);
         font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
@@ -36,20 +42,22 @@
 
     button, input, select, textarea { font-family: inherit; }
 
+    /* ========== GRID LAYOUT ========== */
     .app {
-        width: 100%; height: 100%;
+        width: 100%;
+        height: 100%;
         display: grid;
         grid-template-columns: 250px 1fr 300px;
         grid-template-rows: 54px 1fr;
     }
 
-    /* ----- Topbar ----- */
+    /* ========== TOPBAR ========== */
     .topbar {
         grid-column: 1 / 4;
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 0 14px;
+        gap: 8px;
+        padding: 0 16px;
         background: var(--surface);
         border-bottom: 2px solid var(--border-color);
         box-shadow: 0 2px 0 var(--border-color);
@@ -63,13 +71,13 @@
     }
     .info strong { color: var(--text); font-weight: 700; }
 
-    /* ----- Buttons chung ----- */
+    /* Nút chung */
     .btn {
         border: 2px solid var(--border-color);
         background: var(--surface);
         color: var(--text);
         padding: 8px 14px;
-        border-radius: 0; /* vuông như portfolio */
+        border-radius: 0;
         cursor: pointer;
         font-size: 13px;
         font-weight: 700;
@@ -93,7 +101,6 @@
     .btn.primary:hover {
         background: var(--accent-light);
     }
-
     .btn-icon {
         width: 36px;
         height: 36px;
@@ -104,18 +111,14 @@
         padding: 0;
     }
 
-    /* ----- Sidebars ----- */
+    /* ========== SIDEBARS ========== */
     .sidebar {
         background: var(--surface);
         overflow: auto;
         padding: 14px;
     }
-    .left {
-        border-right: 2px solid var(--border-color);
-    }
-    .right {
-        border-left: 2px solid var(--border-color);
-    }
+    .left { border-right: 2px solid var(--border-color); }
+    .right { border-left: 2px solid var(--border-color); }
 
     .section-title {
         font-size: 0.8rem;
@@ -157,11 +160,10 @@
         font-weight: 700;
     }
 
-    /* ----- Control panel ----- */
+    /* Control panel */
     .control {
         background: var(--surface);
         border: 2px solid var(--border-color);
-        border-radius: 0;
         padding: 12px;
         margin-bottom: 16px;
         box-shadow: var(--shadow-hard);
@@ -185,113 +187,11 @@
         border-radius: 0;
         font-size: 13px;
     }
-
     .small {
         font-size: 12px;
         color: var(--text-secondary);
         line-height: 1.5;
     }
-
-    /* ----- Workspace ----- */
-    .workspace {
-        position: relative;
-        overflow: hidden;
-        background: #050505;
-    }
-    #viewport {
-        position: absolute;
-        top: 0; left: 0;
-        transform-origin: 0 0;
-        width: 100%; height: 100%;
-        will-change: transform;
-    }
-    #canvas {
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        pointer-events: none;
-    }
-
-    /* ----- Tags ----- */
-    .tag {
-        position: absolute;
-        padding: 6px 10px;
-        border-radius: 0;
-        color: white;
-        font-size: 12px;
-        font-weight: 700;
-        user-select: none;
-        cursor: move;
-        white-space: nowrap;
-        box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
-        z-index: 10;
-        border: 1px solid rgba(255,255,255,0.2);
-        text-transform: uppercase;
-    }
-
-    /* ----- Textbox ----- */
-    .textbox-container {
-        position: absolute;
-        z-index: 10;
-        user-select: none;
-    }
-    .textbox-content {
-        min-width: 50px;
-        min-height: 30px;
-        padding: 6px 8px;
-        outline: none;
-        background: transparent;
-        color: #000;
-        text-align: center;
-        font-size: 14px;
-        font-weight: normal;
-        font-style: normal;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        white-space: pre-wrap;
-        border: 1px solid transparent;
-        cursor: move;
-        transition: border-color 0.2s;
-        width: 100%; height: 100%;
-        font-family: inherit;
-    }
-    .textbox-container.editing .textbox-content {
-        cursor: text;
-        user-select: text;
-        border: 1px dashed var(--accent);
-        background: rgba(255,255,255,0.05);
-    }
-    .textbox-container.selected .textbox-content {
-        border: 1px dashed var(--text-secondary);
-    }
-    .textbox-container.hide-border .textbox-content {
-        border-color: transparent !important;
-    }
-    .textbox-container.hide-border .resize-handle {
-        display: none !important;
-    }
-    .resize-handle {
-        position: absolute;
-        bottom: 0; right: 0;
-        width: 14px; height: 14px;
-        background: var(--accent);
-        clip-path: polygon(100% 0, 100% 100%, 0 100%);
-        cursor: nwse-resize;
-        display: none;
-    }
-    .textbox-container.selected .resize-handle,
-    .textbox-container.editing .resize-handle {
-        display: block;
-    }
-
-    .drag-preview {
-        position: absolute;
-        border: 2px dashed var(--accent);
-        pointer-events: none;
-        z-index: 20;
-    }
-
-    /* Tag list trong settings */
     .tag-list {
         display: flex;
         flex-wrap: wrap;
@@ -315,8 +215,6 @@
         color: white;
         border-color: var(--accent);
     }
-
-    /* Format group */
     .format-group {
         display: flex;
         gap: 8px;
@@ -340,19 +238,121 @@
         border-color: var(--accent);
         color: white;
     }
-
-    /* Loại bỏ border-radius mặc định của input range */
     input[type="range"] {
         -webkit-appearance: none;
         background: #333;
         height: 4px;
         border-radius: 0;
     }
-</style>
+
+    /* Workspace */
+    .workspace {
+        position: relative;
+        overflow: hidden;
+        background: #050505;
+    }
+    #viewport {
+        position: absolute;
+        top: 0;
+        left: 0;
+        transform-origin: 0 0;
+        width: 100%;
+        height: 100%;
+        will-change: transform;
+    }
+    #canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    /* Tags */
+    .tag {
+        position: absolute;
+        padding: 6px 10px;
+        border-radius: 0;
+        color: white;
+        font-size: 12px;
+        font-weight: 700;
+        user-select: none;
+        cursor: move;
+        white-space: nowrap;
+        box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+        z-index: 10;
+        border: 1px solid rgba(255,255,255,0.2);
+        text-transform: uppercase;
+    }
+
+    /* Textbox */
+    .textbox-container {
+        position: absolute;
+        z-index: 10;
+        user-select: none;
+    }
+    .textbox-content {
+        min-width: 50px;
+        min-height: 30px;
+        padding: 6px 8px;
+        outline: none;
+        background: transparent;
+        color: #000;
+        text-align: center;
+        font-size: 14px;
+        font-weight: normal;
+        font-style: normal;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        white-space: pre-wrap;
+        border: 1px solid transparent;
+        cursor: move;
+        transition: border-color 0.2s;
+        width: 100%;
+        height: 100%;
+        font-family: inherit;
+    }
+    .textbox-container.editing .textbox-content {
+        cursor: text;
+        user-select: text;
+        border: 1px dashed var(--accent);
+        background: rgba(255,255,255,0.05);
+    }
+    .textbox-container.selected .textbox-content {
+        border: 1px dashed var(--text-secondary);
+    }
+    .textbox-container.hide-border .textbox-content {
+        border-color: transparent !important;
+    }
+    .resize-handle {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 14px;
+        height: 14px;
+        background: var(--accent);
+        clip-path: polygon(100% 0, 100% 100%, 0 100%);
+        cursor: nwse-resize;
+        display: none;
+    }
+    .textbox-container.selected .resize-handle,
+    .textbox-container.editing .resize-handle {
+        display: block;
+    }
+    .drag-preview {
+        position: absolute;
+        border: 2px dashed var(--accent);
+        pointer-events: none;
+        z-index: 20;
+    }
+    </style>
 </head>
 <body>
 <div class="app">
     <div class="topbar">
+        <!-- Nút Home (Trang chủ) - thêm mới -->
+        <button class="btn btn-icon" id="home-btn" title="Về trang chủ"><i class="fas fa-home"></i></button>
         <div class="info">Manga: <strong id="manga-title">Đang tải...</strong> — Tác giả: <strong id="manga-author">Chưa rõ</strong></div>
         <input type="file" id="file-input" multiple accept=".png,.jpg,.jpeg,.webp" hidden />
         <button class="btn btn-icon" id="undo-btn" title="Hoàn tác (Ctrl+Z)">↩</button>
@@ -380,8 +380,20 @@
     </aside>
 </div>
 
+<!-- FontAwesome cho icon home -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
 <script>
 (function() {
+    // ========== Nút về trang chủ ==========
+    const homeBtn = document.getElementById('home-btn');
+    if (homeBtn) {
+        homeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.location.href = 'index.html?t=' + Date.now();
+        });
+    }
+
     const canvas = document.getElementById('canvas');
     const ctx = canvas.getContext('2d');
     const workspace = document.getElementById('workspace');
@@ -390,8 +402,8 @@
     let currentMode = 'FLOW';
     let images = [];
     let currentIndex = 0;
-let currentImage = null;
-let scale = 1, offsetX = 0, offsetY = 0;
+    let currentImage = null;
+    let scale = 1, offsetX = 0, offsetY = 0;
     let usingManualFiles = false;
 
     // View transform
@@ -435,7 +447,7 @@ let scale = 1, offsetX = 0, offsetY = 0;
         saveHistory();
     }
 
-    // Undo/Redo giữ nguyên
+    // Undo/Redo
     function setupUndoRedo() {
         document.getElementById('undo-btn').onclick = undo;
         document.getElementById('redo-btn').onclick = redo;
@@ -483,14 +495,13 @@ let scale = 1, offsetX = 0, offsetY = 0;
         document.getElementById('redo-btn').style.opacity = historyIndex<historyStack.length-1?1:0.4;
     }
 
-    /* ===== SỬA ZOOM & PAN ===== */
+    // Pan & Zoom
     function setupPanZoom() {
         workspace.addEventListener('wheel', e => {
             e.preventDefault();
             const rect = workspace.getBoundingClientRect();
             const mouseX = e.clientX - rect.left;
             const mouseY = e.clientY - rect.top;
-            // world = (screen - pan) / zoom
             const worldX = (mouseX - appPanX) / appZoom;
             const worldY = (mouseY - appPanY) / appZoom;
             const newZoom = Math.min(5, Math.max(0.1, appZoom * (e.deltaY > 0 ? 0.9 : 1.1)));
@@ -512,18 +523,12 @@ let scale = 1, offsetX = 0, offsetY = 0;
             if (e.code === 'Space') { spacePanEnabled = false; if (!isPanning) workspace.style.cursor = getCurrentCursor(); isPanning = false; }
         });
     }
-
     function getCurrentCursor() {
         if (currentMode === 'FLOW') return 'crosshair';
         if (currentMode === 'TEXT') return 'text';
         return 'default';
     }
-
-    function updateTransform() {
-        viewport.style.transform = `translate(${appPanX}px, ${appPanY}px) scale(${appZoom})`;
-    }
-
-    // SỬA screenToWorld
+    function updateTransform() { viewport.style.transform = `translate(${appPanX}px, ${appPanY}px) scale(${appZoom})`; }
     function screenToWorld(clientX, clientY) {
         const rect = workspace.getBoundingClientRect();
         return {
@@ -532,17 +537,15 @@ let scale = 1, offsetX = 0, offsetY = 0;
         };
     }
 
-    /* ===== WORKSPACE EVENTS ===== */
+    // Workspace events
     function setupWorkspaceEvents() {
         workspace.addEventListener('mousedown', e => {
             if (e.button !== 0) return;
             if (spacePanEnabled) {
                 e.preventDefault();
                 isPanning = true;
-                panStartClientX = e.clientX;
-                panStartClientY = e.clientY;
-                panStartPanX = appPanX;
-                panStartPanY = appPanY;
+                panStartClientX = e.clientX; panStartClientY = e.clientY;
+                panStartPanX = appPanX; panStartPanY = appPanY;
                 workspace.style.cursor = 'grabbing';
                 return;
             }
@@ -571,7 +574,6 @@ let scale = 1, offsetX = 0, offsetY = 0;
 
         window.addEventListener('mousemove', e => {
             if (isPanning) {
-                // Pan không chia zoom
                 const dx = e.clientX - panStartClientX;
                 const dy = e.clientY - panStartClientY;
                 appPanX = panStartPanX + dx;
@@ -634,17 +636,10 @@ let scale = 1, offsetX = 0, offsetY = 0;
         setupTextboxEvents(container);
     }
 
-    window.createTextbox = function() {
-        const { x, y } = screenToWorld(workspace.getBoundingClientRect().left + 150, workspace.getBoundingClientRect().top + 150);
-        createTextboxWithSize(x, y, 200, 60);
-        saveHistory();
-    };
-
     function setupTextboxEvents(container) {
         const content = container.querySelector('.textbox-content');
         const handle = container.querySelector('.resize-handle');
         container.addEventListener('dblclick', () => { if (content.contentEditable === 'false') enterEditing(container); });
-
         let dragging = false, startLeft, startTop, startClientX, startClientY;
         container.addEventListener('mousedown', e => {
             if (e.button !== 0 || spacePanEnabled || isPanning) return;
@@ -662,7 +657,6 @@ let scale = 1, offsetX = 0, offsetY = 0;
             container.style.top = (startTop + dy) + 'px';
         }
         function stopDrag() { if(dragging){dragging=false;saveHistory();} window.removeEventListener('mousemove',onDrag); window.removeEventListener('mouseup',stopDrag); }
-
         let resizing=false, startW, startH, startX2, startY2;
         handle.addEventListener('mousedown', e => {
             if (spacePanEnabled||isPanning) return;
@@ -676,10 +670,7 @@ let scale = 1, offsetX = 0, offsetY = 0;
             container.style.height = Math.max(30, startH+dy)+'px';
         }
         function stopResize() { if(resizing){resizing=false;saveHistory();} window.removeEventListener('mousemove',onResize); window.removeEventListener('mouseup',stopResize); }
-
-        container.addEventListener('keydown', e => {
-            if (e.key==='Delete' && !container.classList.contains('editing')) { e.preventDefault(); container.remove(); if(activeTextbox===container)activeTextbox=null; saveHistory(); }
-        });
+        container.addEventListener('keydown', e => { if (e.key==='Delete' && !container.classList.contains('editing')) { e.preventDefault(); container.remove(); if(activeTextbox===container)activeTextbox=null; saveHistory(); } });
         container.tabIndex=0;
     }
 
@@ -703,7 +694,11 @@ let scale = 1, offsetX = 0, offsetY = 0;
 
     window.spawnTag = function(text) {
         const div=document.createElement('div'); div.className='tag'; div.innerText=text; div.dataset.mode=currentMode; div.dataset.id=++elementIdCounter;
-        div.style.background = currentMode==='TRANSITION'?'var(--transition)':currentMode==='CAMERA'?'var(--camera)':'var(--layout)';
+        let bg = '#555';
+        if(currentMode==='TRANSITION') bg = '#2196f3';
+        else if(currentMode==='CAMERA') bg = '#ff9800';
+        else if(currentMode==='LAYOUT') bg = '#9c27b0';
+        div.style.background = bg;
         div.style.left='220px'; div.style.top='220px'; viewport.appendChild(div);
         makeTagDraggable(div); div.ondblclick=()=>{div.remove();saveHistory();};
     };
@@ -726,7 +721,6 @@ let scale = 1, offsetX = 0, offsetY = 0;
         showBorders=!showBorders; viewport.querySelectorAll('.textbox-container').forEach(c=>c.classList.toggle('hide-border',!showBorders));
         const btn=document.getElementById('toggle-border-btn'); if(btn) btn.textContent=showBorders?'👁 Ẩn khung':'👁 Hiện khung';
     };
-
     function getActiveContent() { return activeTextbox?.querySelector('.textbox-content'); }
     function updateTextSettingsUI() {
         if(currentMode!=='TEXT') return;
@@ -739,27 +733,19 @@ let scale = 1, offsetX = 0, offsetY = 0;
         if(ib) ib.classList.toggle('active', style.fontStyle==='italic');
     }
 
-    // Ảnh, canvas, modes... giữ nguyên như trước, chỉ cập nhật screenToWorld
-   async function loadImagesFromGitHub() {
-    // Không dùng API nữa, đọc file danh sách ảnh tĩnh
-    try {
-        const response = await fetch('./images/images.json');
-        if (!response.ok) throw new Error('Không tìm thấy file images/images.json');
-        const files = await response.json();
-        if (!files.length) {
-            document.getElementById('manga-title').innerText = 'Không có ảnh trong danh sách';
-            return;
-        }
-        images = files;
-        usingManualFiles = false;
-        currentIndex = Math.floor(Math.random() * images.length);
-        loadImage(); // hàm loadImage dùng chung (đã có sẵn)
-    } catch (err) {
-        console.error(err);
-        document.getElementById('manga-title').innerText = 'Lỗi: thiếu file images/images.json';
+    // Load ảnh từ images.json (giữ nguyên logic cũ)
+    async function loadImagesFromGitHub() {
+        try {
+            const response = await fetch('./images/images.json');
+            if (!response.ok) throw new Error('Không tìm thấy file images/images.json');
+            const files = await response.json();
+            if (!files.length) { document.getElementById('manga-title').innerText = 'Không có ảnh trong danh sách'; return; }
+            images = files; usingManualFiles = false;
+            currentIndex = Math.floor(Math.random() * images.length);
+            loadImage();
+        } catch (err) { console.error(err); document.getElementById('manga-title').innerText = 'Lỗi: thiếu file images/images.json'; }
     }
-}
-       function loadImage() {
+    function loadImage() {
         if (!images.length) return;
         const file = images[currentIndex];
         let filename, url;
@@ -780,8 +766,7 @@ let scale = 1, offsetX = 0, offsetY = 0;
     }
     function pickRandomImage() {
         if (!images.length) { alert('Chưa có ảnh.'); return; }
-        let newIdx;
-        do { newIdx = Math.floor(Math.random()*images.length); } while (newIdx===currentIndex && images.length>1);
+        let newIdx; do { newIdx = Math.floor(Math.random()*images.length); } while (newIdx===currentIndex && images.length>1);
         currentIndex = newIdx; loadImage();
     }
     function resizeCanvas() { canvas.width = workspace.clientWidth; canvas.height = workspace.clientHeight; draw(); }
