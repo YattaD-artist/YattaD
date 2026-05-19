@@ -256,12 +256,10 @@
     width: 100%;
     max-width: 500px;
     aspect-ratio: 1 / 1;
-    border: 6px solid var(--border-color);
-    box-shadow: var(--shadow-hard);
     display: flex;
     justify-content: center;
     align-items: center;
-    background: var(--surface);
+
   }
   #wheelCanvas {
     width: 95%;
@@ -276,6 +274,10 @@
     width: auto;
     max-width: 42%;
     height: auto;
+    /* LOẠI BỎ KHUNG BAO */
+    border: none;
+    background: var(--surface);
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
   }
 
   /* ========== MENU (Xổ số, ABCD) ========== */
