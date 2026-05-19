@@ -130,7 +130,7 @@
       margin: 0 auto;
     }
 
-    /* ----- INFO SECTION - desktop: grid 2 cột để hiển thị trọn vẹn không cuộn dọc quá nhiều ----- */
+    /* ----- INFO SECTION ----- */
     .info {
       flex: 2.2;
       background: var(--surface);
@@ -155,29 +155,29 @@
       padding-bottom: 10px;
     }
 
-    /* Desktop: bố cục grid 2 cột cho các nhóm thông tin */
+    /* Desktop: bố cục 2 cột: cột trái (thông tin, học vấn, công việc), cột phải (mascot) */
     @media (min-width: 769px) {
       .info-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 24px 32px;
+        gap: 28px 36px;
         align-items: start;
       }
-      .info-group {
-        margin-bottom: 0;
-        break-inside: avoid;
+      .info-left {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
       }
-      /* Group mascot có thể chiếm hết chiều rộng nếu muốn, nhưng để gọn ta đặt nó ở cột phải */
-      .info-group:last-child {
-        /* mascot group - giữ nguyên trong lưới */
+      .info-right {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
       }
     }
 
     .info-group {
-      margin-bottom: 28px;
-    }
-    .info-group:last-of-type {
       margin-bottom: 0;
+      break-inside: avoid;
     }
 
     .group-title {
@@ -218,7 +218,7 @@
       font-weight: 600;
     }
 
-    /* Mascot - Ảnh lớn, rõ, không viền, hover phóng to + nghiêng nhẹ */
+    /* Mascot - Ảnh lớn, rõ, không viền, không shadow, hover phóng to + nghiêng */
     .mascot-box {
       margin-top: 8px;
       text-align: center;
@@ -234,13 +234,13 @@
     .mascot-box img {
       max-width: 100%;
       height: auto;
-      max-height: 220px;
+      max-height: 260px;
       display: block;
       margin: 0 auto;
       border: none;
+      box-shadow: none;        /* Loại bỏ shadow */
       transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     
     /* Hover: phóng to + nghiêng nhẹ */
@@ -377,7 +377,7 @@
       border: 4px solid white;
     }
 
-    /* ----- MOBILE OPTIMIZATION: menu cố định dưới cùng, hiển thị đầy đủ ----- */
+    /* ----- MOBILE OPTIMIZATION ----- */
     @media (max-width: 768px) {
       header {
         padding: 10px 14px;
@@ -405,9 +405,18 @@
         gap: 8px 10px;
       }
       
-      /* Bỏ grid 2 cột trên mobile */
+      /* Bỏ grid 2 cột trên mobile, chuyển thành block */
       .info-grid {
         display: block;
+      }
+      .info-left, .info-right {
+        display: block;
+      }
+      .info-left .info-group, .info-right .info-group {
+        margin-bottom: 28px;
+      }
+      .info-right .info-group:last-child {
+        margin-bottom: 0;
       }
       
       .menu {
@@ -501,62 +510,68 @@
   <main>
     <section class="info">
       <h2><i class="fas fa-address-card"></i> <span data-lang="infoTitle">Thông tin cá nhân</span></h2>
-      <!-- Bọc các group trong grid để desktop hiển thị 2 cột -->
+      
+      <!-- Desktop: 2 cột rõ ràng: bên trái thông tin, bên phải mascot -->
       <div class="info-grid">
-        <!-- NHÓM I: Cơ bản -->
-        <div class="info-group">
-          <div class="group-title" data-lang="group1">Thông tin cơ bản</div>
-          <div class="info-table">
-            <span class="info-label" data-lang="nameLabel">Họ và Tên</span>
-            <span class="info-value" data-lang="nameValue">Ngô Xuân Đạt</span>
+        <!-- Cột trái: 3 nhóm thông tin -->
+        <div class="info-left">
+          <!-- NHÓM I: Cơ bản -->
+          <div class="info-group">
+            <div class="group-title" data-lang="group1">Thông tin cơ bản</div>
+            <div class="info-table">
+              <span class="info-label" data-lang="nameLabel">Họ và Tên</span>
+              <span class="info-value" data-lang="nameValue">Ngô Xuân Đạt</span>
 
-            <span class="info-label" data-lang="birthLabel">Ngày sinh</span>
-            <span class="info-value" data-lang="birthValue">07 / 05 / 1998</span>
+              <span class="info-label" data-lang="birthLabel">Ngày sinh</span>
+              <span class="info-value" data-lang="birthValue">07 / 05 / 1998</span>
 
-            <span class="info-label" data-lang="genderLabel">Giới tính</span>
-            <span class="info-value" data-lang="genderValue">Nam</span>
+              <span class="info-label" data-lang="genderLabel">Giới tính</span>
+              <span class="info-value" data-lang="genderValue">Nam</span>
 
-            <span class="info-label" data-lang="nationLabel">Quốc tịch</span>
-            <span class="info-value" data-lang="nationValue">Việt Nam</span>
+              <span class="info-label" data-lang="nationLabel">Quốc tịch</span>
+              <span class="info-value" data-lang="nationValue">Việt Nam</span>
 
-            <span class="info-label" data-lang="addressLabel">Địa chỉ</span>
-            <span class="info-value" data-lang="addressValue">Thanh Oai, Hà Nội</span>
+              <span class="info-label" data-lang="addressLabel">Địa chỉ</span>
+              <span class="info-value" data-lang="addressValue">Thanh Oai, Hà Nội</span>
 
-            <span class="info-label" data-lang="hobbyLabel">Sở thích</span>
-            <span class="info-value" data-lang="hobbyValue">Vẽ, Kể Chuyện, Học hỏi điều mới, Ngủ, Màu <span class='highlight'>Đỏ</span></span>
+              <span class="info-label" data-lang="hobbyLabel">Sở thích</span>
+              <span class="info-value" data-lang="hobbyValue">Vẽ, Kể Chuyện, Học hỏi điều mới, Ngủ, Màu <span class='highlight'>Đỏ</span></span>
+            </div>
+          </div>
+
+          <!-- NHÓM II: Học vấn & Khả năng -->
+          <div class="info-group">
+            <div class="group-title" data-lang="group2">Học vấn & Khả năng</div>
+            <div class="info-table">
+              <span class="info-label" data-lang="eduLabel">Học vấn</span>
+              <span class="info-value" data-lang="eduValue">Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong></span>
+
+              <span class="info-label" data-lang="skillLabel">Khả năng</span>
+              <span class="info-value" data-lang="skillValue">Vẽ Minh họa, Thiết kế nhân vật, <span class='highlight'>Vẽ truyện tranh</span>, Sáng tạo nội dung</span>
+            </div>
+          </div>
+
+          <!-- NHÓM III: Công việc & Kinh nghiệm -->
+          <div class="info-group">
+            <div class="group-title" data-lang="group3">Công việc & Kinh nghiệm</div>
+            <div class="info-table">
+              <span class="info-label" data-lang="jobLabel">Công việc</span>
+              <span class="info-value" data-lang="jobValue">Freelancer <strong>Artist</strong> · <span class='highlight'>Trợ giảng</span> khóa truyện tranh cơ bản tại <span class='highlight'>Comia</span></span>
+
+              <span class="info-label" data-lang="expLabel">Kinh nghiệm</span>
+              <span class="info-value" data-lang="expValue">Làm nghề từ <strong>năm 2020</strong></span>
+            </div>
           </div>
         </div>
 
-        <!-- NHÓM II: Học vấn & Khả năng -->
-        <div class="info-group">
-          <div class="group-title" data-lang="group2">Học vấn & Khả năng</div>
-          <div class="info-table">
-            <span class="info-label" data-lang="eduLabel">Học vấn</span>
-            <span class="info-value" data-lang="eduValue">Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong></span>
-
-            <span class="info-label" data-lang="skillLabel">Khả năng</span>
-            <span class="info-value" data-lang="skillValue">Vẽ Minh họa, Thiết kế nhân vật, <span class='highlight'>Vẽ truyện tranh</span>, Sáng tạo nội dung</span>
-          </div>
-        </div>
-
-        <!-- NHÓM III: Công việc & Kinh nghiệm -->
-        <div class="info-group">
-          <div class="group-title" data-lang="group3">Công việc & Kinh nghiệm</div>
-          <div class="info-table">
-            <span class="info-label" data-lang="jobLabel">Công việc</span>
-            <span class="info-value" data-lang="jobValue">Freelancer <strong>Artist</strong> · <span class='highlight'>Trợ giảng</span> khóa truyện tranh cơ bản tại <span class='highlight'>Comia</span></span>
-
-            <span class="info-label" data-lang="expLabel">Kinh nghiệm</span>
-            <span class="info-value" data-lang="expValue">Làm nghề từ <strong>năm 2020</strong></span>
-          </div>
-        </div>
-
-        <!-- NHÓM IV: Mascot Tiêu -->
-        <div class="info-group">
-          <div class="group-title" data-lang="group4">Mascot</div>
-          <div class="mascot-box">
-            <div class="mascot-label" data-lang="mascotName">Tiêu</div>
-            <img src="assets/01.png" alt="Mascot Tiêu - YattaD">
+        <!-- Cột phải: chỉ mascot -->
+        <div class="info-right">
+          <div class="info-group">
+            <div class="group-title" data-lang="group4">Mascot</div>
+            <div class="mascot-box">
+              <div class="mascot-label" data-lang="mascotName">Tiêu</div>
+              <img src="assets/01.png" alt="Mascot Tiêu - YattaD">
+            </div>
           </div>
         </div>
       </div>
