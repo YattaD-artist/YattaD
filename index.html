@@ -125,17 +125,17 @@
       display: flex;
       gap: 28px;
       padding: 32px 28px 40px;
-      max-width: 1100px;
+      max-width: 1200px;
       width: 100%;
       margin: 0 auto;
     }
 
-    /* ----- INFO SECTION ----- */
+    /* ----- INFO SECTION - desktop: grid 2 cột để hiển thị trọn vẹn không cuộn dọc quá nhiều ----- */
     .info {
       flex: 2.2;
       background: var(--surface);
       border: 3px solid var(--border-color);
-      padding: 32px 28px 24px;
+      padding: 28px 28px 24px;
       box-shadow: var(--shadow-hard);
       transition: background var(--transition), border-color var(--transition);
       display: flex;
@@ -146,18 +146,35 @@
       font-size: 1.5rem;
       font-weight: 700;
       color: var(--accent);
-      margin-bottom: 28px;
+      margin-bottom: 24px;
       letter-spacing: 0.5px;
       display: flex;
       align-items: center;
       gap: 8px;
       border-bottom: 2px dashed var(--border-color);
-      padding-bottom: 12px;
+      padding-bottom: 10px;
     }
 
-    /* Nhóm */
+    /* Desktop: bố cục grid 2 cột cho các nhóm thông tin */
+    @media (min-width: 769px) {
+      .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px 32px;
+        align-items: start;
+      }
+      .info-group {
+        margin-bottom: 0;
+        break-inside: avoid;
+      }
+      /* Group mascot có thể chiếm hết chiều rộng nếu muốn, nhưng để gọn ta đặt nó ở cột phải */
+      .info-group:last-child {
+        /* mascot group - giữ nguyên trong lưới */
+      }
+    }
+
     .info-group {
-      margin-bottom: 32px;
+      margin-bottom: 28px;
     }
     .info-group:last-of-type {
       margin-bottom: 0;
@@ -203,7 +220,7 @@
 
     /* Mascot - Ảnh lớn, rõ, không viền, hover phóng to + nghiêng nhẹ */
     .mascot-box {
-      margin-top: 20px;
+      margin-top: 8px;
       text-align: center;
       border: 2px solid var(--border-color);
       padding: 16px;
@@ -217,13 +234,13 @@
     .mascot-box img {
       max-width: 100%;
       height: auto;
-      max-height: 280px;
+      max-height: 220px;
       display: block;
       margin: 0 auto;
-      border: none;             /* Xóa khung viền ảnh */
+      border: none;
       transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0,0,0,0);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
     }
     
     /* Hover: phóng to + nghiêng nhẹ */
@@ -240,7 +257,7 @@
       color: var(--accent);
     }
 
-    /* ----- MENU (Desktop: vertical, Mobile: fixed bottom) ----- */
+    /* ----- MENU (Desktop: vertical) ----- */
     .menu {
       flex: 0.9;
       display: flex;
@@ -360,7 +377,7 @@
       border: 4px solid white;
     }
 
-    /* ----- MOBILE OPTIMIZATION: menu cố định dưới cùng, hiển thị ĐẦY ĐỦ ----- */
+    /* ----- MOBILE OPTIMIZATION: menu cố định dưới cùng, hiển thị đầy đủ ----- */
     @media (max-width: 768px) {
       header {
         padding: 10px 14px;
@@ -369,14 +386,13 @@
         font-size: 1.5rem;
       }
       
-      /* header-right luôn bên phải */
       .header-right {
         margin-left: auto;
       }
       
       main {
         flex-direction: column;
-        padding: 20px 16px 90px;  /* khoảng trống dưới để menu không che nội dung */
+        padding: 20px 16px 90px;
         gap: 20px;
       }
 
@@ -389,7 +405,11 @@
         gap: 8px 10px;
       }
       
-      /* MENU FIXED BOTTOM - ĐẢM BẢO HIỂN THỊ TẤT CẢ 4 MỤC */
+      /* Bỏ grid 2 cột trên mobile */
+      .info-grid {
+        display: block;
+      }
+      
       .menu {
         position: fixed;
         bottom: 0;
@@ -406,7 +426,6 @@
         top: auto;
         align-self: auto;
         backdrop-filter: blur(12px);
-        background: var(--surface);
       }
       
       .menu a {
@@ -426,9 +445,12 @@
         background: var(--accent);
         border-color: var(--accent);
       }
+
+      .mascot-box img {
+        max-height: 200px;
+      }
     }
 
-    /* Điều chỉnh cho màn hình rất nhỏ (dưới 450px) - menu vẫn full */
     @media (max-width: 480px) {
       .header-left .icon-btn,
       .header-right .icon-btn {
@@ -446,20 +468,17 @@
       .menu a {
         font-size: 0.65rem;
         padding: 8px 2px;
-        letter-spacing: 0;
         font-weight: 600;
       }
       .mascot-box img {
-        max-height: 200px;
+        max-height: 180px;
       }
     }
 
-    /* Đảm bảo trên màn hình siêu nhỏ (dưới 380px) không bị tràn, chữ có thể xuống dòng nhẹ */
     @media (max-width: 380px) {
       .menu a {
         font-size: 0.6rem;
         padding: 6px 1px;
-        white-space: normal;
       }
     }
   </style>
@@ -472,7 +491,6 @@
     </div>
     <div class="center-title" data-lang="title">YattaD</div>
     <div class="header-right">
-      <!-- Các icon mạng xã hội đúng bên phải chữ YattaD -->
       <a href="https://www.facebook.com/Fb.YattaD/" target="_blank" class="icon-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
       <a href="https://www.instagram.com/yattad.art/" target="_blank" class="icon-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
       <button class="icon-btn" onclick="copyToClipboard('YattaD')" title="Copy Discord"><i class="fab fa-discord"></i></button>
@@ -483,61 +501,63 @@
   <main>
     <section class="info">
       <h2><i class="fas fa-address-card"></i> <span data-lang="infoTitle">Thông tin cá nhân</span></h2>
+      <!-- Bọc các group trong grid để desktop hiển thị 2 cột -->
+      <div class="info-grid">
+        <!-- NHÓM I: Cơ bản -->
+        <div class="info-group">
+          <div class="group-title" data-lang="group1">Thông tin cơ bản</div>
+          <div class="info-table">
+            <span class="info-label" data-lang="nameLabel">Họ và Tên</span>
+            <span class="info-value" data-lang="nameValue">Ngô Xuân Đạt</span>
 
-      <!-- NHÓM I: Cơ bản -->
-      <div class="info-group">
-        <div class="group-title" data-lang="group1">Thông tin cơ bản</div>
-        <div class="info-table">
-          <span class="info-label" data-lang="nameLabel">Họ và Tên</span>
-          <span class="info-value" data-lang="nameValue">Ngô Xuân Đạt</span>
+            <span class="info-label" data-lang="birthLabel">Ngày sinh</span>
+            <span class="info-value" data-lang="birthValue">07 / 05 / 1998</span>
 
-          <span class="info-label" data-lang="birthLabel">Ngày sinh</span>
-          <span class="info-value" data-lang="birthValue">07 / 05 / 1998</span>
+            <span class="info-label" data-lang="genderLabel">Giới tính</span>
+            <span class="info-value" data-lang="genderValue">Nam</span>
 
-          <span class="info-label" data-lang="genderLabel">Giới tính</span>
-          <span class="info-value" data-lang="genderValue">Nam</span>
+            <span class="info-label" data-lang="nationLabel">Quốc tịch</span>
+            <span class="info-value" data-lang="nationValue">Việt Nam</span>
 
-          <span class="info-label" data-lang="nationLabel">Quốc tịch</span>
-          <span class="info-value" data-lang="nationValue">Việt Nam</span>
+            <span class="info-label" data-lang="addressLabel">Địa chỉ</span>
+            <span class="info-value" data-lang="addressValue">Thanh Oai, Hà Nội</span>
 
-          <span class="info-label" data-lang="addressLabel">Địa chỉ</span>
-          <span class="info-value" data-lang="addressValue">Thanh Oai, Hà Nội</span>
-
-          <span class="info-label" data-lang="hobbyLabel">Sở thích</span>
-          <span class="info-value" data-lang="hobbyValue">Vẽ, Kể Chuyện, Học hỏi điều mới, Ngủ, Màu <span class='highlight'>Đỏ</span></span>
+            <span class="info-label" data-lang="hobbyLabel">Sở thích</span>
+            <span class="info-value" data-lang="hobbyValue">Vẽ, Kể Chuyện, Học hỏi điều mới, Ngủ, Màu <span class='highlight'>Đỏ</span></span>
+          </div>
         </div>
-      </div>
 
-      <!-- NHÓM II: Học vấn & Khả năng -->
-      <div class="info-group">
-        <div class="group-title" data-lang="group2">Học vấn & Khả năng</div>
-        <div class="info-table">
-          <span class="info-label" data-lang="eduLabel">Học vấn</span>
-          <span class="info-value" data-lang="eduValue">Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong></span>
+        <!-- NHÓM II: Học vấn & Khả năng -->
+        <div class="info-group">
+          <div class="group-title" data-lang="group2">Học vấn & Khả năng</div>
+          <div class="info-table">
+            <span class="info-label" data-lang="eduLabel">Học vấn</span>
+            <span class="info-value" data-lang="eduValue">Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong></span>
 
-          <span class="info-label" data-lang="skillLabel">Khả năng</span>
-          <span class="info-value" data-lang="skillValue">Vẽ Minh họa, Thiết kế nhân vật, <span class='highlight'>Vẽ truyện tranh</span>, Sáng tạo nội dung</span>
+            <span class="info-label" data-lang="skillLabel">Khả năng</span>
+            <span class="info-value" data-lang="skillValue">Vẽ Minh họa, Thiết kế nhân vật, <span class='highlight'>Vẽ truyện tranh</span>, Sáng tạo nội dung</span>
+          </div>
         </div>
-      </div>
 
-      <!-- NHÓM III: Công việc & Kinh nghiệm -->
-      <div class="info-group">
-        <div class="group-title" data-lang="group3">Công việc & Kinh nghiệm</div>
-        <div class="info-table">
-          <span class="info-label" data-lang="jobLabel">Công việc</span>
-          <span class="info-value" data-lang="jobValue">Freelancer <strong>Artist</strong> · <span class='highlight'>Trợ giảng</span> khóa truyện tranh cơ bản tại <span class='highlight'>Comia</span></span>
+        <!-- NHÓM III: Công việc & Kinh nghiệm -->
+        <div class="info-group">
+          <div class="group-title" data-lang="group3">Công việc & Kinh nghiệm</div>
+          <div class="info-table">
+            <span class="info-label" data-lang="jobLabel">Công việc</span>
+            <span class="info-value" data-lang="jobValue">Freelancer <strong>Artist</strong> · <span class='highlight'>Trợ giảng</span> khóa truyện tranh cơ bản tại <span class='highlight'>Comia</span></span>
 
-          <span class="info-label" data-lang="expLabel">Kinh nghiệm</span>
-          <span class="info-value" data-lang="expValue">Làm nghề từ <strong>năm 2020</strong></span>
+            <span class="info-label" data-lang="expLabel">Kinh nghiệm</span>
+            <span class="info-value" data-lang="expValue">Làm nghề từ <strong>năm 2020</strong></span>
+          </div>
         </div>
-      </div>
 
-      <!-- NHÓM IV: Mascot Tiêu (ảnh to, rõ, không viền, hover phóng to + nghiêng) -->
-      <div class="info-group">
-        <div class="group-title" data-lang="group4">Mascot</div>
-        <div class="mascot-box">
-          <div class="mascot-label" data-lang="mascotName">Tiêu</div>
-          <img src="assets/01.png" alt="Mascot Tiêu - YattaD">
+        <!-- NHÓM IV: Mascot Tiêu -->
+        <div class="info-group">
+          <div class="group-title" data-lang="group4">Mascot</div>
+          <div class="mascot-box">
+            <div class="mascot-label" data-lang="mascotName">Tiêu</div>
+            <img src="assets/01.png" alt="Mascot Tiêu - YattaD">
+          </div>
         </div>
       </div>
     </section>
@@ -681,7 +701,6 @@
         });
       };
 
-      // Modal thanh toán
       const paymentModal = document.getElementById("payment-modal");
       const paymentBtn = document.getElementById("payment-btn");
       const closePayment = document.getElementById("close-payment-modal");
@@ -695,7 +714,6 @@
         if (e.target === paymentModal) paymentModal.style.display = "none";
       });
 
-      // Phóng to QR
       const qrImages = document.querySelectorAll(".qr-item img");
       const imageModal = document.getElementById("image-modal");
       const largeImage = document.getElementById("large-image");
@@ -711,11 +729,9 @@
         largeImage.src = "";
       });
 
-      // Áp dụng theme & ngôn ngữ
       applyTheme();
       applyLanguage();
 
-      // Service Worker (PWA)
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("service-worker.js")
           .then(() => console.log("SW registered"))
