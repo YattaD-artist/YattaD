@@ -69,8 +69,12 @@
     gap: 10px;
   }
 
-  header > div:first-child {
-    width: 40px;
+  /* Căn chỉnh để các phần tử cân đối */
+  .left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 40px;
   }
   .center-title {
     font-size: 1.9rem;
@@ -80,8 +84,9 @@
     text-transform: uppercase;
     text-shadow: 1px 1px 0 var(--border-color);
   }
-  header > div:last-child {
+  .right {
     display: flex;
+    align-items: center;
     gap: 10px;
   }
 
@@ -145,11 +150,11 @@
   .menuItem img {
     width: 100%;
     height: auto;
-    aspect-ratio: auto;          /* bỏ tỷ lệ ép buộc, lấy theo ảnh gốc */
-    object-fit: contain;         /* giữ toàn bộ ảnh, không cắt */
+    aspect-ratio: auto;
+    object-fit: contain;
     display: block;
     border-bottom: 2px solid var(--border-color);
-    background-color: var(--bg); /* nền phụ nếu ảnh trong suốt */
+    background-color: var(--bg);
     transition: transform 0.25s ease;
   }
   .menuItem:hover img {
@@ -177,8 +182,8 @@
     .center-title {
       font-size: 1.5rem;
     }
-    header > div:first-child {
-      width: auto;
+    .left {
+      min-width: auto;
     }
     main {
       padding: 20px 16px 40px;
@@ -207,9 +212,12 @@
 <body>
 
 <header>
-  <div></div>
+  <div class="left">
+    <!-- Nút trang chủ -->
+    <a href="index.html" class="icon-btn" title="Trang chủ"><i class="fas fa-home"></i></a>
+  </div>
   <div class="center-title" id="title">YattaD</div>
-  <div>
+  <div class="right">
     <button class="icon-btn" id="theme-toggle"><i class="fas fa-adjust"></i></button>
     <button class="icon-btn" id="lang-toggle"><i class="fa-solid fa-language"></i></button>
   </div>
