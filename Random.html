@@ -585,8 +585,8 @@ if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark');
 const langBtn = document.getElementById('lang-toggle');
 let currentLang = localStorage.getItem('lang')||'vi';
 const translations = {
-  vi:{ title:"Tiêu Chuẩn", introTitle:"Giới Thiệu", introP1:"Đây là trang Tiêu Chuẩn – nơi cung cấp thông tin cơ bản và rõ ràng.", introP2:"Hãy điền tên vào bảng để Tiêu chọn, hoặc thử những tiên đoán khác của Tiêu.", repeat:"Số lần lặp", spin:"Thời gian quay", spinBtn:"Quay", menu1:"Vietlott Mega", menu2:"Vietlott Power", menu3:"ABCD", resultText:"Kết quả" },
-  en:{ title:"Standard", introTitle:"Introduction", introP1:"This is the Standard page – providing simple and clear information.", introP2:"Please enter a name in the table for Tiêu to choose, or try Tiêu's other predictions.", repeat:"Iterations", spin:"Spin time", spinBtn:"Spin", menu1:"Vietlott Mega", menu2:"Vietlott Power", menu3:"ABCD", resultText:"Result" }
+  vi:{ title:"Tiêu Chuẩn", introTitle:"Giới Thiệu", introP1:"Đây là trang Tiêu Chuẩn.", introP2:"Hãy điền tên vào bảng để Tiêu chọn, hoặc thử những tiên đoán khác của Tiêu.", repeat:"Số lần lặp", spin:"Thời gian quay", spinBtn:"Quay", menu1:"Vietlott Mega", menu2:"Vietlott Power", menu3:"ABCD", resultText:"Kết quả" },
+  en:{ title:"Standard", introTitle:"Introduction", introP1:"This is the Tieu Chuan. ", introP2:"Please enter a name in the table for Tiêu to choose, or try Tiêu's other predictions.", repeat:"Iterations", spin:"Spin time", spinBtn:"Spin", menu1:"Vietlott Mega", menu2:"Vietlott Power", menu3:"ABCD", resultText:"Result" }
 };
 function switchLanguage(){
   currentLang = currentLang==='vi'?'en':'vi';
