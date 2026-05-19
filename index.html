@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-  <!-- CHỐNG CACHE TRÌNH DUYỆT CŨ -->
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
@@ -64,12 +63,12 @@
       line-height: 1.4;
     }
 
-    /* ----- HEADER: full width ----- */
+    /* ----- HEADER ----- */
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 24px;
+      padding: 10px 40px;
       background: var(--surface);
       border-bottom: 3px solid var(--border-color);
       position: sticky;
@@ -84,7 +83,7 @@
     .header-right {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .center-title {
@@ -119,12 +118,12 @@
       background: rgba(255,255,255,0.05);
     }
 
-    /* ----- MAIN: full width, không lề thừa ----- */
+    /* ----- MAIN: có padding 2 bên để dễ đọc, không quá sát lề ----- */
     main {
       flex: 1;
       display: flex;
       gap: 28px;
-      padding: 24px 24px 32px;
+      padding: 24px 40px 40px;
       width: 100%;
     }
 
@@ -133,7 +132,7 @@
       flex: 3;
       background: var(--surface);
       border: 3px solid var(--border-color);
-      padding: 24px 28px;
+      padding: 28px 32px;
       box-shadow: var(--shadow-hard);
       transition: background var(--transition), border-color var(--transition);
       display: flex;
@@ -144,7 +143,7 @@
       font-size: 1.5rem;
       font-weight: 700;
       color: var(--accent);
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -152,17 +151,18 @@
       padding-bottom: 10px;
     }
 
+    /* Desktop: 2 cột, cột trái rộng hơn 1 chút */
     @media (min-width: 769px) {
       .info-grid {
         display: grid;
-        grid-template-columns: 1fr 0.7fr;
-        gap: 32px 40px;
+        grid-template-columns: 1fr 0.65fr;
+        gap: 32px 48px;
         align-items: start;
       }
       .info-left {
         display: flex;
         flex-direction: column;
-        gap: 24px;
+        gap: 28px;
       }
       .info-right {
         display: flex;
@@ -181,7 +181,7 @@
       text-transform: uppercase;
       letter-spacing: 1px;
       color: var(--text-secondary);
-      margin-bottom: 12px;
+      margin-bottom: 14px;
       padding: 4px 8px;
       border-left: 4px solid var(--accent);
       background: rgba(0,0,0,0.02);
@@ -192,8 +192,8 @@
 
     .info-table {
       display: grid;
-      grid-template-columns: 130px 1fr;
-      gap: 10px 16px;
+      grid-template-columns: 135px 1fr;
+      gap: 12px 18px;
     }
 
     .info-label {
@@ -217,9 +217,8 @@
     .mascot-box {
       text-align: center;
       border: 2px solid var(--border-color);
-      padding: 20px 16px;
+      padding: 24px 16px;
       background: rgba(0,0,0,0.01);
-      margin-top: 8px;
     }
     body.dark .mascot-box {
       background: rgba(255,255,255,0.02);
@@ -228,7 +227,7 @@
     .mascot-box img {
       max-width: 100%;
       height: auto;
-      max-height: 280px;
+      max-height: 300px;
       display: block;
       margin: 0 auto;
       border: none;
@@ -243,7 +242,7 @@
     
     .mascot-label {
       font-weight: 700;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       font-size: 0.85rem;
       text-transform: uppercase;
       letter-spacing: 0.8px;
@@ -275,7 +274,6 @@
       letter-spacing: 0.5px;
       box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
       text-transform: uppercase;
-      white-space: nowrap;
     }
     .menu a:hover {
       background: var(--accent);
@@ -361,7 +359,7 @@
       border: 4px solid white;
     }
 
-    /* MOBILE */
+    /* MOBILE: padding nhỏ hơn */
     @media (max-width: 768px) {
       header {
         padding: 8px 16px;
@@ -409,9 +407,9 @@
       }
       .menu a {
         flex: 1;
-        white-space: nowrap;
         font-size: 0.7rem;
         padding: 10px 2px;
+        white-space: nowrap;
         box-shadow: none;
         border: 1.5px solid var(--border-color);
       }
@@ -558,15 +556,11 @@
       }
 
       function applyTheme() {
-        if (darkMode) {
-          document.body.classList.add("dark");
-        } else {
-          document.body.classList.remove("dark");
-        }
+        if (darkMode) document.body.classList.add("dark");
+        else document.body.classList.remove("dark");
         localStorage.setItem("theme", darkMode ? "dark" : "light");
       }
 
-      // Hàm khởi tạo từ localStorage
       function initFromStorage() {
         darkMode = localStorage.getItem("theme") === "dark";
         currentLang = localStorage.getItem("lang") || "vi";
@@ -574,9 +568,7 @@
         applyLanguage();
       }
 
-      // Lắng nghe sự kiện pageshow để ép cập nhật mỗi khi quay lại (kể cả bfcache)
-      window.addEventListener("pageshow", function(event) {
-        // Nếu trang được phục hồi từ bfcache, vẫn đọc lại localStorage
+      window.addEventListener("pageshow", () => {
         const savedTheme = localStorage.getItem("theme");
         const savedLang = localStorage.getItem("lang");
         let needUpdate = false;
@@ -597,68 +589,37 @@
         }
       });
 
-      // Đăng ký sự kiện cho các nút
       document.getElementById("lang-toggle").addEventListener("click", () => {
         currentLang = currentLang === "vi" ? "en" : "vi";
         applyLanguage();
       });
-
       document.getElementById("theme-toggle").addEventListener("click", () => {
         darkMode = !darkMode;
         applyTheme();
       });
 
       window.copyToClipboard = function(text) {
-        navigator.clipboard.writeText(text).then(() => {
-          alert(`Đã copy: ${text}`);
-        }).catch(() => {
-          prompt("Sao chép thủ công:", text);
-        });
+        navigator.clipboard.writeText(text).then(() => alert(`Đã copy: ${text}`))
+          .catch(() => prompt("Sao chép thủ công:", text));
       };
 
-      // Modal thanh toán
       const paymentModal = document.getElementById("payment-modal");
       const paymentBtn = document.getElementById("payment-btn");
       const closePayment = document.getElementById("close-payment-modal");
-      if (paymentBtn) {
-        paymentBtn.addEventListener("click", (e) => {
-          e.preventDefault();
-          paymentModal.style.display = "flex";
-        });
-      }
-      if (closePayment) {
-        closePayment.addEventListener("click", () => paymentModal.style.display = "none");
-      }
-      if (paymentModal) {
-        paymentModal.addEventListener("click", (e) => {
-          if (e.target === paymentModal) paymentModal.style.display = "none";
-        });
-      }
+      if (paymentBtn) paymentBtn.addEventListener("click", (e) => { e.preventDefault(); paymentModal.style.display = "flex"; });
+      if (closePayment) closePayment.addEventListener("click", () => paymentModal.style.display = "none");
+      if (paymentModal) paymentModal.addEventListener("click", (e) => { if (e.target === paymentModal) paymentModal.style.display = "none"; });
 
-      // Phóng to QR
       const qrImages = document.querySelectorAll(".qr-item img");
       const imageModal = document.getElementById("image-modal");
       const largeImage = document.getElementById("large-image");
       qrImages.forEach(img => {
-        img.addEventListener("click", () => {
-          largeImage.src = img.src;
-          imageModal.style.display = "flex";
-        });
+        img.addEventListener("click", () => { largeImage.src = img.src; imageModal.style.display = "flex"; });
       });
-      if (imageModal) {
-        imageModal.addEventListener("click", () => {
-          imageModal.style.display = "none";
-          largeImage.src = "";
-        });
-      }
+      if (imageModal) imageModal.addEventListener("click", () => { imageModal.style.display = "none"; largeImage.src = ""; });
 
-      // Khởi tạo lần đầu
       initFromStorage();
-
-      // Service worker - chỉ register nếu có file, không cache index quá mức
-      if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.register("service-worker.js").catch(err => console.log("SW không cần thiết:", err));
-      }
+      if ("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js").catch(() => {});
     })();
   </script>
 </body>
