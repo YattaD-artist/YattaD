@@ -183,7 +183,7 @@
 <body>
   <div id="game-layout">
     <div id="board-container">
-      <img id="cover-image" src="game/TieuTung/TieuTung.jpg" alt="Tieu Tung">
+      <img id="cover-image" src="TieuTung/TieuTung.jpg" alt="Tieu Tung">
       <canvas id="boardCanvas"></canvas>
     </div>
 
@@ -263,33 +263,33 @@
       // TẢI ẢNH
       // ──────────────────────────────
       function loadImages() {
-        images.Tieu.src = "game/TieuTung/Tieu.png";
-        images.Tung.src = "game/TieuTung/Tung.png";
-        images.TieuWin.src = "game/TieuTung/TieuWin.png";
-        images.TieuLose.src = "game/TieuTung/TieuLose.png";
-        images.TungWin.src = "game/TieuTung/TungWin.png";
-        images.TungLose.src = "game/TieuTung/TungLose.png";
-        paperTexture.src = "game/paper-texture.png";
+  images.Tieu.src = "TieuTung/Tieu.png";
+  images.Tung.src = "TieuTung/Tung.png";
+  images.TieuWin.src = "TieuTung/TieuWin.png";
+  images.TieuLose.src = "TieuTung/TieuLose.png";
+  images.TungWin.src = "TieuTung/TungWin.png";
+  images.TungLose.src = "TieuTung/TungLose.png";
+  paperTexture.src = "paper-texture.png";
 
-        let loadedCount = 0;
-        const totalImages = 7;
-        const onImageLoad = () => {
-          loadedCount++;
-          if (loadedCount === totalImages) {
-            allImagesLoaded = true;
-            textureLoaded = true;
-          }
-        };
-        for (const key in images) {
-          images[key].onload = onImageLoad;
-          images[key].onerror = () => onImageLoad();
-        }
-        paperTexture.onload = onImageLoad;
-        paperTexture.onerror = () => {
-          textureLoaded = false;
-          onImageLoad();
-        };
-      }
+  let loadedCount = 0;
+  const totalImages = 7;
+  const onImageLoad = () => {
+    loadedCount++;
+    if (loadedCount === totalImages) {
+      allImagesLoaded = true;
+      textureLoaded = true;
+    }
+  };
+  for (const key in images) {
+    images[key].onload = onImageLoad;
+    images[key].onerror = () => onImageLoad();
+  }
+  paperTexture.onload = onImageLoad;
+  paperTexture.onerror = () => {
+    textureLoaded = false;
+    onImageLoad();
+  };
+}
 
       // ──────────────────────────────
       // CHỌN ẢNH THEO TRẠNG THÁI
