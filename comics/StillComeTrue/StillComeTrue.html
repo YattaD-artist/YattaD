@@ -1,1 +1,483 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>YattaD · Still Come True</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ========== RESET & BIẾN YATTAD ========== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
+        :root {
+            --border-width: 4px;
+            --bg-body: #1a1a1a;
+            --surface: #f5f5f5;
+            --surface-alt: #ffffff;
+            --text: #1a1a1a;
+            --text-secondary: #444444;
+            --accent: #c62828;
+            --accent-dark: #b71c1c;
+            --border-color: #222;
+            --shadow-hard: 4px 4px 0 rgba(0,0,0,0.1);
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body.dark {
+            --surface: #1e1e1e;
+            --surface-alt: #2a2a2a;
+            --text: #e8e8e8;
+            --text-secondary: #b0b0b0;
+            --accent: #ef4444;
+            --accent-dark: #dc2626;
+            --border-color: #555;
+            --shadow-hard: 4px 4px 0 rgba(0,0,0,0.4);
+        }
+
+        body {
+            background-color: var(--bg-body);
+            font-family: var(--font);
+            color: var(--text);
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        /* ========== LAYOUT CHÍNH ========== */
+        .app-container {
+            display: grid;
+            grid-template-columns: 260px 1fr 260px;
+            grid-template-rows: 1fr 80px;
+            height: 100vh;
+            gap: 12px;
+            padding: 12px;
+            background-color: var(--bg-body);
+        }
+
+        .panel {
+            background-color: var(--surface);
+            border: var(--border-width) solid var(--border-color);
+            box-shadow: var(--shadow-hard);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+            transition: background 0.2s, border 0.2s;
+        }
+
+        /* ===== SIDEBAR TRÁI (DANH SÁCH CHƯƠNG) ===== */
+        .sidebar-left-top {
+            grid-column: 1;
+            grid-row: 1;
+            padding: 12px;
+        }
+
+        .sidebar-left-top > div:first-child {
+            text-align: center;
+            font-weight: 800;
+            margin-bottom: 14px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid var(--border-color);
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            color: var(--accent);
+            text-transform: uppercase;
+        }
+
+        .chapter-list {
+            overflow-y: auto;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chapter-item {
+            width: 100%;
+            padding: 12px 8px;
+            background: var(--surface-alt);
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            font-weight: 700;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            color: var(--text);
+        }
+
+        .chapter-item:hover {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            transform: translate(-1px, -1px);
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+        }
+
+        .chapter-item.active {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2);
+        }
+
+        /* panel dưới cùng bên trái (chỉ số trang) */
+        .sidebar-left-bottom {
+            grid-column: 1;
+            grid-row: 2;
+            justify-content: center;
+            align-items: center;
+            font-weight: 800;
+            font-size: 1rem;
+            text-transform: uppercase;
+            background: var(--surface);
+            border-top: var(--border-width) solid var(--border-color);
+            color: var(--accent);
+        }
+
+        /* ===== KHU VỰC ĐỌC CHÍNH ===== */
+        .main-reader {
+            grid-column: 2;
+            grid-row: 1 / span 2;
+            overflow-y: auto;
+            background-color: #2a2a2a;
+            scroll-snap-type: y mandatory;
+            position: relative;
+            border: var(--border-width) solid var(--border-color);
+            box-shadow: var(--shadow-hard);
+        }
+
+        /* TEXTURE CHỈ TRÊN DESKTOP */
+        @media (min-width: 769px) {
+            .main-reader::after {
+                content: "";
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url("paper-texture.png");
+                background-repeat: repeat;
+                opacity: 0.08;
+                pointer-events: none;
+                z-index: 10;
+            }
+        }
+
+        #gallery {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 100%;
+            row-gap: 20vh;
+            padding-bottom: 100px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .img-container {
+            display: flex;
+            width: 100%;
+            height: 95vh;
+            align-items: center;
+            scroll-snap-align: center;
+        }
+
+        .img-container:nth-child(odd) {
+            justify-content: flex-end;
+        }
+        .img-container:nth-child(even) {
+            justify-content: flex-start;
+        }
+
+        .img-container img {
+            max-width: 100%;
+            max-height: 90vh;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border: 2px solid var(--border-color);
+            box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
+            background: #fff;
+        }
+        .img-container img.loaded {
+            opacity: 1;
+        }
+
+        /* ===== SIDEBAR PHẢI ===== */
+        .sidebar-right-top {
+            grid-column: 3;
+            grid-row: 1;
+        }
+        .sidebar-right-top > div:first-child {
+            text-align: center;
+            font-weight: 800;
+            padding: 10px;
+            border-bottom: 3px solid var(--border-color);
+            background: var(--surface);
+            color: var(--accent);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+        .cover-box {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .cover-box img {
+            max-width: 100%;
+            border: 3px solid var(--border-color);
+            box-shadow: var(--shadow-hard);
+            background: var(--surface-alt);
+        }
+
+        .sidebar-right-bottom {
+            grid-column: 3;
+            grid-row: 2;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+        }
+        #page-search {
+            width: 100%;
+            padding: 12px;
+            border: 3px solid var(--border-color);
+            background: var(--surface-alt);
+            text-align: center;
+            font-weight: 700;
+            font-size: 1rem;
+            font-family: var(--font);
+            color: var(--text);
+            transition: all 0.2s;
+        }
+        #page-search:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: var(--surface);
+            box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+        }
+
+        #sentinel {
+            height: 50px;
+            width: 100%;
+            grid-column: span 2;
+        }
+
+        /* ===== MOBILE (<=768px) - GIỮ NGUYÊN CẤU TRÚC NHƯNG ĐIỀU CHỈNH ===== */
+        @media (max-width: 768px) {
+            .app-container {
+                display: flex;
+                flex-direction: column;
+                padding: 0;
+                gap: 0;
+            }
+            .sidebar-left-top {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 60px;
+                z-index: 100;
+                display: flex;
+                overflow-x: auto;
+                padding: 6px 8px;
+                border-bottom: 3px solid var(--border-color);
+                background: var(--surface);
+                box-shadow: 0 2px 0 var(--border-color);
+            }
+            .sidebar-left-top > div:first-child {
+                display: none;
+            }
+            .chapter-list {
+                display: flex;
+                flex-direction: row;
+                gap: 8px;
+                align-items: center;
+            }
+            .chapter-item {
+                flex: 0 0 auto;
+                padding: 8px 14px;
+                margin-bottom: 0;
+                font-size: 0.7rem;
+                border-width: 2px;
+                white-space: nowrap;
+            }
+            .sidebar-left-bottom,
+            .sidebar-right-top,
+            .sidebar-right-bottom {
+                display: none;
+            }
+            .main-reader {
+                margin-top: 60px;
+                height: calc(100vh - 60px);
+                scroll-snap-type: none;
+            }
+            .main-reader::after {
+                display: none !important;
+            }
+            #gallery {
+                display: block;
+                padding: 0;
+            }
+            .img-container {
+                height: auto;
+                margin-bottom: 20px;
+                justify-content: center !important;
+                scroll-snap-align: none;
+            }
+            .img-container img {
+                width: 100%;
+                height: auto;
+                max-height: none;
+                border-width: 2px;
+                box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+            }
+            #sentinel {
+                height: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="panel sidebar-left-top">
+        <div>DANH MỤC</div>
+        <div class="chapter-list" id="chapter-list-ui"></div>
+    </div>
+    <div class="panel sidebar-left-bottom">TRANG: <span id="page-indicator">-</span></div>
+    <div class="panel main-reader" id="reader-scroll-area">
+        <div id="gallery"></div>
+        <div id="sentinel"></div>
+    </div>
+    <div class="panel sidebar-right-top">
+        <div>BÌA CHƯƠNG</div>
+        <div class="cover-box"><img id="chapter-cover" src="" alt=" "></div>
+    </div>
+    <div class="panel sidebar-right-bottom"><input type="number" id="page-search" placeholder="NHẬP SỐ TRANG..." min="1"></div>
+</div>
+
+<script>
+    const TOTAL_CHAPTERS = 1;
+    const IMAGE_EXT = ".jpg";
+    let currentChapter = 1;
+    let currentIndex = 1;
+    let isEnded = false;
+    let isFirstLoad = true;
+    let visiblePages = new Set();
+
+    const gallery = document.getElementById('gallery');
+    const chapterListUI = document.getElementById('chapter-list-ui');
+    const coverImg = document.getElementById('chapter-cover');
+    const pageIndicator = document.getElementById('page-indicator');
+    const scrollArea = document.getElementById('reader-scroll-area');
+    const pageSearch = document.getElementById('page-search');
+
+    function initChapters() {
+        chapterListUI.innerHTML = "";
+        for (let i = 1; i <= TOTAL_CHAPTERS; i++) {
+            const btn = document.createElement('div');
+            btn.className = 'chapter-item';
+            btn.textContent = `Chương ${i}`;
+            btn.id = `btn-chap-${i}`;
+            btn.onclick = () => loadChapter(i);
+            chapterListUI.appendChild(btn);
+        }
+        loadChapter(1);
+    }
+
+    function loadChapter(idx) {
+        currentChapter = idx;
+        currentIndex = 1;
+        isEnded = false;
+        isFirstLoad = true;
+        visiblePages.clear();
+        document.querySelectorAll('.chapter-item').forEach(b => b.classList.remove('active'));
+        document.getElementById(`btn-chap-${idx}`)?.classList.add('active');
+        gallery.innerHTML = '<div style="height: 95vh; width: 100%;"></div>';
+        coverImg.src = `Chap${idx}/0${IMAGE_EXT}`;
+        scrollArea.scrollTop = 0;
+        loadNextBatch();
+    }
+
+    function attemptLoadImage(imgElement, chapter, index, zeroCount = 0) {
+        let fileName = String(index);
+        if (zeroCount > 0) fileName = fileName.padStart(zeroCount + 1, '0');
+        imgElement.src = `Chap${chapter}/${fileName}${IMAGE_EXT}`;
+        imgElement.onerror = () => {
+            if (zeroCount < 2) {
+                attemptLoadImage(imgElement, chapter, index, zeroCount + 1);
+            } else {
+                imgElement.closest('.img-container')?.remove();
+                isEnded = true;
+            }
+        };
+    }
+
+    function createImgContainer(index, priority) {
+        const container = document.createElement('div');
+        container.className = 'img-container';
+        container.dataset.page = index;
+        container.id = `cp-${currentChapter}-${index}`;
+        const img = new Image();
+        if (!priority) img.loading = "lazy";
+        attemptLoadImage(img, currentChapter, index);
+        img.onload = () => img.classList.add('loaded');
+        container.appendChild(img);
+        pageObserver.observe(container);
+        return container;
+    }
+
+    function loadNextBatch() {
+        if (isEnded) return;
+        const amount = isFirstLoad ? 11 : 10;
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < amount; i++) {
+            if (isEnded) break;
+            fragment.appendChild(createImgContainer(currentIndex, isFirstLoad));
+            currentIndex++;
+        }
+        gallery.appendChild(fragment);
+        isFirstLoad = false;
+    }
+
+    const pageObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) visiblePages.add(entry.target.dataset.page);
+            else visiblePages.delete(entry.target.dataset.page);
+        });
+        if (visiblePages.size > 0) {
+            pageIndicator.textContent = Array.from(visiblePages).sort((a,b)=>a-b).join(' - ');
+        }
+    }, { threshold: 0.1, root: scrollArea });
+
+    const scrollObserver = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && !isEnded) loadNextBatch();
+    }, { root: scrollArea, rootMargin: '1000px' });
+
+    scrollObserver.observe(document.getElementById('sentinel'));
+
+    pageSearch.onkeypress = (e) => {
+        if (e.key === 'Enter') {
+            const targetPage = parseInt(pageSearch.value);
+            if (targetPage > 0) {
+                let safety = 0;
+                while (targetPage >= currentIndex && !isEnded && safety < 150) {
+                    loadNextBatch();
+                    safety++;
+                }
+                setTimeout(() => {
+                    const el = document.getElementById(`cp-${currentChapter}-${targetPage}`);
+                    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            }
+            pageSearch.value = "";
+            pageSearch.blur();
+        }
+    };
+
+    initChapters();
+</script>
+</body>
+</html>
