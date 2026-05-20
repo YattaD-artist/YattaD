@@ -144,12 +144,16 @@
 
     .game-card img {
       width: 100%;
-      aspect-ratio: 16 / 9;
-      object-fit: cover;
+      aspect-ratio: 1 / 1;          /* Vuông 1:1 */
+      object-fit: contain;          /* Hiển thị toàn bộ ảnh, không cắt */
+      background-color: #f0f0f0;    /* Nền nhẹ nếu ảnh có trong suốt */
       display: block;
       border-bottom: 2px solid var(--border-color);
-      background-color: var(--bg);
       transition: transform 0.25s ease;
+    }
+
+    body.dark .game-card img {
+      background-color: #2a2a2a;    /* Nền tối khi dark mode */
     }
 
     .game-card:hover img {
@@ -197,8 +201,9 @@
         font-size: 0.9rem;
         padding: 12px;
       }
+      /* Giữ nguyên tỉ lệ 1:1 trên mobile */
       .game-card img {
-        aspect-ratio: 16 / 9;
+        aspect-ratio: 1 / 1;
       }
     }
   </style>
