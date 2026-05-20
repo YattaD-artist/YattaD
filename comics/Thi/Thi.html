@@ -105,6 +105,7 @@
             letter-spacing: 0.5px;
             transition: all 0.2s ease;
             color: var(--text);
+            word-break: break-word;
         }
 
         .chapter-item:hover {
@@ -361,6 +362,14 @@
 <script>
     const TOTAL_CHAPTERS = 4;
     const IMAGE_EXT = ".jpg";
+    // Tên hiển thị tùy chỉnh cho 4 chương
+    const CUSTOM_NAMES = [
+        "WOW mùa 1",
+        "KAIA mùa 1",
+        "AVA mùa 1",
+        "WOW mùa 2 (thử nghiệm)"
+    ];
+
     let currentChapter = 1;
     let currentIndex = 1;
     let isEnded = false;
@@ -379,7 +388,8 @@
         for (let i = 1; i <= TOTAL_CHAPTERS; i++) {
             const btn = document.createElement('div');
             btn.className = 'chapter-item';
-            btn.textContent = `Chương ${i}`;
+            // Gán tên theo mảng (chú ý index 0 cho chap1)
+            btn.textContent = CUSTOM_NAMES[i-1];
             btn.id = `btn-chap-${i}`;
             btn.onclick = () => loadChapter(i);
             chapterListUI.appendChild(btn);
@@ -396,6 +406,7 @@
         document.querySelectorAll('.chapter-item').forEach(b => b.classList.remove('active'));
         document.getElementById(`btn-chap-${idx}`)?.classList.add('active');
         gallery.innerHTML = '<div style="height: 95vh; width: 100%;"></div>';
+        // Bìa chương vẫn theo thư mục ChapX/0.jpg
         coverImg.src = `Chap${idx}/0${IMAGE_EXT}`;
         scrollArea.scrollTop = 0;
         loadNextBatch();
