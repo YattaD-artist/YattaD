@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>YattaD · Game</title>
+
+  <!-- Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #f5f5f5;
+      --surface: #ffffff;
+      --text: #1a1a1a;
+      --text-secondary: #444444;
+      --accent: #c62828;
+      --accent-light: #e53935;
+      --border-color: #222;
+      --border-light: #ccc;
+      --shadow-hard: 4px 4px 0 rgba(0,0,0,0.1);
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --transition: 0.2s ease;
+    }
+
+    body.dark {
+      --bg: #121212;
+      --surface: #1e1e1e;
+      --text: #e8e8e8;
+      --text-secondary: #b0b0b0;
+      --accent: #ef4444;
+      --accent-light: #f87171;
+      --border-color: #555;
+      --border-light: #333;
+      --shadow-hard: 4px 4px 0 rgba(0,0,0,0.4);
+    }
+
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background var(--transition), color var(--transition);
+      line-height: 1.5;
+    }
+
+    /* ========== HEADER ========== */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 40px;
+      background: var(--surface);
+      border-bottom: 3px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 0 var(--border-color);
+      transition: background var(--transition), border-color var(--transition);
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .header-left, .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .center-title {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      text-shadow: 1px 1px 0 var(--border-color);
+    }
+
+    .icon-btn {
+      background: none;
+      border: 2px solid transparent;
+      font-size: 1rem;
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-decoration: none;
+      border-radius: 0;
+    }
+    .icon-btn:hover {
+      color: var(--accent);
+      border-color: var(--border-color);
+      background: rgba(0,0,0,0.03);
+    }
+    body.dark .icon-btn:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* ========== MAIN ========== */
+    main {
+      max-width: 1300px;
+      margin: 0 auto;
+      padding: 32px 28px 60px;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* ========== GAME GRID ========== */
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 28px;
+    }
+
+    .game-card {
+      display: block;
+      background: var(--surface);
+      border: 2px solid var(--border-color);
+      box-shadow: var(--shadow-hard);
+      text-decoration: none;
+      color: var(--text);
+      transition: all var(--transition);
+      overflow: hidden;
+    }
+
+    .game-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.15);
+      border-color: var(--accent);
+    }
+
+    .game-card img {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      display: block;
+      border-bottom: 2px solid var(--border-color);
+      background-color: var(--bg);
+      transition: transform 0.25s ease;
+    }
+
+    .game-card:hover img {
+      transform: scale(1.02);
+    }
+
+    .game-card p {
+      padding: 16px 14px;
+      font-weight: 700;
+      font-size: 1rem;
+      text-align: center;
+      letter-spacing: 0.3px;
+      color: var(--text);
+      background: var(--surface);
+      margin: 0;
+      border-top: 1px solid var(--border-light);
+    }
+
+    /* ========== RESPONSIVE ========== */
+    @media (max-width: 1024px) and (min-width: 769px) {
+      .game-grid {
+        gap: 20px;
+      }
+      .game-card p {
+        font-size: 0.9rem;
+        padding: 12px 10px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 10px 16px;
+      }
+      .center-title {
+        font-size: 1.5rem;
+      }
+      main {
+        padding: 20px 16px 40px;
+      }
+      .game-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      .game-card p {
+        font-size: 0.9rem;
+        padding: 12px;
+      }
+      .game-card img {
+        aspect-ratio: 16 / 9;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <!-- Nút trang chủ -->
+      <a href="index.html" class="icon-btn" id="home-link" title="Trang chủ"><i class="fas fa-home"></i></a>
+      <button class="icon-btn" id="theme-toggle" title="Giao diện tối/sáng"><i class="fas fa-adjust"></i></button>
+      <button class="icon-btn" id="lang-toggle" title="Ngôn ngữ"><i class="fa-solid fa-language"></i></button>
+    </div>
+    <div class="center-title" id="title">YattaD</div>
+    <div class="header-right">
+      <a href="https://www.facebook.com/Fb.YattaD/" target="_blank" class="icon-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://www.instagram.com/yattad.art/" target="_blank" class="icon-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      <button class="icon-btn" onclick="copyToClipboard('YattaD')" title="Copy Discord"><i class="fab fa-discord"></i></button>
+      <button class="icon-btn" onclick="copyToClipboard('Yattadwork@gmail.com')" title="Copy Gmail"><i class="fas fa-envelope"></i></button>
+    </div>
+  </header>
+
+  <main>
+    <div class="game-grid">
+      <!-- Game 1: Cờ Tiêu - Tùng -->
+      <a href="Game/TieuTung.html" target="_blank" class="game-card" data-game="1">
+        <img src="Game/TieuTung.jpg" alt="Cờ Tiêu - Tùng" id="game1-img">
+        <p id="game1-name">Cờ Tiêu - Tùng</p>
+      </a>
+      <!-- Các game sau sẽ thêm tại đây, giữ nguyên cấu trúc -->
+    </div>
+  </main>
+
+  <script>
+    // ========== THEME TOGGLE ==========
+    const themeBtn = document.getElementById('theme-toggle');
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      localStorage.setItem('theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+    });
+    if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark');
+
+    // ========== LANGUAGE TOGGLE (dự phòng) ==========
+    const langBtn = document.getElementById('lang-toggle');
+    let currentLang = localStorage.getItem('lang') || 'vi';
+    const translations = {
+      vi: {
+        title: "YattaD",
+        game1: "Cờ Tiêu - Tùng"
+      },
+      en: {
+        title: "YattaD",
+        game1: "Tieu Tung Chess"
+      }
+    };
+
+    function applyLanguage() {
+      const titleEl = document.getElementById('title');
+      if (titleEl) titleEl.textContent = translations[currentLang].title;
+      const game1Name = document.getElementById('game1-name');
+      if (game1Name) game1Name.textContent = translations[currentLang].game1;
+      localStorage.setItem('lang', currentLang);
+    }
+
+    langBtn.addEventListener('click', () => {
+      currentLang = currentLang === 'vi' ? 'en' : 'vi';
+      applyLanguage();
+    });
+
+    // Khởi tạo ngôn ngữ
+    if (currentLang === 'en') applyLanguage();
+    else applyLanguage(); // đảm bảo đồng bộ
+
+    // ========== COPY TO CLIPBOARD ==========
+    window.copyToClipboard = function(text) {
+      navigator.clipboard.writeText(text).then(() => alert(`Đã copy: ${text}`))
+        .catch(() => prompt("Sao chép thủ công:", text));
+    };
+
+    // ========== FIX HOME LINK (CHỐNG CACHE) ==========
+    const homeLink = document.getElementById('home-link');
+    if (homeLink) {
+      homeLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'index.html?t=' + Date.now();
+      });
+    }
+
+    // ========== PAGESHOW RESYNC THEME & LANG ==========
+    window.addEventListener('pageshow', () => {
+      const savedTheme = localStorage.getItem('theme');
+      const savedLang = localStorage.getItem('lang');
+      if (savedTheme === 'dark' && !document.body.classList.contains('dark')) {
+        document.body.classList.add('dark');
+      } else if (savedTheme === 'light' && document.body.classList.contains('dark')) {
+        document.body.classList.remove('dark');
+      }
+      if (savedLang && savedLang !== currentLang) {
+        currentLang = savedLang;
+        applyLanguage();
+      }
+    });
+
+    // ========== SERVICE WORKER (nếu có) ==========
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js").catch(() => {});
+    }
+  </script>
+</body>
+</html>
