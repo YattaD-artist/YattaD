@@ -43,6 +43,7 @@
       align-items: flex-end;
       justify-content: center;
     }
+    /* ========== BOARD (chung) ========== */
     #board-container {
       background: var(--surface);
       border: 3px solid var(--border-color);
@@ -76,6 +77,8 @@
     canvas:active {
       cursor: grabbing;
     }
+
+    /* ========== PANEL (desktop) ========== */
     #panel {
       width: 260px;
       background: var(--surface);
@@ -285,7 +288,37 @@
       border-color: var(--accent) !important;
     }
 
-    /* ========== MOBILE ========== */
+    /* ========== MOBILE HEADER & FOOTER (ẩn trên desktop) ========== */
+    #mobile-header, #mobile-footer {
+      display: none;
+      background: var(--surface);
+      border: 3px solid var(--border-color);
+      box-shadow: var(--shadow);
+      width: 100%;
+      padding: 12px 16px;
+      text-align: center;
+    }
+    #mobile-header h2 {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 0 0 4px;
+      -webkit-text-stroke: 0.5px var(--border-color);
+    }
+    #mobile-winMessage {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--accent);
+      min-height: 1.8rem;
+      margin-bottom: 4px;
+    }
+    #mobile-footer {
+      padding: 10px 16px;
+      max-height: 45vh;
+      overflow-y: auto;
+    }
+
+    /* ========== MOBILE LAYOUT ========== */
     @media (max-width: 700px) {
       body {
         padding: 0;
@@ -297,35 +330,30 @@
         height: 100vh;
         align-items: center;
       }
-      /* Bàn cờ vuông bằng chiều rộng màn hình */
+      /* Ẩn panel desktop */
+      #panel {
+        display: none;
+      }
+      /* Hiện header/footer mobile */
+      #mobile-header, #mobile-footer {
+        display: block;
+        flex-shrink: 0;
+      }
       #board-container {
-        width: 100vw;
-        height: 100vw;
-        max-width: 100vw;
-        max-height: 100vw;
-        flex: none;
-        margin: 0;
+        flex: 1 1 auto;
+        min-height: 0;
+        width: auto;
+        height: auto;
         border-left: none;
         border-right: none;
         border-top: none;
       }
-      /* Panel chiếm toàn bộ chiều cao còn lại */
-      #panel {
-        width: 100vw;
-        max-width: 100vw;
-        flex: 1 1 auto;
+      /* Bàn cờ luôn vuông vừa khung */
+      #board-container {
+        width: 100%;
         height: auto;
-        border-bottom: none;
-        padding: 12px 16px 20px;
-        gap: 8px;
       }
-      .panel-content {
-        gap: 10px;
-      }
-      #winMessage {
-        font-size: 1.4rem;
-        min-height: 2.5rem;
-      }
+      /* Nút không còn vuông */
       .undo-btn {
         aspect-ratio: auto;
         padding: 10px 6px;
@@ -337,13 +365,6 @@
       }
       .undo-btn .small {
         font-size: 0.65rem;
-      }
-      .turn-info {
-        font-size: 0.65rem;
-        padding: 6px 0;
-      }
-      #winImage {
-        display: none !important;
       }
       .mode-list {
         flex-direction: row;
@@ -365,16 +386,69 @@
         font-size: 0.55rem;
         opacity: 0.8;
       }
+      #winImage {
+        display: none !important;
+      }
     }
   </style>
 </head>
 <body>
   <div id="game-layout">
+    <!-- ========== MOBILE HEADER ========== -->
+    <div id="mobile-header">
+      <h2>Cờ Tiêu - Tùng</h2>
+      <div id="mobile-winMessage"></div>
+      <div class="turn-info">Lượt: <span id="mobile-turnText">Tiêu</span></div>
+    </div>
+
+    <!-- ========== BOARD ========== -->
     <div id="board-container">
       <img id="cover-image" src="TieuTung/TieuTung.jpg" alt="Tieu Tung">
       <canvas id="boardCanvas"></canvas>
     </div>
 
+    <!-- ========== MOBILE FOOTER ========== -->
+    <div id="mobile-footer">
+      <!-- Màn chọn mốc (mobile) -->
+      <div id="mobile-mode-panel">
+        <div class="mode-description">Chọn mốc thắng:</div>
+        <div class="mode-list">
+          <button class="mode-btn" data-mode="4">
+            <span class="mode-title">Mốc 4</span>
+            <span class="mode-desc">Thắng khi xếp 4 quân liên tiếp</span>
+          </button>
+          <button class="mode-btn" data-mode="5">
+            <span class="mode-title">Mốc 5</span>
+            <span class="mode-desc">Thắng khi xếp 5 quân liên tiếp</span>
+          </button>
+          <button class="mode-btn" data-mode="6">
+            <span class="mode-title">Mốc 6</span>
+            <span class="mode-desc">Thắng khi xếp 6 quân liên tiếp</span>
+          </button>
+        </div>
+      </div>
+      <!-- Màn game (mobile) -->
+      <div id="mobile-game-panel" style="display: none; flex-direction: column;">
+        <div class="undo-group">
+          <button id="mobile-undoTieuBtn" class="undo-btn">
+            <span class="small">Hoàn tác</span>
+            <span class="big">TIÊU</span>
+            <span class="small">Còn <span id="mobile-undoTieuCount">3</span> lượt</span>
+          </button>
+          <button id="mobile-undoTungBtn" class="undo-btn">
+            <span class="small">Hoàn tác</span>
+            <span class="big">TÙNG</span>
+            <span class="small">Còn <span id="mobile-undoTungCount">3</span> lượt</span>
+          </button>
+        </div>
+        <div class="action-group">
+          <button id="mobile-restartBtn">Chơi lại</button>
+          <button id="mobile-backToModeBtn">Đổi mốc</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== PANEL DESKTOP ========== -->
     <div id="panel">
       <h2>Cờ Tiêu - Tùng</h2>
       <div class="panel-content">
@@ -461,6 +535,7 @@
       let imagesLoadedCount = 0;
       const TOTAL_IMAGES = 7;
 
+      // Desktop elements
       const modePanel = document.getElementById("mode-panel");
       const gamePanel = document.getElementById("game-panel");
       const turnText = document.getElementById("turnText");
@@ -472,6 +547,21 @@
       const winImage = document.getElementById("winImage");
       const restartBtn = document.getElementById("restartBtn");
       const backToModeBtn = document.getElementById("backToModeBtn");
+
+      // Mobile elements
+      const mobileHeader = document.getElementById("mobile-header");
+      const mobileFooter = document.getElementById("mobile-footer");
+      const mobileWinMessage = document.getElementById("mobile-winMessage");
+      const mobileTurnText = document.getElementById("mobile-turnText");
+      const mobileModePanel = document.getElementById("mobile-mode-panel");
+      const mobileGamePanel = document.getElementById("mobile-game-panel");
+      const mobileUndoTieuBtn = document.getElementById("mobile-undoTieuBtn");
+      const mobileUndoTungBtn = document.getElementById("mobile-undoTungBtn");
+      const mobileUndoTieuCount = document.getElementById("mobile-undoTieuCount");
+      const mobileUndoTungCount = document.getElementById("mobile-undoTungCount");
+      const mobileRestartBtn = document.getElementById("mobile-restartBtn");
+      const mobileBackToModeBtn = document.getElementById("mobile-backToModeBtn");
+
       const gameLayout = document.getElementById("game-layout");
       const panel = document.getElementById("panel");
 
@@ -587,10 +677,9 @@
           const img = getUnitImage(player);
 
           if (img) {
-            const angle = ((col * 31 + row * 17) % 360) * Math.PI / 180;
+            // Không xoay ảnh nữa
             ctx.save();
             ctx.translate(x, y);
-            ctx.rotate(angle);
             if (isWinning) { ctx.shadowColor = "#c62828"; ctx.shadowBlur = 20; }
             else if (isLastMove) { ctx.shadowColor = "#ffd700"; ctx.shadowBlur = 16; }
             ctx.drawImage(img, -half, -half, size, size);
@@ -726,6 +815,7 @@
         }
         winMessageDiv.style.display = "none";
         winImage.style.display = "none";
+        mobileWinMessage.textContent = "";
         updateRestartButton();
         lastMovePos = history.length > 0 ? {col: history[history.length-1].col, row: history[history.length-1].row} : null;
         currentPlayer = loser;
@@ -745,26 +835,32 @@
       }
 
       function updateTurnDisplay() {
-        turnText.textContent = currentPlayer === "Tieu" ? "Tiêu" : "Tùng";
+        const text = currentPlayer === "Tieu" ? "Tiêu" : "Tùng";
+        turnText.textContent = text;
+        mobileTurnText.textContent = text;
       }
 
       function updateUndoButtons() {
         undoTieuCountSpan.textContent = undoTieuRemaining;
         undoTungCountSpan.textContent = undoTungRemaining;
-        if (gameOver) {
-          undoTieuBtn.disabled = !(winner === "Tung" && undoTieuRemaining > 0);
-          undoTungBtn.disabled = !(winner === "Tieu" && undoTungRemaining > 0);
-        } else {
-          const last = history.length > 0 ? history[history.length - 1] : null;
-          undoTieuBtn.disabled = !(last && last.player === "Tieu" && undoTieuRemaining > 0);
-          undoTungBtn.disabled = !(last && last.player === "Tung" && undoTungRemaining > 0);
-        }
+        mobileUndoTieuCount.textContent = undoTieuRemaining;
+        mobileUndoTungCount.textContent = undoTungRemaining;
+
+        const disableTieu = gameOver ? !(winner === "Tung" && undoTieuRemaining > 0) : !(history.length > 0 && history[history.length-1].player === "Tieu" && undoTieuRemaining > 0);
+        const disableTung = gameOver ? !(winner === "Tieu" && undoTungRemaining > 0) : !(history.length > 0 && history[history.length-1].player === "Tung" && undoTungRemaining > 0);
+
+        undoTieuBtn.disabled = disableTieu;
+        undoTungBtn.disabled = disableTung;
+        mobileUndoTieuBtn.disabled = disableTieu;
+        mobileUndoTungBtn.disabled = disableTung;
       }
 
       function showWinMessage(player) {
-        winMessageDiv.textContent = player === "Tieu" ? "Tiêu thắng!" : "Tùng thắng!";
+        const msg = player === "Tieu" ? "Tiêu thắng!" : "Tùng thắng!";
+        winMessageDiv.textContent = msg;
         winMessageDiv.style.display = "block";
-        // Chỉ hiện ảnh trên desktop
+        mobileWinMessage.textContent = msg;
+
         if (!window.matchMedia('(max-width: 700px)').matches) {
           winImage.src = player === "Tieu" ? "TieuTung/TieuWin.png" : "TieuTung/TungWin.png";
           winImage.style.display = "block";
@@ -784,6 +880,7 @@
         lastMovePos = null;
         winMessageDiv.style.display = "none";
         winImage.style.display = "none";
+        mobileWinMessage.textContent = "";
         offsetX = canvas.width / 2;
         offsetY = canvas.height / 2;
         scale = 1;
@@ -796,25 +893,21 @@
       function adjustBoardSize() {
         const isMobile = window.matchMedia('(max-width: 700px)').matches;
         const layoutRect = gameLayout.getBoundingClientRect();
-        const gap = isMobile ? 0 : 20;
 
         if (isMobile) {
-          // Bàn cờ vuông = chiều rộng màn hình
-          const size = layoutRect.width;
+          const headerH = mobileHeader.offsetHeight;
+          const footerH = mobileFooter.offsetHeight;
+          const availH = layoutRect.height - headerH - footerH;
+          const size = Math.min(layoutRect.width, availH);
           boardContainer.style.width = size + 'px';
           boardContainer.style.height = size + 'px';
-          // Panel không cần set height, flex sẽ tự co giãn
-          panel.style.width = size + 'px';
-          panel.style.maxWidth = size + 'px';
         } else {
           const panelRect = panel.getBoundingClientRect();
-          const maxWidth = layoutRect.width - panelRect.width - gap;
+          const maxWidth = layoutRect.width - panelRect.width - 20;
           const maxHeight = layoutRect.height;
           const size = Math.min(maxWidth, maxHeight);
-          if (size > 0) {
-            boardContainer.style.width = size + 'px';
-            boardContainer.style.height = size + 'px';
-          }
+          boardContainer.style.width = size + 'px';
+          boardContainer.style.height = size + 'px';
           panel.style.height = size + 'px';
         }
 
@@ -973,8 +1066,12 @@
 
       function startGame(mode) {
         winCondition = parseInt(mode);
+        // Desktop
         modePanel.style.display = "none";
         gamePanel.style.display = "flex";
+        // Mobile
+        mobileModePanel.style.display = "none";
+        mobileGamePanel.style.display = "flex";
         coverImage.style.display = "none";
         gameActive = true;
         adjustBoardSize();
@@ -984,31 +1081,52 @@
       function backToMode() {
         gameActive = false;
         gameOver = true;
+        // Desktop
         gamePanel.style.display = "none";
         modePanel.style.display = "block";
+        // Mobile
+        mobileGamePanel.style.display = "none";
+        mobileModePanel.style.display = "block";
         coverImage.style.display = "block";
         winImage.style.display = "none";
+        mobileWinMessage.textContent = "";
         if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
         adjustBoardSize();
       }
 
       function updateRestartButton() {
-        restartBtn.classList.toggle("highlight-btn", gameOver);
+        const isOver = gameOver;
+        restartBtn.classList.toggle("highlight-btn", isOver);
+        mobileRestartBtn.classList.toggle("highlight-btn", isOver);
       }
 
+      // Gán sự kiện cho tất cả nút mode (cả desktop và mobile)
       document.querySelectorAll(".mode-btn").forEach(btn => {
         btn.addEventListener("click", e => startGame(e.currentTarget.dataset.mode));
       });
+
+      // Desktop buttons
       undoTieuBtn.addEventListener("click", () => undoPlayer("Tieu"));
       undoTungBtn.addEventListener("click", () => undoPlayer("Tung"));
       restartBtn.addEventListener("click", resetGame);
       backToModeBtn.addEventListener("click", backToMode);
+
+      // Mobile buttons
+      mobileUndoTieuBtn.addEventListener("click", () => undoPlayer("Tieu"));
+      mobileUndoTungBtn.addEventListener("click", () => undoPlayer("Tung"));
+      mobileRestartBtn.addEventListener("click", resetGame);
+      mobileBackToModeBtn.addEventListener("click", backToMode);
+
       window.addEventListener("resize", onResize);
 
       loadImages();
       bindEvents();
+
+      // Khởi tạo trạng thái ban đầu
       modePanel.style.display = "block";
       gamePanel.style.display = "none";
+      mobileModePanel.style.display = "block";
+      mobileGamePanel.style.display = "none";
       coverImage.style.display = "block";
       gameActive = false;
       ctx = canvas.getContext("2d");
