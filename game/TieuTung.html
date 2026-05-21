@@ -26,7 +26,8 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #1a1a1a;
       color: var(--text);
-      height: 100vh;
+      /* SỬA: dùng dvh để khớp chiều cao thực tế trên mobile */
+      height: 100dvh;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -345,7 +346,7 @@
         flex-direction: column;
         gap: 0;
         max-height: none;
-        height: 100vh;
+        height: 100%;
         align-items: stretch;
       }
       #panel {
