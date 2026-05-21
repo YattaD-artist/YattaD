@@ -407,6 +407,31 @@
         font-size: 0.9rem;
         min-height: 1.2rem;
       }
+      /* Thêm vào trong @media (max-width: 700px) */
+#mobile-footer {
+  max-height: 40vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 10px 12px;
+}
+.mode-list {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.undo-group {
+  flex-wrap: wrap;
+}
+.undo-btn {
+  min-width: 100px;
+  flex: 1 1 auto;
+}
+.action-group {
+  flex-direction: row;
+  gap: 8px;
+}
+.action-group button {
+  flex: 1;
+}
     }
   </style>
 </head>
