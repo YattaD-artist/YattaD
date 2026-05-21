@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>YattaD · Cờ Tiêu - Tùng</title>
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon32.png">
+  
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
@@ -43,7 +44,8 @@
       align-items: flex-end;
       justify-content: center;
     }
-    /* ========== BOARD (chung) ========== */
+
+    /* ========== BOARD CONTAINER ========== */
     #board-container {
       background: var(--surface);
       border: 3px solid var(--border-color);
@@ -52,6 +54,11 @@
       overflow: hidden;
       touch-action: none;
       flex-shrink: 0;
+    }
+    #board-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
     }
     #cover-image {
       position: absolute;
@@ -78,7 +85,7 @@
       cursor: grabbing;
     }
 
-    /* ========== PANEL (desktop) ========== */
+    /* ========== PANEL DESKTOP ========== */
     #panel {
       width: 260px;
       background: var(--surface);
@@ -295,27 +302,28 @@
       border: 3px solid var(--border-color);
       box-shadow: var(--shadow);
       width: 100%;
-      padding: 12px 16px;
+      padding: 8px 12px;
       text-align: center;
+      flex-shrink: 0;
     }
     #mobile-header h2 {
-      font-size: 1.2rem;
+      font-size: 1rem;
       font-weight: 800;
       color: var(--accent);
-      margin: 0 0 4px;
+      margin: 0 0 2px;
       -webkit-text-stroke: 0.5px var(--border-color);
     }
     #mobile-winMessage {
-      font-size: 1.2rem;
+      font-size: 1rem;
       font-weight: 800;
       color: var(--accent);
-      min-height: 1.8rem;
-      margin-bottom: 4px;
+      min-height: 1.4rem;
+      margin-bottom: 2px;
     }
     #mobile-footer {
-      padding: 10px 16px;
-      max-height: 45vh;
+      max-height: 35vh;
       overflow-y: auto;
+      padding: 6px 12px;
     }
 
     /* ========== MOBILE LAYOUT ========== */
@@ -328,117 +336,114 @@
         gap: 0;
         max-height: none;
         height: 100vh;
-        align-items: center;
+        align-items: stretch;
       }
-      /* Ẩn panel desktop */
       #panel {
         display: none;
       }
-      /* Hiện header/footer mobile */
       #mobile-header, #mobile-footer {
         display: block;
-        flex-shrink: 0;
       }
       #board-container {
         flex: 1 1 auto;
         min-height: 0;
-        width: auto;
-        height: auto;
         border-left: none;
         border-right: none;
         border-top: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent; /* để không bị viền trắng dư */
+        border: none;
+        box-shadow: none;
       }
-      /* Bàn cờ luôn vuông vừa khung */
-      #board-container {
-        width: 100%;
-        height: auto;
+      #board-inner {
+        border: 3px solid var(--border-color);
+        box-shadow: var(--shadow);
+        background: var(--surface);
+        position: relative;
+        overflow: hidden;
       }
-      /* Nút không còn vuông */
+      /* Giảm kích thước nút, chữ trên mobile */
       .undo-btn {
         aspect-ratio: auto;
-        padding: 10px 6px;
-        font-size: 0.7rem;
-        gap: 4px;
+        padding: 6px 4px;
+        font-size: 0.6rem;
+        gap: 2px;
       }
       .undo-btn .big {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
       }
       .undo-btn .small {
-        font-size: 0.65rem;
+        font-size: 0.55rem;
       }
       .mode-list {
         flex-direction: row;
-        gap: 8px;
+        gap: 4px;
       }
       .mode-btn {
         flex: 1 1 0;
         aspect-ratio: auto;
-        width: auto;
-        max-width: none;
-        padding: 10px 6px;
-        font-size: 0.75rem;
-        gap: 4px;
+        padding: 6px 4px;
+        font-size: 0.65rem;
+        gap: 3px;
       }
       .mode-btn .mode-title {
-        font-size: 0.9rem;
+        font-size: 0.8rem;
       }
       .mode-btn .mode-desc {
-        font-size: 0.55rem;
+        font-size: 0.5rem;
         opacity: 0.8;
       }
-      #winImage {
-        display: none !important;
+      .action-group button {
+        padding: 8px 4px;
+        font-size: 0.7rem;
+      }
+      .turn-info {
+        font-size: 0.6rem;
+        padding: 4px 0;
+      }
+      #mobile-winMessage {
+        font-size: 0.9rem;
+        min-height: 1.2rem;
       }
     }
   </style>
 </head>
 <body>
   <div id="game-layout">
-    <!-- ========== MOBILE HEADER ========== -->
+    <!-- MOBILE HEADER -->
     <div id="mobile-header">
       <h2>Cờ Tiêu - Tùng</h2>
       <div id="mobile-winMessage"></div>
       <div class="turn-info">Lượt: <span id="mobile-turnText">Tiêu</span></div>
     </div>
 
-    <!-- ========== BOARD ========== -->
+    <!-- BOARD -->
     <div id="board-container">
-      <img id="cover-image" src="TieuTung/TieuTung.jpg" alt="Tieu Tung">
-      <canvas id="boardCanvas"></canvas>
+      <div id="board-inner">
+        <img id="cover-image" src="TieuTung/TieuTung.jpg" alt="Tieu Tung">
+        <canvas id="boardCanvas"></canvas>
+      </div>
     </div>
 
-    <!-- ========== MOBILE FOOTER ========== -->
+    <!-- MOBILE FOOTER -->
     <div id="mobile-footer">
-      <!-- Màn chọn mốc (mobile) -->
       <div id="mobile-mode-panel">
         <div class="mode-description">Chọn mốc thắng:</div>
         <div class="mode-list">
-          <button class="mode-btn" data-mode="4">
-            <span class="mode-title">Mốc 4</span>
-            <span class="mode-desc">Thắng khi xếp 4 quân liên tiếp</span>
-          </button>
-          <button class="mode-btn" data-mode="5">
-            <span class="mode-title">Mốc 5</span>
-            <span class="mode-desc">Thắng khi xếp 5 quân liên tiếp</span>
-          </button>
-          <button class="mode-btn" data-mode="6">
-            <span class="mode-title">Mốc 6</span>
-            <span class="mode-desc">Thắng khi xếp 6 quân liên tiếp</span>
-          </button>
+          <button class="mode-btn" data-mode="4"><span class="mode-title">Mốc 4</span><span class="mode-desc">4 quân</span></button>
+          <button class="mode-btn" data-mode="5"><span class="mode-title">Mốc 5</span><span class="mode-desc">5 quân</span></button>
+          <button class="mode-btn" data-mode="6"><span class="mode-title">Mốc 6</span><span class="mode-desc">6 quân</span></button>
         </div>
       </div>
-      <!-- Màn game (mobile) -->
       <div id="mobile-game-panel" style="display: none; flex-direction: column;">
         <div class="undo-group">
           <button id="mobile-undoTieuBtn" class="undo-btn">
-            <span class="small">Hoàn tác</span>
-            <span class="big">TIÊU</span>
-            <span class="small">Còn <span id="mobile-undoTieuCount">3</span> lượt</span>
+            <span class="small">Hoàn tác</span><span class="big">TIÊU</span><span class="small">Còn <span id="mobile-undoTieuCount">3</span></span>
           </button>
           <button id="mobile-undoTungBtn" class="undo-btn">
-            <span class="small">Hoàn tác</span>
-            <span class="big">TÙNG</span>
-            <span class="small">Còn <span id="mobile-undoTungCount">3</span> lượt</span>
+            <span class="small">Hoàn tác</span><span class="big">TÙNG</span><span class="small">Còn <span id="mobile-undoTungCount">3</span></span>
           </button>
         </div>
         <div class="action-group">
@@ -448,50 +453,29 @@
       </div>
     </div>
 
-    <!-- ========== PANEL DESKTOP ========== -->
+    <!-- PANEL DESKTOP -->
     <div id="panel">
       <h2>Cờ Tiêu - Tùng</h2>
       <div class="panel-content">
         <div id="mode-panel">
           <div class="mode-description">Chọn mốc thắng:</div>
           <div class="mode-list">
-            <button class="mode-btn" data-mode="4">
-              <span class="mode-title">Mốc 4</span>
-              <span class="mode-desc">Thắng khi xếp 4 quân liên tiếp</span>
-            </button>
-            <button class="mode-btn" data-mode="5">
-              <span class="mode-title">Mốc 5</span>
-              <span class="mode-desc">Thắng khi xếp 5 quân liên tiếp</span>
-            </button>
-            <button class="mode-btn" data-mode="6">
-              <span class="mode-title">Mốc 6</span>
-              <span class="mode-desc">Thắng khi xếp 6 quân liên tiếp</span>
-            </button>
+            <button class="mode-btn" data-mode="4"><span class="mode-title">Mốc 4</span><span class="mode-desc">Thắng khi xếp 4 quân liên tiếp</span></button>
+            <button class="mode-btn" data-mode="5"><span class="mode-title">Mốc 5</span><span class="mode-desc">Thắng khi xếp 5 quân liên tiếp</span></button>
+            <button class="mode-btn" data-mode="6"><span class="mode-title">Mốc 6</span><span class="mode-desc">Thắng khi xếp 6 quân liên tiếp</span></button>
           </div>
         </div>
-
         <div id="game-panel" style="display: none; flex-direction: column;">
           <img id="winImage" src="" alt="Người thắng" style="display: none;">
           <div id="winMessage"></div>
-
           <div class="undo-group">
-            <button id="undoTieuBtn" class="undo-btn">
-              <span class="small">Hoàn tác</span>
-              <span class="big">TIÊU</span>
-              <span class="small">Còn <span id="undoTieuCount">3</span> lượt</span>
-            </button>
-            <button id="undoTungBtn" class="undo-btn">
-              <span class="small">Hoàn tác</span>
-              <span class="big">TÙNG</span>
-              <span class="small">Còn <span id="undoTungCount">3</span> lượt</span>
-            </button>
+            <button id="undoTieuBtn" class="undo-btn"><span class="small">Hoàn tác</span><span class="big">TIÊU</span><span class="small">Còn <span id="undoTieuCount">3</span> lượt</span></button>
+            <button id="undoTungBtn" class="undo-btn"><span class="small">Hoàn tác</span><span class="big">TÙNG</span><span class="small">Còn <span id="undoTungCount">3</span> lượt</span></button>
           </div>
-
           <div class="action-group">
             <button id="restartBtn">Chơi lại</button>
             <button id="backToModeBtn">Đổi mốc</button>
           </div>
-
           <div class="turn-info">Lượt: <span id="turnText">Tiêu</span></div>
         </div>
       </div>
@@ -527,6 +511,7 @@
 
       const canvas = document.getElementById("boardCanvas");
       const boardContainer = document.getElementById("board-container");
+      const boardInner = document.getElementById("board-inner");
       const coverImage = document.getElementById("cover-image");
       let ctx = canvas.getContext("2d");
 
@@ -585,9 +570,7 @@
               requestDrawBoard();
             }
           };
-          img.onerror = () => {
-            imagesLoadedCount++;
-          };
+          img.onerror = () => { imagesLoadedCount++; };
           images[key] = img;
         }
       }
@@ -677,7 +660,7 @@
           const img = getUnitImage(player);
 
           if (img) {
-            // Không xoay ảnh nữa
+            // Không xoay ảnh
             ctx.save();
             ctx.translate(x, y);
             if (isWinning) { ctx.shadowColor = "#c62828"; ctx.shadowBlur = 20; }
@@ -745,7 +728,6 @@
         if (!gameActive || gameOver) return false;
         const key = `${col},${row}`;
         if (gameState.has(key)) return false;
-
         gameState.set(key, currentPlayer);
         history.push({col, row, player: currentPlayer});
         lastMovePos = {col, row};
@@ -846,8 +828,9 @@
         mobileUndoTieuCount.textContent = undoTieuRemaining;
         mobileUndoTungCount.textContent = undoTungRemaining;
 
-        const disableTieu = gameOver ? !(winner === "Tung" && undoTieuRemaining > 0) : !(history.length > 0 && history[history.length-1].player === "Tieu" && undoTieuRemaining > 0);
-        const disableTung = gameOver ? !(winner === "Tieu" && undoTungRemaining > 0) : !(history.length > 0 && history[history.length-1].player === "Tung" && undoTungRemaining > 0);
+        const last = history.length > 0 ? history[history.length-1] : null;
+        const disableTieu = gameOver ? !(winner === "Tung" && undoTieuRemaining > 0) : !(last && last.player === "Tieu" && undoTieuRemaining > 0);
+        const disableTung = gameOver ? !(winner === "Tieu" && undoTungRemaining > 0) : !(last && last.player === "Tung" && undoTungRemaining > 0);
 
         undoTieuBtn.disabled = disableTieu;
         undoTungBtn.disabled = disableTung;
@@ -860,7 +843,6 @@
         winMessageDiv.textContent = msg;
         winMessageDiv.style.display = "block";
         mobileWinMessage.textContent = msg;
-
         if (!window.matchMedia('(max-width: 700px)').matches) {
           winImage.src = player === "Tieu" ? "TieuTung/TieuWin.png" : "TieuTung/TungWin.png";
           winImage.style.display = "block";
@@ -892,27 +874,35 @@
 
       function adjustBoardSize() {
         const isMobile = window.matchMedia('(max-width: 700px)').matches;
-        const layoutRect = gameLayout.getBoundingClientRect();
-
         if (isMobile) {
-          const headerH = mobileHeader.offsetHeight;
-          const footerH = mobileFooter.offsetHeight;
-          const availH = layoutRect.height - headerH - footerH;
-          const size = Math.min(layoutRect.width, availH);
-          boardContainer.style.width = size + 'px';
-          boardContainer.style.height = size + 'px';
+          // Header và footer đã có flex-shrink:0, board-container flex:1
+          // Lấy kích thước thực tế của board-container
+          const containerW = boardContainer.clientWidth;
+          const containerH = boardContainer.clientHeight;
+          const size = Math.min(containerW, containerH);
+          if (size > 0) {
+            boardInner.style.width = size + 'px';
+            boardInner.style.height = size + 'px';
+            canvas.width = size;
+            canvas.height = size;
+          }
         } else {
+          const layoutRect = gameLayout.getBoundingClientRect();
           const panelRect = panel.getBoundingClientRect();
-          const maxWidth = layoutRect.width - panelRect.width - 20;
-          const maxHeight = layoutRect.height;
-          const size = Math.min(maxWidth, maxHeight);
-          boardContainer.style.width = size + 'px';
-          boardContainer.style.height = size + 'px';
-          panel.style.height = size + 'px';
+          const gap = 20;
+          const maxW = layoutRect.width - panelRect.width - gap;
+          const maxH = layoutRect.height;
+          const size = Math.min(maxW, maxH);
+          if (size > 0) {
+            boardContainer.style.width = size + 'px';
+            boardContainer.style.height = size + 'px';
+            panel.style.height = size + 'px';
+            boardInner.style.width = '100%';
+            boardInner.style.height = '100%';
+            canvas.width = size;
+            canvas.height = size;
+          }
         }
-
-        canvas.width = boardContainer.clientWidth;
-        canvas.height = boardContainer.clientHeight;
         if (offsetX === 0 && offsetY === 0) {
           offsetX = canvas.width / 2;
           offsetY = canvas.height / 2;
@@ -941,21 +931,14 @@
       }
 
       /* ========== CẢM ỨNG & ZOOM ========== */
-      let isPanning = false;
-      let lastPan = null;
-      let panStart = null;
-      let panStartTime = 0;
-      let isPinching = false;
-      let pinchStartDist = 0;
-      let pinchStartScale = 1;
-      let pinchStartMid = null;
+      let isPanning = false, lastPan = null, panStart = null, panStartTime = 0;
+      let isPinching = false, pinchStartDist = 0, pinchStartScale = 1, pinchStartMid = null;
 
       function onPointerDown(e) {
         if (!gameActive) return;
         e.preventDefault();
         if (e.touches && e.touches.length === 2) {
-          isPinching = true;
-          isPanning = false;
+          isPinching = true; isPanning = false;
           const dx = e.touches[0].clientX - e.touches[1].clientX;
           const dy = e.touches[0].clientY - e.touches[1].clientY;
           pinchStartDist = Math.hypot(dx, dy);
@@ -997,14 +980,10 @@
         if ((e.touches && e.touches.length === 1) || (e.buttons === 1 && e.type === "mousemove")) {
           const pos = getCanvasPos(e);
           if (lastPan) {
-            const dx = pos.x - lastPan.x;
-            const dy = pos.y - lastPan.y;
-            if (panStart && (Math.abs(pos.x - panStart.x) > TAP_THRESHOLD_PX || Math.abs(pos.y - panStart.y) > TAP_THRESHOLD_PX)) {
-              isPanning = true;
-            }
+            const dx = pos.x - lastPan.x, dy = pos.y - lastPan.y;
+            if (panStart && (Math.abs(pos.x - panStart.x) > TAP_THRESHOLD_PX || Math.abs(pos.y - panStart.y) > TAP_THRESHOLD_PX)) isPanning = true;
             if (isPanning) {
-              offsetX += dx;
-              offsetY += dy;
+              offsetX += dx; offsetY += dy;
               requestDrawBoard();
             }
             lastPan = {x: pos.x, y: pos.y};
@@ -1023,19 +1002,12 @@
           isPanning = false;
           return;
         }
-        if (isPinching) {
-          isPinching = false;
-          pinchStartDist = 0;
-          return;
-        }
+        if (isPinching) { isPinching = false; pinchStartDist = 0; return; }
         if (!isPanning && panStart && Date.now() - panStartTime < TAP_THRESHOLD_MS) {
           const world = screenToWorld(panStart.x, panStart.y);
           placePiece(world.col, world.row);
         }
-        isPanning = false;
-        lastPan = null;
-        panStart = null;
-        panStartTime = 0;
+        isPanning = false; lastPan = null; panStart = null; panStartTime = 0;
       }
 
       function onWheel(e) {
@@ -1066,10 +1038,8 @@
 
       function startGame(mode) {
         winCondition = parseInt(mode);
-        // Desktop
         modePanel.style.display = "none";
         gamePanel.style.display = "flex";
-        // Mobile
         mobileModePanel.style.display = "none";
         mobileGamePanel.style.display = "flex";
         coverImage.style.display = "none";
@@ -1081,10 +1051,8 @@
       function backToMode() {
         gameActive = false;
         gameOver = true;
-        // Desktop
         gamePanel.style.display = "none";
         modePanel.style.display = "block";
-        // Mobile
         mobileGamePanel.style.display = "none";
         mobileModePanel.style.display = "block";
         coverImage.style.display = "block";
@@ -1100,29 +1068,22 @@
         mobileRestartBtn.classList.toggle("highlight-btn", isOver);
       }
 
-      // Gán sự kiện cho tất cả nút mode (cả desktop và mobile)
       document.querySelectorAll(".mode-btn").forEach(btn => {
         btn.addEventListener("click", e => startGame(e.currentTarget.dataset.mode));
       });
-
-      // Desktop buttons
       undoTieuBtn.addEventListener("click", () => undoPlayer("Tieu"));
       undoTungBtn.addEventListener("click", () => undoPlayer("Tung"));
       restartBtn.addEventListener("click", resetGame);
       backToModeBtn.addEventListener("click", backToMode);
-
-      // Mobile buttons
       mobileUndoTieuBtn.addEventListener("click", () => undoPlayer("Tieu"));
       mobileUndoTungBtn.addEventListener("click", () => undoPlayer("Tung"));
       mobileRestartBtn.addEventListener("click", resetGame);
       mobileBackToModeBtn.addEventListener("click", backToMode);
 
       window.addEventListener("resize", onResize);
-
       loadImages();
       bindEvents();
 
-      // Khởi tạo trạng thái ban đầu
       modePanel.style.display = "block";
       gamePanel.style.display = "none";
       mobileModePanel.style.display = "block";
