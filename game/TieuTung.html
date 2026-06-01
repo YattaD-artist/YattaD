@@ -513,7 +513,7 @@
       <div id="mobile-game-panel" style="display: none; flex-direction: column;">
         <div class="undo-group">
           <button id="mobile-undoTieuBtn" class="undo-btn">
-            <span class="small">Hoàn tác</span><span class="big">TIÊU</span><span class="small">Còn <span id="mobile-undoTieuCount">3</span></span>
+            <span class="small">Hoàn tác</span><span class="big">TIÊU</span><span class="small">Còn <span id="mobile-undoTieuCount">∞</span></span>
           </button>
           <button id="mobile-undoTungBtn" class="undo-btn">
             <span class="small">Hoàn tác</span><span class="big">TÙNG</span><span class="small">Còn <span id="mobile-undoTungCount">3</span></span>
@@ -546,7 +546,7 @@
           <img id="winImage" src="" alt="Người thắng" style="display: none;">
           <div id="winMessage"></div>
           <div class="undo-group">
-            <button id="undoTieuBtn" class="undo-btn"><span class="small">Hoàn tác</span><span class="big">TIÊU</span><span class="small">Còn <span id="undoTieuCount">3</span> lượt</span></button>
+            <button id="undoTieuBtn" class="undo-btn"><span class="small">Hoàn tác</span><span class="big">TIÊU</span><span class="small">Còn <span id="undoTieuCount">∞</span> lượt</span></button>
             <button id="undoTungBtn" class="undo-btn"><span class="small">Hoàn tác</span><span class="big">TÙNG</span><span class="small">Còn <span id="undoTungCount">3</span> lượt</span></button>
           </div>
           <div class="action-group">
@@ -576,7 +576,7 @@
       let gameState = new Map();
       let history = [];
       let currentPlayer = "Tieu";
-      let undoTieuRemaining = 3;
+      let undoTieuRemaining = Infinity;  // vô hạn khi đấu máy, sẽ gán lại trong resetGame
       let undoTungRemaining = 3;
       let gameOver = false;
       let winner = null;
@@ -636,10 +636,8 @@
 
       function setGameMode(mode) {
         gameMode = mode;
-        // Cập nhật giao diện nút chọn chế độ
         [pvpBtn, mobilePvpBtn].forEach(b => b.classList.toggle('active', mode === 'pvp'));
         [aiBtn, mobileAiBtn].forEach(b => b.classList.toggle('active', mode === 'ai'));
-        // Khi đổi chế độ, quay về màn hình chọn mốc
         backToMode();
       }
 
@@ -926,7 +924,6 @@
         const moves = getCandidateMoves();
         if (moves.length === 0) return { score: 0 };
 
-        // Sắp xếp moves để cắt tỉa tốt hơn (đơn giản: ưu tiên gần trung tâm)
         moves.sort((a,b) => (Math.abs(a.col) + Math.abs(a.row)) - (Math.abs(b.col) + Math.abs(b.row)));
 
         if (maximizingPlayer) {
@@ -984,8 +981,7 @@
           }
           const move = getBestMove();
           if (move) {
-            // Tạm thời cho phép placePiece xử lý
-            allowInput = true; // placePiece cần allowInput
+            allowInput = true;
             placePiece(move.col, move.row);
           }
           aiThinking = false;
@@ -997,18 +993,20 @@
       function undoNormal(player) {
         if (!gameActive || history.length === 0) return;
         if (gameMode === 'ai') {
-          // AI mode: chỉ Tiêu được undo, phải xóa cả nước của Tùng và Tiêu
+          // AI mode: Tiêu undo, xoá cặp Tùng + Tiêu gần nhất
           if (player !== 'Tieu') return;
-          if (undotieuRemaining <= 0) return;
-          if (gameOver) return; // xử lý riêng
           if (history.length < 2) return;
           const last = history[history.length-1];
           const prev = history[history.length-2];
           if (last.player !== 'Tung' || prev.player !== 'Tieu') return;
+
           gameState.delete(`${last.col},${last.row}`);
           gameState.delete(`${prev.col},${prev.row}`);
           history.pop(); history.pop();
-          undoTieuRemaining--;
+
+          // Không giới hạn số lần undo (undotieuRemaining = Infinity, không giảm)
+          if (undoTieuRemaining !== Infinity) undoTieuRemaining--;
+
           lastMovePos = history.length > 0 ? {col: history[history.length-1].col, row: history[history.length-1].row} : null;
           currentPlayer = 'Tieu';
           updateTurnDisplay();
@@ -1040,14 +1038,18 @@
         if (last.player === loser) return;
         const prev = history[history.length - 2];
         if (prev.player !== loser) return;
-        if ((loser === "Tieu" && undoTieuRemaining <= 0) || (loser === "Tung" && undoTungRemaining <= 0)) return;
+        if (loser === "Tieu" && undoTieuRemaining <= 0) return;
+        if (loser === "Tung" && undoTungRemaining <= 0) return;
 
         gameState.delete(`${last.col},${last.row}`);
         history.pop();
         gameState.delete(`${prev.col},${prev.row}`);
         history.pop();
-        if (loser === "Tieu") undoTieuRemaining--;
-        else undoTungRemaining--;
+        if (loser === "Tieu") {
+          if (undoTieuRemaining !== Infinity) undoTieuRemaining--;
+        } else {
+          undoTungRemaining--;
+        }
 
         gameOver = false;
         winner = null;
@@ -1096,6 +1098,36 @@
       }
 
       function updateUndoButtons() {
+        // Hiển thị số lượt undo
+        if (gameMode === 'ai') {
+          undoTieuCountSpan.textContent = '∞';
+          mobileUndoTieuCount.textContent = '∞';
+          // Ẩn nút Tùng
+          undoTungBtn.style.display = 'none';
+          mobileUndoTungBtn.style.display = 'none';
+
+          let disableTieu = true;
+          if (!gameOver && history.length >= 2) {
+            const last = history[history.length-1];
+            const prev = history[history.length-2];
+            if (last && last.player === 'Tung' && prev && prev.player === 'Tieu') {
+              disableTieu = false;
+            }
+          } else if (gameOver && winner === 'Tung' && history.length >= 2) {
+            const last = history[history.length-1];
+            const prev = history[history.length-2];
+            if (last && last.player === 'Tung' && prev && prev.player === 'Tieu') {
+              disableTieu = false;
+            }
+          }
+          undoTieuBtn.disabled = disableTieu || aiThinking;
+          mobileUndoTieuBtn.disabled = disableTieu || aiThinking;
+          return;
+        }
+
+        // PvP
+        undoTungBtn.style.display = '';
+        mobileUndoTungBtn.style.display = '';
         undoTieuCountSpan.textContent = undoTieuRemaining;
         undoTungCountSpan.textContent = undoTungRemaining;
         mobileUndoTieuCount.textContent = undoTieuRemaining;
@@ -1104,26 +1136,12 @@
         const last = history.length > 0 ? history[history.length-1] : null;
         let disableTieu = true, disableTung = true;
 
-        if (gameMode === 'ai') {
-          // Ẩn nút Tùng
-          undoTungBtn.style.display = 'none';
-          mobileUndoTungBtn.style.display = 'none';
-          // Chỉ cho Tiêu undo khi có ít nhất 2 nước gần nhất là Tieu rồi Tung (không gameOver) hoặc gameOver AI thắng
-          if (!gameOver && history.length >= 2 && last && last.player === 'Tung' && history[history.length-2].player === 'Tieu' && undoTieuRemaining > 0) {
-            disableTieu = false;
-          } else if (gameOver && winner === 'Tung' && history.length >= 2 && last && last.player === 'Tung' && history[history.length-2].player === 'Tieu' && undoTieuRemaining > 0) {
-            disableTieu = false;
-          }
+        if (!gameOver) {
+          disableTieu = !(last && last.player === "Tieu" && undoTieuRemaining > 0);
+          disableTung = !(last && last.player === "Tung" && undoTungRemaining > 0);
         } else {
-          undoTungBtn.style.display = '';
-          mobileUndoTungBtn.style.display = '';
-          if (!gameOver) {
-            disableTieu = !(last && last.player === "Tieu" && undoTieuRemaining > 0);
-            disableTung = !(last && last.player === "Tung" && undoTungRemaining > 0);
-          } else {
-            disableTieu = !(winner === "Tung" && undoTieuRemaining > 0);
-            disableTung = !(winner === "Tieu" && undoTungRemaining > 0);
-          }
+          disableTieu = !(winner === "Tung" && undoTieuRemaining > 0);
+          disableTung = !(winner === "Tieu" && undoTungRemaining > 0);
         }
 
         undoTieuBtn.disabled = disableTieu || aiThinking;
@@ -1147,7 +1165,8 @@
         gameState.clear();
         history = [];
         currentPlayer = "Tieu";
-        undoTieuRemaining = 3;
+        // Khi đấu máy, undo Tiêu không giới hạn
+        undoTieuRemaining = (gameMode === 'ai') ? Infinity : 3;
         undoTungRemaining = 3;
         gameOver = false;
         winner = null;
@@ -1166,7 +1185,6 @@
         updateUndoButtons();
         updateRestartButton();
         drawBoard();
-        // Nếu AI đi trước? Không, luôn Tiêu trước.
       }
 
       function adjustBoardSize() {
@@ -1344,7 +1362,6 @@
         gameLayout.classList.remove("selecting-mode");
         adjustBoardSize();
         resetGame();
-        // Nếu AI mode, ẩn nút Tùng ngay từ đầu
         if (gameMode === 'ai') {
           undoTungBtn.style.display = 'none';
           mobileUndoTungBtn.style.display = 'none';
@@ -1366,7 +1383,6 @@
         gameLayout.classList.add("selecting-mode");
         if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
         adjustBoardSize();
-        // Reset hiển thị nút Tùng
         undoTungBtn.style.display = '';
         mobileUndoTungBtn.style.display = '';
       }
