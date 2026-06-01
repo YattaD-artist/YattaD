@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>YattaD · Cờ Tiêu - Tùng</title>
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/icons/icon32.png">
-  
+
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     * {
@@ -26,7 +26,6 @@
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: #1a1a1a;
       color: var(--text);
-      /* SỬA: dùng dvh để khớp chiều cao thực tế trên mobile */
       height: 100dvh;
       display: flex;
       align-items: center;
@@ -34,7 +33,6 @@
       padding: 20px;
       margin: 0;
       overflow: hidden;
-      /* an toàn tai thỏ & thanh điều hướng */
       padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     }
     #game-layout {
@@ -56,7 +54,7 @@
       position: relative;
       overflow: hidden;
       touch-action: none;
-      flex-shrink: 1; /* cho phép co lại để nhường chỗ footer */
+      flex-shrink: 1;
     }
     #board-inner {
       position: relative;
@@ -121,6 +119,30 @@
       margin-bottom: 8px;
       -webkit-text-stroke: 1px var(--border-color);
       text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+    }
+    .mode-switch {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      justify-content: center;
+    }
+    .switch-btn {
+      padding: 8px 16px;
+      font-size: 0.8rem;
+      border: 2px solid var(--border-color);
+      background: var(--surface);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+      font-weight: 600;
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+      font-family: inherit;
+      flex: 1;
+    }
+    .switch-btn.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
     }
     .mode-description {
       margin: 8px 0 12px;
@@ -308,8 +330,7 @@
       width: 100%;
       padding: 8px 12px;
       text-align: center;
-      flex-shrink: 0; /* không cho co lại */
-      /* an toàn tai thỏ / thanh điều hướng */
+      flex-shrink: 0;
       padding-top: max(8px, env(safe-area-inset-top));
       padding-bottom: max(8px, env(safe-area-inset-bottom));
       padding-left: max(12px, env(safe-area-inset-left));
@@ -334,7 +355,7 @@
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
       position: relative;
-      z-index: 2; /* đảm bảo nằm trên canvas */
+      z-index: 2;
     }
 
     /* ========== MOBILE LAYOUT ========== */
@@ -357,7 +378,7 @@
       }
       #board-container {
         flex: 1 1 auto;
-        min-height: 0; /* cho phép co về 0 nếu cần */
+        min-height: 0;
         border-left: none;
         border-right: none;
         border-top: none;
@@ -377,7 +398,6 @@
         box-sizing: border-box;
       }
 
-      /* KHI ĐANG CHỌN MỐC: bàn cờ thu nhỏ lại, footer chiếm phần còn lại */
       #game-layout.selecting-mode #board-container {
         flex: 0 0 auto;
         height: 30vh;
@@ -390,7 +410,6 @@
         overflow-y: visible;
       }
 
-      /* Giảm kích thước nút, chữ trên mobile */
       .undo-btn {
         aspect-ratio: auto;
         padding: 6px 4px;
@@ -454,6 +473,9 @@
       .action-group button {
         flex: 1;
       }
+      .mode-switch {
+        flex-wrap: wrap;
+      }
     }
   </style>
 </head>
@@ -477,6 +499,10 @@
     <!-- MOBILE FOOTER -->
     <div id="mobile-footer">
       <div id="mobile-mode-panel">
+        <div class="mode-switch">
+          <button id="mobile-pvpBtn" class="switch-btn active">Người vs Người</button>
+          <button id="mobile-aiBtn" class="switch-btn">Người vs Máy</button>
+        </div>
         <div class="mode-description">Chọn mốc thắng:</div>
         <div class="mode-list">
           <button class="mode-btn" data-mode="4"><span class="mode-title">Mốc 4</span><span class="mode-desc">4 quân</span></button>
@@ -505,6 +531,10 @@
       <h2>Cờ Tiêu - Tùng</h2>
       <div class="panel-content">
         <div id="mode-panel">
+          <div class="mode-switch">
+            <button id="pvpBtn" class="switch-btn active">Người vs Người</button>
+            <button id="aiBtn" class="switch-btn">Người vs Máy</button>
+          </div>
           <div class="mode-description">Chọn mốc thắng:</div>
           <div class="mode-list">
             <button class="mode-btn" data-mode="4"><span class="mode-title">Mốc 4</span><span class="mode-desc">Thắng khi xếp 4 quân liên tiếp</span></button>
@@ -554,6 +584,9 @@
       let preWinCamera = null;
       let lastMovePos = null;
       let gameActive = false;
+      let gameMode = 'pvp'; // 'pvp' hoặc 'ai'
+      let allowInput = true;
+      let aiThinking = false;
       let rafId = null;
 
       const canvas = document.getElementById("boardCanvas");
@@ -579,6 +612,8 @@
       const winImage = document.getElementById("winImage");
       const restartBtn = document.getElementById("restartBtn");
       const backToModeBtn = document.getElementById("backToModeBtn");
+      const pvpBtn = document.getElementById("pvpBtn");
+      const aiBtn = document.getElementById("aiBtn");
 
       // Mobile elements
       const mobileHeader = document.getElementById("mobile-header");
@@ -593,9 +628,25 @@
       const mobileUndoTungCount = document.getElementById("mobile-undoTungCount");
       const mobileRestartBtn = document.getElementById("mobile-restartBtn");
       const mobileBackToModeBtn = document.getElementById("mobile-backToModeBtn");
+      const mobilePvpBtn = document.getElementById("mobile-pvpBtn");
+      const mobileAiBtn = document.getElementById("mobile-aiBtn");
 
       const gameLayout = document.getElementById("game-layout");
       const panel = document.getElementById("panel");
+
+      function setGameMode(mode) {
+        gameMode = mode;
+        // Cập nhật giao diện nút chọn chế độ
+        [pvpBtn, mobilePvpBtn].forEach(b => b.classList.toggle('active', mode === 'pvp'));
+        [aiBtn, mobileAiBtn].forEach(b => b.classList.toggle('active', mode === 'ai'));
+        // Khi đổi chế độ, quay về màn hình chọn mốc
+        backToMode();
+      }
+
+      pvpBtn.addEventListener('click', () => setGameMode('pvp'));
+      aiBtn.addEventListener('click', () => setGameMode('ai'));
+      mobilePvpBtn.addEventListener('click', () => setGameMode('pvp'));
+      mobileAiBtn.addEventListener('click', () => setGameMode('ai'));
 
       function loadImages() {
         const sources = {
@@ -771,7 +822,7 @@
       }
 
       function placePiece(col, row) {
-        if (!gameActive || gameOver) return false;
+        if (!gameActive || gameOver || !allowInput) return false;
         const key = `${col},${row}`;
         if (gameState.has(key)) return false;
         gameState.set(key, currentPlayer);
@@ -796,11 +847,177 @@
         updateTurnDisplay();
         updateUndoButtons();
         requestDrawBoard();
+
+        // Nếu là chế độ AI và đến lượt máy
+        if (gameMode === 'ai' && currentPlayer === 'Tung' && !gameOver) {
+          scheduleAIMove();
+        }
         return true;
+      }
+
+      // AI
+      function getCandidateMoves() {
+        const moves = new Set();
+        if (gameState.size === 0) return [{col:0, row:0}];
+        for (let [key] of gameState) {
+          const [c, r] = key.split(',').map(Number);
+          for (let dc = -1; dc <= 1; dc++) {
+            for (let dr = -1; dr <= 1; dr++) {
+              const nc = c + dc, nr = r + dr;
+              if (!gameState.has(`${nc},${nr}`)) {
+                moves.add(`${nc},${nr}`);
+              }
+            }
+          }
+        }
+        return Array.from(moves).map(s => {
+          const [c, r] = s.split(',').map(Number);
+          return {col: c, row: r};
+        });
+      }
+
+      function evaluateWindow(window, player) {
+        const opp = player === 'Tieu' ? 'Tung' : 'Tieu';
+        let playerCount = 0, oppCount = 0, empty = 0;
+        for (let cell of window) {
+          if (cell === player) playerCount++;
+          else if (cell === opp) oppCount++;
+          else empty++;
+        }
+        if (oppCount > 0 && playerCount > 0) return 0;
+        if (playerCount === winCondition) return 100000;
+        if (oppCount === winCondition) return -100000;
+        if (playerCount === winCondition - 1 && empty === 1) return 10000;
+        if (oppCount === winCondition - 1 && empty === 1) return -10000;
+        if (playerCount === winCondition - 2 && empty === 2) return 1000;
+        if (oppCount === winCondition - 2 && empty === 2) return -1000;
+        return playerCount * 10 - oppCount * 10;
+      }
+
+      function evaluateBoard(player) {
+        let score = 0;
+        const dirs = [[1,0],[0,1],[1,1],[1,-1]];
+        const checked = new Set();
+        for (let [key] of gameState) {
+          const [c, r] = key.split(',').map(Number);
+          for (let [dx, dy] of dirs) {
+            for (let start = -winCondition+1; start <= 0; start++) {
+              const window = [];
+              for (let i = 0; i < winCondition; i++) {
+                const nc = c + dx * (start + i);
+                const nr = r + dy * (start + i);
+                window.push(gameState.get(`${nc},${nr}`) || null);
+              }
+              const windowKey = window.map(cell=>cell||'e').join(',')+`|${dx},${dy}`;
+              if (!checked.has(windowKey)) {
+                checked.add(windowKey);
+                score += evaluateWindow(window, player);
+              }
+            }
+          }
+        }
+        return score;
+      }
+
+      function minimax(depth, alpha, beta, maximizingPlayer, player) {
+        if (depth === 0 || gameOver) {
+          return { score: evaluateBoard(player) };
+        }
+        const moves = getCandidateMoves();
+        if (moves.length === 0) return { score: 0 };
+
+        // Sắp xếp moves để cắt tỉa tốt hơn (đơn giản: ưu tiên gần trung tâm)
+        moves.sort((a,b) => (Math.abs(a.col) + Math.abs(a.row)) - (Math.abs(b.col) + Math.abs(b.row)));
+
+        if (maximizingPlayer) {
+          let maxEval = -Infinity;
+          let bestMove = moves[0];
+          for (let move of moves) {
+            const key = `${move.col},${move.row}`;
+            gameState.set(key, player);
+            const result = minimax(depth - 1, alpha, beta, false, player);
+            gameState.delete(key);
+            if (result.score > maxEval) {
+              maxEval = result.score;
+              bestMove = move;
+            }
+            alpha = Math.max(alpha, result.score);
+            if (beta <= alpha) break;
+          }
+          return { score: maxEval, move: bestMove };
+        } else {
+          const opp = player === 'Tieu' ? 'Tung' : 'Tieu';
+          let minEval = Infinity;
+          let bestMove = moves[0];
+          for (let move of moves) {
+            const key = `${move.col},${move.row}`;
+            gameState.set(key, opp);
+            const result = minimax(depth - 1, alpha, beta, true, player);
+            gameState.delete(key);
+            if (result.score < minEval) {
+              minEval = result.score;
+              bestMove = move;
+            }
+            beta = Math.min(beta, result.score);
+            if (beta <= alpha) break;
+          }
+          return { score: minEval, move: bestMove };
+        }
+      }
+
+      function getBestMove() {
+        const result = minimax(2, -Infinity, Infinity, true, 'Tung');
+        return result.move || {col:0, row:0};
+      }
+
+      function scheduleAIMove() {
+        if (aiThinking || !gameActive || gameOver || currentPlayer !== 'Tung' || gameMode !== 'ai') return;
+        aiThinking = true;
+        allowInput = false;
+        updateUndoButtons();
+        setTimeout(() => {
+          if (!gameActive || gameOver || currentPlayer !== 'Tung') {
+            aiThinking = false;
+            allowInput = true;
+            updateUndoButtons();
+            return;
+          }
+          const move = getBestMove();
+          if (move) {
+            // Tạm thời cho phép placePiece xử lý
+            allowInput = true; // placePiece cần allowInput
+            placePiece(move.col, move.row);
+          }
+          aiThinking = false;
+          allowInput = true;
+          updateUndoButtons();
+        }, 200);
       }
 
       function undoNormal(player) {
         if (!gameActive || history.length === 0) return;
+        if (gameMode === 'ai') {
+          // AI mode: chỉ Tiêu được undo, phải xóa cả nước của Tùng và Tiêu
+          if (player !== 'Tieu') return;
+          if (undotieuRemaining <= 0) return;
+          if (gameOver) return; // xử lý riêng
+          if (history.length < 2) return;
+          const last = history[history.length-1];
+          const prev = history[history.length-2];
+          if (last.player !== 'Tung' || prev.player !== 'Tieu') return;
+          gameState.delete(`${last.col},${last.row}`);
+          gameState.delete(`${prev.col},${prev.row}`);
+          history.pop(); history.pop();
+          undoTieuRemaining--;
+          lastMovePos = history.length > 0 ? {col: history[history.length-1].col, row: history[history.length-1].row} : null;
+          currentPlayer = 'Tieu';
+          updateTurnDisplay();
+          updateUndoButtons();
+          requestDrawBoard();
+          return;
+        }
+
+        // PvP
         const last = history[history.length - 1];
         if (last.player !== player) return;
         if ((player === "Tieu" && undoTieuRemaining <= 0) || (player === "Tung" && undoTungRemaining <= 0)) return;
@@ -853,6 +1070,16 @@
       }
 
       function undoPlayer(player) {
+        if (gameMode === 'ai') {
+          if (player !== 'Tieu') return;
+          if (gameOver && winner === 'Tung') {
+            undoAfterWin('Tieu');
+          } else if (!gameOver) {
+            undoNormal('Tieu');
+          }
+          return;
+        }
+
         if (gameOver) {
           if ((winner === "Tieu" && player === "Tung") || (winner === "Tung" && player === "Tieu")) {
             undoAfterWin(player);
@@ -875,13 +1102,34 @@
         mobileUndoTungCount.textContent = undoTungRemaining;
 
         const last = history.length > 0 ? history[history.length-1] : null;
-        const disableTieu = gameOver ? !(winner === "Tung" && undoTieuRemaining > 0) : !(last && last.player === "Tieu" && undoTieuRemaining > 0);
-        const disableTung = gameOver ? !(winner === "Tieu" && undoTungRemaining > 0) : !(last && last.player === "Tung" && undoTungRemaining > 0);
+        let disableTieu = true, disableTung = true;
 
-        undoTieuBtn.disabled = disableTieu;
-        undoTungBtn.disabled = disableTung;
-        mobileUndoTieuBtn.disabled = disableTieu;
-        mobileUndoTungBtn.disabled = disableTung;
+        if (gameMode === 'ai') {
+          // Ẩn nút Tùng
+          undoTungBtn.style.display = 'none';
+          mobileUndoTungBtn.style.display = 'none';
+          // Chỉ cho Tiêu undo khi có ít nhất 2 nước gần nhất là Tieu rồi Tung (không gameOver) hoặc gameOver AI thắng
+          if (!gameOver && history.length >= 2 && last && last.player === 'Tung' && history[history.length-2].player === 'Tieu' && undoTieuRemaining > 0) {
+            disableTieu = false;
+          } else if (gameOver && winner === 'Tung' && history.length >= 2 && last && last.player === 'Tung' && history[history.length-2].player === 'Tieu' && undoTieuRemaining > 0) {
+            disableTieu = false;
+          }
+        } else {
+          undoTungBtn.style.display = '';
+          mobileUndoTungBtn.style.display = '';
+          if (!gameOver) {
+            disableTieu = !(last && last.player === "Tieu" && undoTieuRemaining > 0);
+            disableTung = !(last && last.player === "Tung" && undoTungRemaining > 0);
+          } else {
+            disableTieu = !(winner === "Tung" && undoTieuRemaining > 0);
+            disableTung = !(winner === "Tieu" && undoTungRemaining > 0);
+          }
+        }
+
+        undoTieuBtn.disabled = disableTieu || aiThinking;
+        undoTungBtn.disabled = disableTung || aiThinking;
+        mobileUndoTieuBtn.disabled = disableTieu || aiThinking;
+        mobileUndoTungBtn.disabled = disableTung || aiThinking;
       }
 
       function showWinMessage(player) {
@@ -906,6 +1154,8 @@
         winningCells = [];
         preWinCamera = null;
         lastMovePos = null;
+        allowInput = true;
+        aiThinking = false;
         winMessageDiv.style.display = "none";
         winImage.style.display = "none";
         mobileWinMessage.textContent = "";
@@ -916,6 +1166,7 @@
         updateUndoButtons();
         updateRestartButton();
         drawBoard();
+        // Nếu AI đi trước? Không, luôn Tiêu trước.
       }
 
       function adjustBoardSize() {
@@ -979,7 +1230,7 @@
       let isPinching = false, pinchStartDist = 0, pinchStartScale = 1, pinchStartMid = null;
 
       function onPointerDown(e) {
-        if (!gameActive) return;
+        if (!gameActive || !allowInput) return;
         e.preventDefault();
         if (e.touches && e.touches.length === 2) {
           isPinching = true; isPanning = false;
@@ -1004,7 +1255,7 @@
       }
 
       function onPointerMove(e) {
-        if (!gameActive) return;
+        if (!gameActive || !allowInput) return;
         e.preventDefault();
         if (isPinching && e.touches && e.touches.length === 2) {
           const dx = e.touches[0].clientX - e.touches[1].clientX;
@@ -1036,7 +1287,7 @@
       }
 
       function onPointerUp(e) {
-        if (!gameActive) return;
+        if (!gameActive || !allowInput) return;
         e.preventDefault();
         if (isPinching && e.touches && e.touches.length === 1) {
           isPinching = false;
@@ -1055,7 +1306,7 @@
       }
 
       function onWheel(e) {
-        if (!gameActive) return;
+        if (!gameActive || !allowInput) return;
         e.preventDefault();
         const rect = canvas.getBoundingClientRect();
         const mx = (e.clientX - rect.left) * (canvas.width / rect.width);
@@ -1088,14 +1339,23 @@
         mobileGamePanel.style.display = "flex";
         coverImage.style.display = "none";
         gameActive = true;
+        allowInput = true;
+        aiThinking = false;
         gameLayout.classList.remove("selecting-mode");
         adjustBoardSize();
         resetGame();
+        // Nếu AI mode, ẩn nút Tùng ngay từ đầu
+        if (gameMode === 'ai') {
+          undoTungBtn.style.display = 'none';
+          mobileUndoTungBtn.style.display = 'none';
+        }
       }
 
       function backToMode() {
         gameActive = false;
-        gameOver = true;
+        gameOver = false;
+        aiThinking = false;
+        allowInput = true;
         gamePanel.style.display = "none";
         modePanel.style.display = "block";
         mobileGamePanel.style.display = "none";
@@ -1106,6 +1366,9 @@
         gameLayout.classList.add("selecting-mode");
         if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
         adjustBoardSize();
+        // Reset hiển thị nút Tùng
+        undoTungBtn.style.display = '';
+        mobileUndoTungBtn.style.display = '';
       }
 
       function updateRestartButton() {
