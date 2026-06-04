@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tiêu Thụ Măng Cụt</title>
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/icons/icon32.png">
-  
+
   <style>
     * {
       box-sizing: border-box;
@@ -22,7 +22,7 @@
       padding: 30px 20px;
       margin: 0;
       min-height: 100vh;
-      cursor: url('Chi.png') 16 16, auto;
+      cursor: none;
     }
 
     h1 {
@@ -43,7 +43,6 @@
       color: #d33b3a;
     }
 
-    /* ---------- LƯỚI CHƠI ---------- */
     .grid {
       display: grid;
       grid-template-columns: repeat(8, 50px);
@@ -58,7 +57,6 @@
       position: relative;
     }
 
-    /* Overlay pattern mờ */
     .grid::before {
       content: "";
       position: absolute;
@@ -71,28 +69,36 @@
     }
 
     .cell {
-  width: 50px;
-  height: 50px;
-  background-color: #ffffff;   /* chỉ màu nền, không động đến image */
-  border-radius: 6px;
-  position: relative;
-  z-index: 0;
-  transition: background-color 0.1s ease;
-}
+      width: 50px;
+      height: 50px;
+      background-color: #ffffff;
+      border-radius: 6px;
+      position: relative;
+      z-index: 0;
+      transition: background-color 0.1s ease;
+    }
 
-/* Ô đã điền: đặt tất cả background cùng lúc */
-.cell.filled {
-  background: var(--color, #d33b3a) url('TieuTru/Paw.png') center/contain no-repeat;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
-}
+    .cell.filled {
+      background-color: var(--color, #d33b3a);
+      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+    }
 
-/* Preview giữ nguyên */
-.cell.preview {
-  background: rgba(211, 59, 58, 0.4);
-  box-shadow: inset 0 0 0 2px rgba(211, 59, 58, 0.8);
-}
+    .cell.filled::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: url('TieuThu/Paw.png') center/60% no-repeat;
+      filter: var(--paw-filter);
+      border-radius: inherit;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-    /* ---------- VÙNG MẢNH GHÉP ---------- */
+    .cell.preview {
+      background: rgba(211, 59, 58, 0.4);
+      box-shadow: inset 0 0 0 2px rgba(211, 59, 58, 0.8);
+    }
+
     .pieces-area {
       display: flex;
       gap: 24px;
@@ -102,16 +108,12 @@
     }
 
     .piece {
-      cursor: url('Gio.png') 16 16, grab;
       padding: 6px;
       background: rgba(241, 245, 244, 0.08);
       border-radius: 12px;
       transition: transform 0.1s ease;
       display: inline-block;
-    }
-
-    .piece:active {
-      cursor: url('Nam.png') 16 16, grabbing;
+      cursor: none;
     }
 
     .piece-inner {
@@ -126,7 +128,7 @@
     .piece-cell {
       width: 40px;
       height: 40px;
-      background: var(--piece-color, #d33b3a);
+      background: var(--piece-color, #d33b3a) url('TieuThu/Paw.png') center/80% no-repeat;
       border-radius: 5px;
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
     }
@@ -136,7 +138,6 @@
       box-shadow: none;
     }
 
-    /* ---------- NÚT CHỨC NĂNG ---------- */
     button {
       background: #9ca3af;
       color: #fff;
@@ -145,7 +146,7 @@
       font-size: 1.1rem;
       font-weight: 600;
       border-radius: 30px;
-      cursor: url('Chi.png') 16 16, pointer;
+      cursor: none;
       transition: background 0.2s, transform 0.1s;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
@@ -158,7 +159,6 @@
       transform: scale(0.97);
     }
 
-    /* ---------- GAME OVER ---------- */
     .gameover {
       position: fixed;
       top: 50%;
@@ -173,6 +173,7 @@
       display: none;
       z-index: 10;
       backdrop-filter: blur(4px);
+      cursor: none;
     }
 
     .gameover h2 {
@@ -192,8 +193,9 @@
   </style>
 </head>
 <body>
+
   <h1>Tiêu Thụ Măng Cụt</h1>
-  <div class="score">Số PAWs đã tiêu thụ: <span id="scoreDisplay">0</span></div>
+  <div class="score">Số Măng Cụt đã tiêu thụ: <span id="scoreDisplay">0</span></div>
 
   <div class="grid" id="grid"></div>
 
@@ -203,221 +205,190 @@
 
   <div class="gameover" id="gameover">
     <h2>Game Over</h2>
-    <p>Số PAWs đã tiêu thụ: <span id="finalScore"></span></p>
+    <p>Số Măng Cụt đã tiêu thụ: <span id="finalScore"></span></p>
     <button onclick="restartGame()">Chơi lại</button>
   </div>
 
+  <div id="customCursor" style="position:fixed; pointer-events:none; z-index:9999; width:32px; height:32px; background:url('Chi.png') center/contain no-repeat; transform:translate(-50%,-50%);"></div>
+
   <script>
     (function() {
-      // ---------- THAM SỐ ----------
-      const ROWS = 8;
-      const COLS = 8;
-      const CELL_SIZE = 50;
-      const CELL_GAP = 2;
-      const GRID_PADDING = 4;
-      const PIECE_CELL_SIZE = 40;
-
+      const ROWS = 8, COLS = 8;
+      const CELL_SIZE = 50, CELL_GAP = 2, GRID_PADDING = 4, PIECE_CELL_SIZE = 40;
       let grid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
       let totalPaws = 0;
       let currentPieces = [];
 
-      // ---------- HÌNH DẠNG (bổ sung khối chéo) ----------
       const SHAPES = [
-        [[0,0]],
-        [[0,0],[0,1]],
-        [[0,0],[1,0]],
-        [[0,0],[0,1],[0,2]],
-        [[0,0],[1,0],[2,0]],
-        [[0,0],[0,1],[1,0]],
-        [[0,0],[0,1],[1,1]],
-        [[0,0],[1,0],[1,1]],
-        [[0,1],[1,0],[1,1]],
-        [[0,0],[0,1],[0,2],[1,1]],
-        [[0,0],[0,1],[1,0],[1,1]],
-        [[0,0],[0,1],[0,2],[0,3]],
-        [[0,0],[1,0],[2,0],[3,0]],
-        [[0,0],[0,1],[0,2],[1,0]],
-        [[0,0],[1,0],[2,0],[2,1]],
-        [[0,2],[1,0],[1,1],[1,2]],
-        [[0,0],[0,1],[1,1],[1,2]],
-        [[0,1],[0,2],[1,0],[1,1]],
-        // Khối chéo
-        [[0,0],[1,1]],
-        [[0,1],[1,0]],
-        [[0,0],[1,1],[2,2]],
-        [[0,2],[1,1],[2,0]],
-        [[0,0],[0,1],[1,2]],
-        [[0,1],[1,0],[1,2]],
-        [[0,0],[1,1],[2,0]],
-        [[0,2],[1,1],[2,2]],
-        [[0,0],[0,2],[1,1]],
-        [[0,0],[1,1],[2,1],[2,2]],
-        [[0,1],[1,0],[1,1],[2,0]]
+        [[0,0]],[[0,0],[0,1]],[[0,0],[1,0]],[[0,0],[0,1],[0,2]],[[0,0],[1,0],[2,0]],
+        [[0,0],[0,1],[1,0]],[[0,0],[0,1],[1,1]],[[0,0],[1,0],[1,1]],[[0,1],[1,0],[1,1]],
+        [[0,0],[0,1],[0,2],[1,1]],[[0,0],[0,1],[1,0],[1,1]],[[0,0],[0,1],[0,2],[0,3]],
+        [[0,0],[1,0],[2,0],[3,0]],[[0,0],[0,1],[0,2],[1,0]],[[0,0],[1,0],[2,0],[2,1]],
+        [[0,2],[1,0],[1,1],[1,2]],[[0,0],[0,1],[1,1],[1,2]],[[0,1],[0,2],[1,0],[1,1]],
+        [[0,0],[1,1]],[[0,1],[1,0]],[[0,0],[1,1],[2,2]],[[0,2],[1,1],[2,0]],
+        [[0,0],[0,1],[1,2]],[[0,1],[1,0],[1,2]],[[0,0],[1,1],[2,0]],[[0,2],[1,1],[2,2]],
+        [[0,0],[0,2],[1,1]],[[0,0],[1,1],[2,1],[2,2]],[[0,1],[1,0],[1,1],[2,0]]
       ];
 
+      // Bộ màu "mèo" - 8 màu lấy cảm hứng từ màu lông mèo
       const COLORS = [
-        '#d33b3a', '#5c8a8d', '#e6b85c', '#8a9b6e',
-        '#b56a7a', '#4a7c82', '#c17e60', '#9b6fa3'
+        '#3B3C40', // Xám đen (mèo mun)
+        '#D98C5F', // Cam gừng (mèo vàng)
+        '#F2E3D5', // Kem trắng (mèo trắng)
+        '#7C6A5C', // Nâu tabby (mèo mướp)
+        '#A3B5C6', // Xám xanh (mèo Nga)
+        '#D4A373', // Vàng mướp nhạt
+        '#B5838D', // Hồng đệm thịt
+        '#E6B89C'  // Da mèo hồng nhạt
       ];
 
-      // ---------- DOM ----------
       const gridEl = document.getElementById('grid');
       const piecesArea = document.getElementById('piecesArea');
       const scoreDisplay = document.getElementById('scoreDisplay');
       const gameoverEl = document.getElementById('gameover');
       const finalScoreEl = document.getElementById('finalScore');
-
+      const customCursor = document.getElementById('customCursor');
       let cellElements = [];
-      let dragCanvas = document.createElement('canvas');
+
+      const dragCanvas = document.createElement('canvas');
       dragCanvas.style.display = 'none';
       document.body.appendChild(dragCanvas);
 
-      // ---------- KHỞI TẠO LƯỚI ----------
-      function createGridCells() {
+      // --- Cursor ---
+      let isDragging = false;
+      function setCursor(img) { customCursor.style.backgroundImage = `url('${img}')`; }
+      function updateCursor() {
+        if (isDragging) { setCursor('Nam.png'); return; }
+        const x = parseInt(customCursor.style.left)||0, y = parseInt(customCursor.style.top)||0;
+        const el = document.elementFromPoint(x+16, y+16);
+        setCursor(el?.closest('.piece') ? 'Gio.png' : 'Chi.png');
+      }
+      document.addEventListener('mousemove', e => {
+        customCursor.style.left = e.clientX+'px';
+        customCursor.style.top = e.clientY+'px';
+        updateCursor();
+      });
+      function dragStartCursor() { isDragging = true; setCursor('Nam.png'); }
+      function dragEndCursor() { isDragging = false; updateCursor(); }
+
+      // --- Grid ---
+      function createGrid() {
         gridEl.innerHTML = '';
         cellElements = [];
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
+        for (let r=0; r<ROWS; r++)
+          for (let c=0; c<COLS; c++) {
             const cell = document.createElement('div');
             cell.className = 'cell';
-            cell.dataset.row = r;
-            cell.dataset.col = c;
+            cell.dataset.row = r; cell.dataset.col = c;
             gridEl.appendChild(cell);
             cellElements.push(cell);
           }
-        }
+      }
+
+      function randomFilter() {
+        const hue = Math.floor(Math.random() * 41) - 20;
+        const sat = 0.6 + Math.random() * 0.6;
+        const bri = 0.9 + Math.random() * 0.3;
+        return `hue-rotate(${hue}deg) saturate(${sat}) brightness(${bri})`;
       }
 
       function renderGrid() {
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            const idx = r * COLS + c;
-            const cell = cellElements[idx];
-            const color = grid[r][c];
+        for (let r=0; r<ROWS; r++)
+          for (let c=0; c<COLS; c++) {
+            const idx = r*COLS+c, cell = cellElements[idx], color = grid[r][c];
             if (color) {
               cell.classList.add('filled');
               cell.style.setProperty('--color', color);
+              if (!cell.dataset.filter) cell.dataset.filter = randomFilter();
+              cell.style.setProperty('--paw-filter', cell.dataset.filter);
             } else {
               cell.classList.remove('filled');
               cell.style.removeProperty('--color');
+              cell.style.removeProperty('--paw-filter');
+              delete cell.dataset.filter;
             }
             cell.classList.remove('preview');
           }
-        }
       }
 
-      // ---------- MẢNH GHÉP ----------
+      // --- Pieces ---
       function randomPiece() {
-        const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
-        const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-        return { shape, color };
+        return { shape: SHAPES[Math.floor(Math.random()*SHAPES.length)], color: COLORS[Math.floor(Math.random()*COLORS.length)] };
       }
-
-      function generatePieces() {
-        currentPieces = [randomPiece(), randomPiece(), randomPiece()];
-        renderPieces();
-      }
+      function generatePieces() { currentPieces = [randomPiece(), randomPiece(), randomPiece()]; renderPieces(); }
 
       function renderPieces() {
         piecesArea.innerHTML = '';
-        currentPieces.forEach((piece, index) => {
-          const pieceEl = document.createElement('div');
-          pieceEl.className = 'piece';
-          pieceEl.draggable = true;
-          pieceEl.dataset.index = index;
-          pieceEl.style.setProperty('--piece-color', piece.color);
-
-          const inner = document.createElement('div');
-          inner.className = 'piece-inner';
-
-          const rows = Math.max(...piece.shape.map(p => p[0])) + 1;
-          const cols = Math.max(...piece.shape.map(p => p[1])) + 1;
-          for (let r = 0; r < rows; r++) {
-            const rowDiv = document.createElement('div');
-            rowDiv.className = 'piece-row';
-            for (let c = 0; c < cols; c++) {
-              const cellDiv = document.createElement('div');
-              cellDiv.className = 'piece-cell';
-              if (!piece.shape.some(([pr, pc]) => pr === r && pc === c)) {
-                cellDiv.classList.add('empty');
-              }
+        currentPieces.forEach((piece, idx) => {
+          const el = document.createElement('div');
+          el.className = 'piece'; el.draggable = true; el.dataset.index = idx;
+          el.style.setProperty('--piece-color', piece.color);
+          const inner = document.createElement('div'); inner.className = 'piece-inner';
+          const rows = Math.max(...piece.shape.map(p=>p[0]))+1, cols = Math.max(...piece.shape.map(p=>p[1]))+1;
+          for (let r=0; r<rows; r++) {
+            const rowDiv = document.createElement('div'); rowDiv.className = 'piece-row';
+            for (let c=0; c<cols; c++) {
+              const cellDiv = document.createElement('div'); cellDiv.className = 'piece-cell';
+              if (!piece.shape.some(([pr,pc])=>pr===r&&pc===c)) cellDiv.classList.add('empty');
               rowDiv.appendChild(cellDiv);
             }
             inner.appendChild(rowDiv);
           }
-          pieceEl.appendChild(inner);
-
-          pieceEl.addEventListener('dragstart', onDragStart);
-          pieceEl.addEventListener('dragend', onDragEnd);
-          piecesArea.appendChild(pieceEl);
+          el.appendChild(inner);
+          el.addEventListener('dragstart', onDragStart);
+          el.addEventListener('dragend', onDragEnd);
+          piecesArea.appendChild(el);
         });
       }
 
-      // ---------- KÉO THẢ ----------
-      let draggedPieceIndex = null;
-      let dragOffsetX = 0;
-      let dragOffsetY = 0;
-      let dragPiece = null;
+      // --- Drag & Drop ---
+      let draggedPieceIndex = null, dragOffsetX = 0, dragOffsetY = 0, dragPiece = null;
 
       function onDragStart(e) {
         const pieceEl = e.currentTarget;
         draggedPieceIndex = parseInt(pieceEl.dataset.index);
         dragPiece = currentPieces[draggedPieceIndex];
         if (!dragPiece) return;
-
+        dragStartCursor();
         const inner = pieceEl.querySelector('.piece-inner');
-        const innerRect = inner.getBoundingClientRect();
-        dragOffsetX = e.clientX - innerRect.left;
-        dragOffsetY = e.clientY - innerRect.top;
-
+        const rect = inner.getBoundingClientRect();
+        dragOffsetX = e.clientX - rect.left;
+        dragOffsetY = e.clientY - rect.top;
         createDragImage(dragPiece, dragOffsetX, dragOffsetY, e);
         pieceEl.style.opacity = '0.4';
       }
 
-      function createDragImage(piece, offsetX, offsetY, event) {
-        const shape = piece.shape;
-        const color = piece.color;
-        const rows = Math.max(...shape.map(p => p[0])) + 1;
-        const cols = Math.max(...shape.map(p => p[1])) + 1;
+      function createDragImage(piece, offX, offY, event) {
+        const shape = piece.shape, color = piece.color;
+        const rows = Math.max(...shape.map(p=>p[0]))+1, cols = Math.max(...shape.map(p=>p[1]))+1;
         const canvas = dragCanvas;
-        canvas.width = cols * PIECE_CELL_SIZE;
-        canvas.height = rows * PIECE_CELL_SIZE;
+        canvas.width = cols*PIECE_CELL_SIZE; canvas.height = rows*PIECE_CELL_SIZE;
         const ctx = canvas.getContext('2d');
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0,0,canvas.width,canvas.height);
         ctx.fillStyle = color;
-        for (const [r, c] of shape) {
-          ctx.fillRect(c * PIECE_CELL_SIZE, r * PIECE_CELL_SIZE, PIECE_CELL_SIZE, PIECE_CELL_SIZE);
-          ctx.strokeStyle = 'rgba(0,0,0,0.2)';
-          ctx.lineWidth = 1;
-          ctx.strokeRect(c * PIECE_CELL_SIZE, r * PIECE_CELL_SIZE, PIECE_CELL_SIZE, PIECE_CELL_SIZE);
-        }
-        event.dataTransfer.setDragImage(canvas, offsetX, offsetY);
+        for (const [r,c] of shape) ctx.fillRect(c*PIECE_CELL_SIZE, r*PIECE_CELL_SIZE, PIECE_CELL_SIZE, PIECE_CELL_SIZE);
+        event.dataTransfer.setDragImage(canvas, offX, offY);
       }
 
       function onDragEnd(e) {
         e.currentTarget.style.opacity = '1';
-        draggedPieceIndex = null;
-        dragPiece = null;
+        draggedPieceIndex = null; dragPiece = null;
         clearPreviews();
+        dragEndCursor();
       }
 
-      // ---------- PREVIEW ----------
       let previewCells = [];
-
       function clearPreviews() {
         previewCells.forEach(idx => cellElements[idx]?.classList.remove('preview'));
         previewCells = [];
       }
-
       function showPreview(shape, baseRow, baseCol) {
         clearPreviews();
-        if (baseRow === undefined || baseCol === undefined) return;
-        for (const [dr, dc] of shape) {
-          const r = baseRow + dr;
-          const c = baseCol + dc;
-          if (r >= 0 && r < ROWS && c >= 0 && c < COLS && grid[r][c] === null) {
-            const idx = r * COLS + c;
+        if (baseRow===undefined) return;
+        for (const [dr,dc] of shape) {
+          const r = baseRow+dr, c = baseCol+dc;
+          if (r>=0 && r<ROWS && c>=0 && c<COLS && grid[r][c]===null) {
+            const idx = r*COLS+c;
             cellElements[idx].classList.add('preview');
             previewCells.push(idx);
           }
@@ -425,138 +396,100 @@
       }
 
       function getGridPosition(e) {
-        const gridRect = gridEl.getBoundingClientRect();
-        const mouseX = e.clientX - gridRect.left;
-        const mouseY = e.clientY - gridRect.top;
-        const targetX = mouseX - dragOffsetX;
-        const targetY = mouseY - dragOffsetY;
-        const col = Math.round((targetX - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
-        const row = Math.round((targetY - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
-        return { row, col };
+        const rect = gridEl.getBoundingClientRect();
+        const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+        const tx = mx - dragOffsetX, ty = my - dragOffsetY;
+        const col = Math.round((tx - GRID_PADDING)/(CELL_SIZE+CELL_GAP));
+        const row = Math.round((ty - GRID_PADDING)/(CELL_SIZE+CELL_GAP));
+        return {row, col};
       }
 
       gridEl.addEventListener('dragover', e => {
         e.preventDefault();
         e.dataTransfer.dropEffect = 'move';
-        if (draggedPieceIndex === null || !dragPiece) return;
-        const { row, col } = getGridPosition(e);
-        if (canPlace(dragPiece.shape, row, col)) {
-          showPreview(dragPiece.shape, row, col);
-        } else {
-          clearPreviews();
-        }
+        if (draggedPieceIndex===null || !dragPiece) return;
+        const {row, col} = getGridPosition(e);
+        if (canPlace(dragPiece.shape, row, col)) showPreview(dragPiece.shape, row, col);
+        else clearPreviews();
       });
-
       gridEl.addEventListener('dragleave', e => {
-        if (!gridEl.contains(e.relatedTarget)) {
-          clearPreviews();
-        }
+        if (!gridEl.contains(e.relatedTarget)) clearPreviews();
       });
-
       gridEl.addEventListener('drop', e => {
         e.preventDefault();
         clearPreviews();
-        if (draggedPieceIndex === null || !dragPiece) return;
-        const { row, col } = getGridPosition(e);
+        if (draggedPieceIndex===null || !dragPiece) return;
+        const {row, col} = getGridPosition(e);
         if (canPlace(dragPiece.shape, row, col)) {
           placePiece(dragPiece.shape, dragPiece.color, row, col);
-          currentPieces.splice(draggedPieceIndex, 1);
+          currentPieces.splice(draggedPieceIndex,1);
           renderPieces();
           checkClearLines();
           renderGrid();
           updateScore();
-          if (currentPieces.length === 0) generatePieces();
+          if (currentPieces.length===0) generatePieces();
           if (isGameOver()) gameOver();
         }
-        draggedPieceIndex = null;
-        dragPiece = null;
+        draggedPieceIndex=null; dragPiece=null;
+        dragEndCursor();
       });
-
       document.addEventListener('dragover', e => e.preventDefault());
       document.addEventListener('drop', e => e.preventDefault());
 
-      // ---------- KIỂM TRA VỊ TRÍ ----------
       function canPlace(shape, baseRow, baseCol) {
-        for (const [dr, dc] of shape) {
-          const r = baseRow + dr;
-          const c = baseCol + dc;
-          if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return false;
-          if (grid[r][c] !== null) return false;
-        }
-        return true;
+        return shape.every(([dr,dc]) => {
+          const r = baseRow+dr, c = baseCol+dc;
+          return r>=0 && r<ROWS && c>=0 && c<COLS && grid[r][c]===null;
+        });
       }
-
       function placePiece(shape, color, baseRow, baseCol) {
-        for (const [dr, dc] of shape) {
-          const r = baseRow + dr;
-          const c = baseCol + dc;
-          grid[r][c] = color;
-        }
+        shape.forEach(([dr,dc]) => { grid[baseRow+dr][baseCol+dc] = color; });
       }
 
-      // ---------- XÓA HÀNG & CỘT ----------
       function checkClearLines() {
-        let clearedCellsCount = 0;
+        const cellsToClear = new Set();
         for (let r = 0; r < ROWS; r++) {
           if (grid[r].every(cell => cell !== null)) {
-            for (let c = 0; c < COLS; c++) {
-              grid[r][c] = null;
-              clearedCellsCount++;
-            }
+            for (let c = 0; c < COLS; c++) cellsToClear.add(`${r},${c}`);
           }
         }
         for (let c = 0; c < COLS; c++) {
           if (grid.every(row => row[c] !== null)) {
-            for (let r = 0; r < ROWS; r++) {
-              grid[r][c] = null;
-              clearedCellsCount++;
-            }
+            for (let r = 0; r < ROWS; r++) cellsToClear.add(`${r},${c}`);
           }
         }
-        if (clearedCellsCount > 0) {
-          totalPaws += clearedCellsCount;
+        const clearedCount = cellsToClear.size;
+        if (clearedCount > 0) {
+          cellsToClear.forEach(key => {
+            const [r, c] = key.split(',').map(Number);
+            grid[r][c] = null;
+          });
+          totalPaws += clearedCount;
           updateScore();
         }
       }
 
-      // ---------- GAME OVER ----------
       function isGameOver() {
-        for (const piece of currentPieces) {
-          for (let r = 0; r < ROWS; r++) {
-            for (let c = 0; c < COLS; c++) {
-              if (canPlace(piece.shape, r, c)) return false;
-            }
-          }
-        }
-        return true;
+        return currentPieces.every(piece => {
+          for (let r=0; r<ROWS; r++) for (let c=0; c<COLS; c++) if (canPlace(piece.shape,r,c)) return false;
+          return true;
+        });
       }
-
-      function gameOver() {
-        finalScoreEl.textContent = totalPaws;
-        gameoverEl.style.display = 'block';
-      }
-
-      function updateScore() {
-        scoreDisplay.textContent = totalPaws;
-      }
+      function gameOver() { finalScoreEl.textContent = totalPaws; gameoverEl.style.display = 'block'; }
+      function updateScore() { scoreDisplay.textContent = totalPaws; }
 
       function restartGame() {
-        grid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
-        totalPaws = 0;
-        updateScore();
-        generatePieces();
-        renderGrid();
+        grid = Array(ROWS).fill().map(()=>Array(COLS).fill(null));
+        totalPaws = 0; updateScore();
+        generatePieces(); renderGrid();
         gameoverEl.style.display = 'none';
         clearPreviews();
-        draggedPieceIndex = null;
-        dragPiece = null;
+        draggedPieceIndex=null; dragPiece=null;
+        isDragging=false; updateCursor();
       }
-
-      // Xuất hàm ra toàn cục để gọi từ HTML
       window.restartGame = restartGame;
 
-      // ---------- CHẠY ----------
-      createGridCells();
+      createGrid();
       restartGame();
     })();
   </script>
