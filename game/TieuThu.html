@@ -2,14 +2,16 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Tiêu Thụ Măng Cụt</title>
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/icons/icon32.png">
 
   <style>
     * {
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
       user-select: none;
+      -webkit-user-select: none;
     }
 
     body {
@@ -19,23 +21,36 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 30px 20px;
+      justify-content: center;
+      padding: 10px;
       margin: 0;
       min-height: 100vh;
-      cursor: none;
+      /* không dùng cursor tùy chỉnh trên mobile */
+    }
+
+    /* Ẩn custom cursor trên các thiết bị cảm ứng */
+    @media (pointer: coarse) {
+      body {
+        cursor: auto !important;
+      }
+      #customCursor {
+        display: none !important;
+      }
     }
 
     h1 {
-      margin: 0 0 5px 0;
-      font-size: 2rem;
+      margin: 5px 0 0 0;
+      font-size: clamp(1.2rem, 4vw, 2rem);
       font-weight: 600;
       letter-spacing: 1px;
+      text-align: center;
     }
 
     .score {
-      font-size: 1.3rem;
-      margin-bottom: 20px;
+      font-size: clamp(0.9rem, 3vw, 1.3rem);
+      margin: 8px 0;
       color: #f1f5f4;
+      text-align: center;
     }
 
     .score span {
@@ -43,10 +58,11 @@
       color: #d33b3a;
     }
 
+    /* ---------- LƯỚI CHƠI ---------- */
     .grid {
       display: grid;
-      grid-template-columns: repeat(8, 50px);
-      grid-template-rows: repeat(8, 50px);
+      grid-template-columns: repeat(8, min(10vw, 50px));
+      grid-template-rows: repeat(8, min(10vw, 50px));
       gap: 2px;
       background: #f1f5f4;
       padding: 4px;
@@ -55,6 +71,7 @@
       width: fit-content;
       margin: 0 auto;
       position: relative;
+      touch-action: manipulation; /* ngăn zoom khi chạm nhanh */
     }
 
     .grid::before {
@@ -69,10 +86,10 @@
     }
 
     .cell {
-      width: 50px;
-      height: 50px;
+      width: 100%;
+      height: 100%;
       background-color: #ffffff;
-      border-radius: 6px;
+      border-radius: 4px;
       position: relative;
       z-index: 0;
       transition: background-color 0.1s ease;
@@ -99,25 +116,40 @@
       box-shadow: inset 0 0 0 2px rgba(211, 59, 58, 0.8);
     }
 
+    .cell.valid-drop {
+      background: rgba(76, 175, 80, 0.5);
+      box-shadow: inset 0 0 0 2px #4CAF50;
+    }
+
+    /* ---------- VÙNG MẢNH GHÉP ---------- */
     .pieces-area {
       display: flex;
-      gap: 24px;
-      margin: 24px 0 20px 0;
-      justify-content: center;
       flex-wrap: wrap;
+      gap: 12px;
+      margin: 16px 0 12px 0;
+      justify-content: center;
+      padding: 0 5px;
     }
 
     .piece {
       padding: 6px;
-      background: rgba(241, 245, 244, 0.08);
+      background: rgba(241, 245, 244, 0.12);
       border-radius: 12px;
-      transition: transform 0.1s ease;
+      transition: transform 0.1s ease, box-shadow 0.2s;
       display: inline-block;
-      cursor: none;
+      cursor: pointer;
+      border: 2px solid transparent;
+    }
+
+    .piece.selected {
+      border: 2px solid #f1f5f4;
+      box-shadow: 0 0 12px rgba(241, 245, 244, 0.5);
+      transform: scale(1.03);
     }
 
     .piece-inner {
       display: inline-block;
+      pointer-events: none;
     }
 
     .piece-row {
@@ -126,10 +158,10 @@
     }
 
     .piece-cell {
-      width: 40px;
-      height: 40px;
+      width: min(8vw, 40px);
+      height: min(8vw, 40px);
       background: var(--piece-color, #d33b3a) url('TieuThu/Paw.png') center/80% no-repeat;
-      border-radius: 5px;
+      border-radius: 4px;
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
     }
 
@@ -138,17 +170,20 @@
       box-shadow: none;
     }
 
+    /* ---------- NÚT CHỨC NĂNG ---------- */
     button {
       background: #9ca3af;
       color: #fff;
       border: none;
-      padding: 12px 32px;
-      font-size: 1.1rem;
+      padding: 12px 24px;
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
       font-weight: 600;
       border-radius: 30px;
-      cursor: none;
+      cursor: pointer;
       transition: background 0.2s, transform 0.1s;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      margin: 5px;
+      touch-action: manipulation;
     }
 
     button:hover {
@@ -156,7 +191,7 @@
     }
 
     button:active {
-      transform: scale(0.97);
+      transform: scale(0.95);
     }
 
     .gameover {
@@ -166,18 +201,19 @@
       transform: translate(-50%, -50%);
       background: rgba(0, 43, 62, 0.95);
       color: #f1f5f4;
-      padding: 30px 50px;
+      padding: 20px 30px;
       border-radius: 20px;
       text-align: center;
       border: 1px solid #d33b3a;
       display: none;
       z-index: 10;
       backdrop-filter: blur(4px);
-      cursor: none;
+      font-size: clamp(0.9rem, 2.5vw, 1.2rem);
+      max-width: 90vw;
     }
 
     .gameover h2 {
-      margin: 0 0 15px 0;
+      margin: 0 0 10px 0;
       color: #d33b3a;
     }
 
@@ -190,6 +226,11 @@
     .gameover button:hover {
       background: #6b7280;
     }
+
+    /* Ẩn custom cursor mặc định cho desktop (nếu có) */
+    #customCursor {
+      display: none; /* Ẩn vĩnh viễn, vì đã có cơ chế chạm */
+    }
   </style>
 </head>
 <body>
@@ -201,6 +242,7 @@
 
   <div class="pieces-area" id="piecesArea"></div>
 
+  <button id="deselectBtn" style="display:none;">Bỏ chọn</button>
   <button onclick="restartGame()">Chơi lại</button>
 
   <div class="gameover" id="gameover">
@@ -209,15 +251,16 @@
     <button onclick="restartGame()">Chơi lại</button>
   </div>
 
-  <div id="customCursor" style="position:fixed; pointer-events:none; z-index:9999; width:32px; height:32px; background:url('Chi.png') center/contain no-repeat; transform:translate(-50%,-50%);"></div>
-
   <script>
     (function() {
       const ROWS = 8, COLS = 8;
-      const CELL_SIZE = 50, CELL_GAP = 2, GRID_PADDING = 4, PIECE_CELL_SIZE = 40;
+      // Kích thước ô tính theo vw, nhưng cần giá trị px để tính toán vị trí thả (nếu dùng touchmove)
+      // Với cơ chế click-to-place, không cần tính toán vị trí, chỉ cần biết ô được click.
+
       let grid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
       let totalPaws = 0;
       let currentPieces = [];
+      let selectedPieceIndex = null; // index của piece đang được chọn
 
       const SHAPES = [
         [[0,0]],[[0,0],[0,1]],[[0,0],[1,0]],[[0,0],[0,1],[0,2]],[[0,0],[1,0],[2,0]],
@@ -230,59 +273,43 @@
         [[0,0],[0,2],[1,1]],[[0,0],[1,1],[2,1],[2,2]],[[0,1],[1,0],[1,1],[2,0]]
       ];
 
-      // Bộ màu "mèo" - 8 màu lấy cảm hứng từ màu lông mèo
-      const COLORS = [
-        '#3B3C40', // Xám đen (mèo mun)
-        '#D98C5F', // Cam gừng (mèo vàng)
-        '#F2E3D5', // Kem trắng (mèo trắng)
-        '#7C6A5C', // Nâu tabby (mèo mướp)
-        '#A3B5C6', // Xám xanh (mèo Nga)
-        '#D4A373', // Vàng mướp nhạt
-        '#B5838D', // Hồng đệm thịt
-        '#E6B89C'  // Da mèo hồng nhạt
+      const CAT_COLORS = [
+        '#3B3C40', '#D98C5F', '#F2E3D5', '#7C6A5C', '#A3B5C6', '#D4A373',
+        '#B5838D', '#E6B89C', '#8B5E3C', '#C9A88C', '#5E6472', '#C49A6C'
       ];
+
+      function shuffleArray(arr) {
+        const a = arr.slice();
+        for (let i = a.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [a[i], a[j]] = [a[j], a[i]];
+        }
+        return a;
+      }
 
       const gridEl = document.getElementById('grid');
       const piecesArea = document.getElementById('piecesArea');
       const scoreDisplay = document.getElementById('scoreDisplay');
       const gameoverEl = document.getElementById('gameover');
       const finalScoreEl = document.getElementById('finalScore');
-      const customCursor = document.getElementById('customCursor');
+      const deselectBtn = document.getElementById('deselectBtn');
       let cellElements = [];
 
-      const dragCanvas = document.createElement('canvas');
-      dragCanvas.style.display = 'none';
-      document.body.appendChild(dragCanvas);
-
-      // --- Cursor ---
-      let isDragging = false;
-      function setCursor(img) { customCursor.style.backgroundImage = `url('${img}')`; }
-      function updateCursor() {
-        if (isDragging) { setCursor('Nam.png'); return; }
-        const x = parseInt(customCursor.style.left)||0, y = parseInt(customCursor.style.top)||0;
-        const el = document.elementFromPoint(x+16, y+16);
-        setCursor(el?.closest('.piece') ? 'Gio.png' : 'Chi.png');
-      }
-      document.addEventListener('mousemove', e => {
-        customCursor.style.left = e.clientX+'px';
-        customCursor.style.top = e.clientY+'px';
-        updateCursor();
-      });
-      function dragStartCursor() { isDragging = true; setCursor('Nam.png'); }
-      function dragEndCursor() { isDragging = false; updateCursor(); }
-
-      // --- Grid ---
+      // --- Khởi tạo lưới ---
       function createGrid() {
         gridEl.innerHTML = '';
         cellElements = [];
-        for (let r=0; r<ROWS; r++)
-          for (let c=0; c<COLS; c++) {
+        for (let r = 0; r < ROWS; r++) {
+          for (let c = 0; c < COLS; c++) {
             const cell = document.createElement('div');
             cell.className = 'cell';
-            cell.dataset.row = r; cell.dataset.col = c;
+            cell.dataset.row = r;
+            cell.dataset.col = c;
+            cell.addEventListener('click', () => onCellClick(r, c));
             gridEl.appendChild(cell);
             cellElements.push(cell);
           }
+        }
       }
 
       function randomFilter() {
@@ -293,9 +320,11 @@
       }
 
       function renderGrid() {
-        for (let r=0; r<ROWS; r++)
-          for (let c=0; c<COLS; c++) {
-            const idx = r*COLS+c, cell = cellElements[idx], color = grid[r][c];
+        for (let r = 0; r < ROWS; r++) {
+          for (let c = 0; c < COLS; c++) {
+            const idx = r * COLS + c;
+            const cell = cellElements[idx];
+            const color = grid[r][c];
             if (color) {
               cell.classList.add('filled');
               cell.style.setProperty('--color', color);
@@ -307,143 +336,163 @@
               cell.style.removeProperty('--paw-filter');
               delete cell.dataset.filter;
             }
-            cell.classList.remove('preview');
+            cell.classList.remove('preview', 'valid-drop');
           }
+        }
       }
 
-      // --- Pieces ---
-      function randomPiece() {
-        return { shape: SHAPES[Math.floor(Math.random()*SHAPES.length)], color: COLORS[Math.floor(Math.random()*COLORS.length)] };
+      // --- Mảnh ghép ---
+      function generatePieces() {
+        const colors = shuffleArray(CAT_COLORS);
+        currentPieces = [];
+        for (let i = 0; i < 3; i++) {
+          const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+          const color = colors[i % colors.length];
+          currentPieces.push({ shape, color });
+        }
+        selectedPieceIndex = null;
+        updateDeselectButton();
+        renderPieces();
       }
-      function generatePieces() { currentPieces = [randomPiece(), randomPiece(), randomPiece()]; renderPieces(); }
 
       function renderPieces() {
         piecesArea.innerHTML = '';
         currentPieces.forEach((piece, idx) => {
           const el = document.createElement('div');
-          el.className = 'piece'; el.draggable = true; el.dataset.index = idx;
+          el.className = 'piece';
+          if (idx === selectedPieceIndex) el.classList.add('selected');
+          el.dataset.index = idx;
           el.style.setProperty('--piece-color', piece.color);
-          const inner = document.createElement('div'); inner.className = 'piece-inner';
-          const rows = Math.max(...piece.shape.map(p=>p[0]))+1, cols = Math.max(...piece.shape.map(p=>p[1]))+1;
-          for (let r=0; r<rows; r++) {
-            const rowDiv = document.createElement('div'); rowDiv.className = 'piece-row';
-            for (let c=0; c<cols; c++) {
-              const cellDiv = document.createElement('div'); cellDiv.className = 'piece-cell';
-              if (!piece.shape.some(([pr,pc])=>pr===r&&pc===c)) cellDiv.classList.add('empty');
+          el.addEventListener('click', (e) => onPieceClick(idx, e));
+
+          const inner = document.createElement('div');
+          inner.className = 'piece-inner';
+          const rows = Math.max(...piece.shape.map(p => p[0])) + 1;
+          const cols = Math.max(...piece.shape.map(p => p[1])) + 1;
+          for (let r = 0; r < rows; r++) {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'piece-row';
+            for (let c = 0; c < cols; c++) {
+              const cellDiv = document.createElement('div');
+              cellDiv.className = 'piece-cell';
+              if (!piece.shape.some(([pr, pc]) => pr === r && pc === c))
+                cellDiv.classList.add('empty');
               rowDiv.appendChild(cellDiv);
             }
             inner.appendChild(rowDiv);
           }
           el.appendChild(inner);
-          el.addEventListener('dragstart', onDragStart);
-          el.addEventListener('dragend', onDragEnd);
           piecesArea.appendChild(el);
         });
       }
 
-      // --- Drag & Drop ---
-      let draggedPieceIndex = null, dragOffsetX = 0, dragOffsetY = 0, dragPiece = null;
-
-      function onDragStart(e) {
-        const pieceEl = e.currentTarget;
-        draggedPieceIndex = parseInt(pieceEl.dataset.index);
-        dragPiece = currentPieces[draggedPieceIndex];
-        if (!dragPiece) return;
-        dragStartCursor();
-        const inner = pieceEl.querySelector('.piece-inner');
-        const rect = inner.getBoundingClientRect();
-        dragOffsetX = e.clientX - rect.left;
-        dragOffsetY = e.clientY - rect.top;
-        createDragImage(dragPiece, dragOffsetX, dragOffsetY, e);
-        pieceEl.style.opacity = '0.4';
-      }
-
-      function createDragImage(piece, offX, offY, event) {
-        const shape = piece.shape, color = piece.color;
-        const rows = Math.max(...shape.map(p=>p[0]))+1, cols = Math.max(...shape.map(p=>p[1]))+1;
-        const canvas = dragCanvas;
-        canvas.width = cols*PIECE_CELL_SIZE; canvas.height = rows*PIECE_CELL_SIZE;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        ctx.fillStyle = color;
-        for (const [r,c] of shape) ctx.fillRect(c*PIECE_CELL_SIZE, r*PIECE_CELL_SIZE, PIECE_CELL_SIZE, PIECE_CELL_SIZE);
-        event.dataTransfer.setDragImage(canvas, offX, offY);
-      }
-
-      function onDragEnd(e) {
-        e.currentTarget.style.opacity = '1';
-        draggedPieceIndex = null; dragPiece = null;
-        clearPreviews();
-        dragEndCursor();
-      }
-
-      let previewCells = [];
-      function clearPreviews() {
-        previewCells.forEach(idx => cellElements[idx]?.classList.remove('preview'));
-        previewCells = [];
-      }
-      function showPreview(shape, baseRow, baseCol) {
-        clearPreviews();
-        if (baseRow===undefined) return;
-        for (const [dr,dc] of shape) {
-          const r = baseRow+dr, c = baseCol+dc;
-          if (r>=0 && r<ROWS && c>=0 && c<COLS && grid[r][c]===null) {
-            const idx = r*COLS+c;
-            cellElements[idx].classList.add('preview');
-            previewCells.push(idx);
-          }
+      function onPieceClick(index, event) {
+        event.stopPropagation();
+        if (selectedPieceIndex === index) {
+          // Bỏ chọn
+          selectedPieceIndex = null;
+        } else {
+          selectedPieceIndex = index;
         }
-      }
-
-      function getGridPosition(e) {
-        const rect = gridEl.getBoundingClientRect();
-        const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-        const tx = mx - dragOffsetX, ty = my - dragOffsetY;
-        const col = Math.round((tx - GRID_PADDING)/(CELL_SIZE+CELL_GAP));
-        const row = Math.round((ty - GRID_PADDING)/(CELL_SIZE+CELL_GAP));
-        return {row, col};
-      }
-
-      gridEl.addEventListener('dragover', e => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        if (draggedPieceIndex===null || !dragPiece) return;
-        const {row, col} = getGridPosition(e);
-        if (canPlace(dragPiece.shape, row, col)) showPreview(dragPiece.shape, row, col);
-        else clearPreviews();
-      });
-      gridEl.addEventListener('dragleave', e => {
-        if (!gridEl.contains(e.relatedTarget)) clearPreviews();
-      });
-      gridEl.addEventListener('drop', e => {
-        e.preventDefault();
+        updateDeselectButton();
+        renderPieces();
         clearPreviews();
-        if (draggedPieceIndex===null || !dragPiece) return;
-        const {row, col} = getGridPosition(e);
-        if (canPlace(dragPiece.shape, row, col)) {
-          placePiece(dragPiece.shape, dragPiece.color, row, col);
-          currentPieces.splice(draggedPieceIndex,1);
+      }
+
+      function onCellClick(row, col) {
+        if (selectedPieceIndex === null) return;
+        const piece = currentPieces[selectedPieceIndex];
+        if (!piece) return;
+
+        if (canPlace(piece.shape, row, col)) {
+          // Đặt mảnh
+          placePiece(piece.shape, piece.color, row, col);
+          currentPieces.splice(selectedPieceIndex, 1);
+          selectedPieceIndex = null;
+          updateDeselectButton();
           renderPieces();
           checkClearLines();
           renderGrid();
           updateScore();
-          if (currentPieces.length===0) generatePieces();
-          if (isGameOver()) gameOver();
-        }
-        draggedPieceIndex=null; dragPiece=null;
-        dragEndCursor();
-      });
-      document.addEventListener('dragover', e => e.preventDefault());
-      document.addEventListener('drop', e => e.preventDefault());
 
+          if (currentPieces.length === 0) generatePieces();
+          if (isGameOver()) gameOver();
+        } else {
+          // Không đặt được -> bỏ chọn (có thể thông báo nhẹ)
+          selectedPieceIndex = null;
+          updateDeselectButton();
+          renderPieces();
+          clearPreviews();
+          // Rung nhẹ? Tạm thời không.
+        }
+      }
+
+      function updateDeselectButton() {
+        deselectBtn.style.display = selectedPieceIndex !== null ? 'inline-block' : 'none';
+      }
+
+      deselectBtn.addEventListener('click', () => {
+        selectedPieceIndex = null;
+        updateDeselectButton();
+        renderPieces();
+        clearPreviews();
+      });
+
+      // Preview khi chọn piece (hiển thị vùng có thể đặt)
+      let previewCells = [];
+      function clearPreviews() {
+        previewCells.forEach(idx => cellElements[idx]?.classList.remove('preview', 'valid-drop'));
+        previewCells = [];
+      }
+
+      function showPreviewsForSelectedPiece() {
+        clearPreviews();
+        if (selectedPieceIndex === null) return;
+        const piece = currentPieces[selectedPieceIndex];
+        if (!piece) return;
+        for (let r = 0; r < ROWS; r++) {
+          for (let c = 0; c < COLS; c++) {
+            if (canPlace(piece.shape, r, c)) {
+              const idx = r * COLS + c;
+              cellElements[idx].classList.add('valid-drop');
+              previewCells.push(idx);
+            }
+          }
+        }
+      }
+
+      // Lắng nghe sự kiện click ra ngoài để bỏ chọn
+      document.addEventListener('click', function(e) {
+        if (!e.target.closest('.piece') && !e.target.closest('.cell') && !e.target.closest('button')) {
+          if (selectedPieceIndex !== null) {
+            selectedPieceIndex = null;
+            updateDeselectButton();
+            renderPieces();
+            clearPreviews();
+          }
+        }
+      });
+
+      // Cập nhật preview khi chọn piece
+      // Ta sẽ gọi showPreviewsForSelectedPiece mỗi khi renderPieces và selectedPieceIndex thay đổi
+      const originalRenderPieces = renderPieces;
+      renderPieces = function() {
+        originalRenderPieces();
+        showPreviewsForSelectedPiece();
+      };
+
+      // --- Các hàm kiểm tra & xóa ---
       function canPlace(shape, baseRow, baseCol) {
-        return shape.every(([dr,dc]) => {
-          const r = baseRow+dr, c = baseCol+dc;
-          return r>=0 && r<ROWS && c>=0 && c<COLS && grid[r][c]===null;
+        return shape.every(([dr, dc]) => {
+          const r = baseRow + dr, c = baseCol + dc;
+          return r >= 0 && r < ROWS && c >= 0 && c < COLS && grid[r][c] === null;
         });
       }
+
       function placePiece(shape, color, baseRow, baseCol) {
-        shape.forEach(([dr,dc]) => { grid[baseRow+dr][baseCol+dc] = color; });
+        shape.forEach(([dr, dc]) => {
+          grid[baseRow + dr][baseCol + dc] = color;
+        });
       }
 
       function checkClearLines() {
@@ -471,24 +520,34 @@
 
       function isGameOver() {
         return currentPieces.every(piece => {
-          for (let r=0; r<ROWS; r++) for (let c=0; c<COLS; c++) if (canPlace(piece.shape,r,c)) return false;
+          for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) if (canPlace(piece.shape, r, c)) return false;
           return true;
         });
       }
-      function gameOver() { finalScoreEl.textContent = totalPaws; gameoverEl.style.display = 'block'; }
-      function updateScore() { scoreDisplay.textContent = totalPaws; }
+
+      function gameOver() {
+        finalScoreEl.textContent = totalPaws;
+        gameoverEl.style.display = 'block';
+      }
+
+      function updateScore() {
+        scoreDisplay.textContent = totalPaws;
+      }
 
       function restartGame() {
-        grid = Array(ROWS).fill().map(()=>Array(COLS).fill(null));
-        totalPaws = 0; updateScore();
-        generatePieces(); renderGrid();
+        grid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
+        totalPaws = 0;
+        updateScore();
+        selectedPieceIndex = null;
+        updateDeselectButton();
+        generatePieces();
+        renderGrid();
         gameoverEl.style.display = 'none';
         clearPreviews();
-        draggedPieceIndex=null; dragPiece=null;
-        isDragging=false; updateCursor();
       }
       window.restartGame = restartGame;
 
+      // --- Khởi động ---
       createGrid();
       restartGame();
     })();
