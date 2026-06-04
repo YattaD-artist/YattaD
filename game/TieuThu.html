@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tiêu Thụ Măng Cụt</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/icons/icon32.png">
+  
   <style>
     * {
       box-sizing: border-box;
@@ -69,30 +71,26 @@
     }
 
     .cell {
-      width: 50px;
-      height: 50px;
-      background: #ffffff;
-      border-radius: 6px;
-      position: relative;
-      z-index: 0;
-      transition: background 0.1s ease;
-    }
+  width: 50px;
+  height: 50px;
+  background-color: #ffffff;   /* chỉ màu nền, không động đến image */
+  border-radius: 6px;
+  position: relative;
+  z-index: 0;
+  transition: background-color 0.1s ease;
+}
 
-    /* Ô đã điền: giữ màu nền + ảnh Paw ở giữa */
-    .cell.filled {
-      background-color: var(--color, #d33b3a);
-      background-image: url('TieuTru/Paw.png');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
-      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-    }
+/* Ô đã điền: đặt tất cả background cùng lúc */
+.cell.filled {
+  background: var(--color, #d33b3a) url('TieuTru/Paw.png') center/contain no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
+}
 
-    /* Vùng dự đoán (preview) chỉ tô màu mờ, không có ảnh */
-    .cell.preview {
-      background: rgba(211, 59, 58, 0.4);
-      box-shadow: inset 0 0 0 2px rgba(211, 59, 58, 0.8);
-    }
+/* Preview giữ nguyên */
+.cell.preview {
+  background: rgba(211, 59, 58, 0.4);
+  box-shadow: inset 0 0 0 2px rgba(211, 59, 58, 0.8);
+}
 
     /* ---------- VÙNG MẢNH GHÉP ---------- */
     .pieces-area {
