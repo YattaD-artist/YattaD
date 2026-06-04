@@ -233,6 +233,10 @@
         <p id="game1-name">Cờ Tiêu - Tùng</p>
       </a>
       <!-- Các game sau sẽ thêm tại đây, giữ nguyên cấu trúc -->
+      <a href="game/TieuThu.html" target="_blank" class="game-card" data-game="2">
+        <img src="game/TieuThu/TieuThu.jpg" alt="Tiêu Thụ Măng Cụt" id="game2-img">
+        <p id="game2-name">Tiêu Thụ Măng Cụt</p>
+      </a>
     </div>
   </main>
 
@@ -251,11 +255,13 @@
     const translations = {
       vi: {
         title: "YattaD",
-        game1: "Cờ Tiêu - Tùng"
+        game1: "Cờ Tiêu - Tùng",
+        game2: "Tiêu Thụ Măng Cụt"
       },
       en: {
         title: "YattaD",
-        game1: "Tieu Tung Chess"
+        game1: "Tieu Tung Chess",
+        game2: "Tieu Thu Paws blocks"
       }
     };
 
@@ -263,7 +269,9 @@
       const titleEl = document.getElementById('title');
       if (titleEl) titleEl.textContent = translations[currentLang].title;
       const game1Name = document.getElementById('game1-name');
+      const game1Name = document.getElementById('game2-name');
       if (game1Name) game1Name.textContent = translations[currentLang].game1;
+      if (game2Name) game2Name.textContent = translations[currentLang].game2;
       localStorage.setItem('lang', currentLang);
     }
 
