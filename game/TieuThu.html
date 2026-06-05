@@ -149,6 +149,12 @@
       transition: outline 0.2s;
     }
 
+    .piece.unavailable {
+      opacity: 0.35;
+      filter: grayscale(0.6);
+      pointer-events: none;
+    }
+
     .piece-inner {
       display: inline-block;
     }
@@ -847,6 +853,13 @@
           }
           el.appendChild(inner);
 
+          const isAvailable = canPlaceAnywhere(piece.shape);
+          if (!isAvailable && !replacePieceMode) {
+            el.classList.add('unavailable');
+          } else {
+            el.classList.remove('unavailable');
+          }
+
           if (replacePieceMode) {
             el.classList.add('replaceable');
             el.addEventListener('click', onReplacePieceClick);
@@ -855,18 +868,20 @@
             el.classList.remove('replaceable');
             el.removeEventListener('click', onReplacePieceClick);
             el.removeEventListener('touchend', onReplacePieceTouch);
-            el.addEventListener('mousedown', onMouseDown);
-            el.addEventListener('touchstart', onTouchStart, { passive: false });
-            el.addEventListener('touchmove', onTouchMove, { passive: false });
-            el.addEventListener('touchend', onTouchEnd);
-            el.addEventListener('touchcancel', onTouchEnd);
+            if (!el.classList.contains('unavailable')) {
+              el.addEventListener('mousedown', onMouseDown);
+              el.addEventListener('touchstart', onTouchStart, { passive: false });
+              el.addEventListener('touchmove', onTouchMove, { passive: false });
+              el.addEventListener('touchend', onTouchEnd);
+              el.addEventListener('touchcancel', onTouchEnd);
+            }
           }
 
           piecesArea.appendChild(el);
         });
       }
 
-      // ========== DESKTOP MOUSE DRAG (pieces) ==========
+      // ========== DESKTOP MOUSE DRAG ==========
       function onMouseDown(e) {
         if (e.button !== 0) return;
         if (isDragging || touchActive || helpMode === 'select' || replacePieceMode || help2ModalVisible) return;
@@ -930,13 +945,7 @@
           if (canPlace(dragPiece.shape, pos.row, pos.col)) {
             placePiece(dragPiece.shape, dragPiece.color, pos.row, pos.col);
             currentPieces.splice(draggedPieceIndex, 1);
-            renderPieces();
-            checkClearLines();
-            renderGrid();
-            updateScore();
-            if (currentPieces.length === 0) generatePieces();
-            checkGameOverOrHelp();
-            clearHintGlow();
+            handlePiecePlaced();
           }
         }
 
@@ -948,7 +957,7 @@
         resetIdleTimer();
       }
 
-      // ========== TOUCH DRAG (pieces) ==========
+      // ========== TOUCH DRAG ==========
       function onTouchStart(e) {
         if (isDragging || helpMode === 'select' || replacePieceMode || help2ModalVisible) return;
         e.preventDefault();
@@ -1026,10 +1035,7 @@
           if (canPlace(touchPiece.shape, pos.row, pos.col)) {
             placePiece(touchPiece.shape, touchPiece.color, pos.row, pos.col);
             currentPieces.splice(touchPieceIndex, 1);
-            renderPieces();
-            checkClearLines();
-            renderGrid();
-            updateScore();
+            handlePiecePlaced();
             placed = true;
           }
         }
@@ -1042,18 +1048,32 @@
         touchActive = false;
         touchPieceIndex = null;
         touchPiece = null;
-        if (placed) {
-          if (currentPieces.length === 0) generatePieces();
-          checkGameOverOrHelp();
-          clearHintGlow();
+        if (!placed) {
+          resetIdleTimer();
         }
         if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
           customCursor.style.display = 'block';
         }
-        resetIdleTimer();
       }
 
-      // ========== IDLE HINT (tự động gợi ý) ==========
+      // --- Hàm xử lý chung sau khi đặt quân ---
+      function handlePiecePlaced() {
+        checkClearLines();
+        renderGrid();
+        refreshPieceAvailability();
+        updateScore();
+        if (currentPieces.length === 0) generatePieces();
+        checkGameOverOrHelp();
+        clearHintGlow();
+      }
+
+      function refreshPieceAvailability() {
+        if (!replacePieceMode && !help2ModalVisible) {
+          renderPieces();
+        }
+      }
+
+      // ========== IDLE HINT ==========
       function resetIdleTimer() {
         if (idleTimer) clearTimeout(idleTimer);
         if (gameoverEl.style.display === 'block') return;
@@ -1071,7 +1091,6 @@
       }
 
       function showHintGlow() {
-        // Chọn một mảnh ngẫu nhiên trong currentPieces có thể đặt được
         const placeablePiece = currentPieces.find(p => canPlaceAnywhere(p.shape));
         if (!placeablePiece) return;
 
@@ -1128,6 +1147,7 @@
             help1Remaining--;
             updateHelp1UI();
             renderGrid();
+            refreshPieceAvailability();
             showToast('Đã xóa vùng được chọn!');
             checkGameOverOrHelp();
           } else {
@@ -1489,13 +1509,6 @@
         }
       }
 
-      function canPlaceAnywhere(shape) {
-        for (let r = 0; r < ROWS; r++)
-          for (let c = 0; c < COLS; c++)
-            if (canPlace(shape, r, c)) return true;
-        return false;
-      }
-
       // ========== UTILS ==========
       function clearPreviews() {
         previewCells.forEach(idx => {
@@ -1539,6 +1552,13 @@
         });
       }
 
+      function canPlaceAnywhere(shape) {
+        for (let r = 0; r < ROWS; r++)
+          for (let c = 0; c < COLS; c++)
+            if (canPlace(shape, r, c)) return true;
+        return false;
+      }
+
       function placePiece(shape, color, baseRow, baseCol) {
         shape.forEach(([dr, dc]) => {
           grid[baseRow + dr][baseCol + dc] = color;
@@ -1570,10 +1590,7 @@
 
       function isGameOver() {
         return currentPieces.every(piece => {
-          for (let r = 0; r < ROWS; r++)
-            for (let c = 0; c < COLS; c++)
-              if (canPlace(piece.shape, r, c)) return false;
-          return true;
+          return !canPlaceAnywhere(piece.shape);
         });
       }
 
