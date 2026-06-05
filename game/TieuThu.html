@@ -105,6 +105,12 @@
       box-shadow: inset 0 0 0 2px rgba(211, 59, 58, 0.8);
     }
 
+    .cell.help-selected {
+      background: rgba(16, 185, 129, 0.5) !important;
+      box-shadow: inset 0 0 0 3px #10b981 !important;
+      z-index: 2;
+    }
+
     .pieces-area {
       display: flex;
       gap: 15px;
@@ -150,6 +156,15 @@
       box-shadow: none;
     }
 
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
     button {
       background: #9ca3af;
       color: #fff;
@@ -161,7 +176,6 @@
       cursor: none;
       transition: background 0.2s, transform 0.1s;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      margin-top: 10px;
     }
 
     button:hover {
@@ -170,6 +184,59 @@
 
     button:active {
       transform: scale(0.97);
+    }
+
+    .round-btn {
+      position: relative;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      padding: 0;
+      background: #64748b;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .round-btn:hover {
+      background: #475569;
+    }
+
+    .round-btn:active {
+      transform: scale(0.95);
+    }
+
+    .round-btn img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .round-btn:disabled {
+      opacity: 0.5;
+      pointer-events: none;
+      background: #4b5563;
+    }
+
+    .badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #d33b3a;
+      color: white;
+      font-size: 12px;
+      font-weight: bold;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+      pointer-events: none;
     }
 
     .gameover {
@@ -206,7 +273,27 @@
       background: #6b7280;
     }
 
-    /* Responsive cho grid 10x10 */
+    .toast {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: #f1f5f4;
+      padding: 10px 22px;
+      border-radius: 30px;
+      font-weight: 500;
+      z-index: 200;
+      backdrop-filter: blur(4px);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
     @media (max-width: 400px) {
       :root {
         --cell-size: 30px;
@@ -237,13 +324,15 @@
       }
     }
 
-    /* Ẩn custom cursor trên mobile */
     @media (hover: none) and (pointer: coarse) {
       #customCursor {
         display: none;
       }
       body {
         cursor: auto;
+      }
+      button, .round-btn {
+        cursor: pointer;
       }
     }
   </style>
@@ -254,7 +343,18 @@
 
   <div class="grid" id="grid"></div>
   <div class="pieces-area" id="piecesArea"></div>
-  <button onclick="restartGame()">Chơi lại</button>
+
+  <div class="action-buttons">
+    <button onclick="restartGame()">Chơi lại</button>
+    <button class="round-btn" id="rollButton" onclick="performRoll()">
+      <img src="game/TieuThu/Help3.png" alt="Roll">
+      <span class="badge" id="rollBadge">2</span>
+    </button>
+    <button class="round-btn" id="help1Button" onclick="toggleHelp1()">
+      <img src="game/TieuThu/Help1.png" alt="Xóa vùng">
+      <span class="badge" id="help1Badge">1</span>
+    </button>
+  </div>
 
   <div class="gameover" id="gameover">
     <h2>Game Over</h2>
@@ -262,6 +362,7 @@
     <button onclick="restartGame()">Chơi lại</button>
   </div>
 
+  <div class="toast" id="toast"></div>
   <div id="customCursor" style="position:fixed; pointer-events:none; z-index:9999; width:32px; height:32px; background:url('Chi.png') center/contain no-repeat; transform:translate(-50%,-50%);"></div>
 
   <script>
@@ -281,6 +382,19 @@
       let totalPaws = 0;
       let currentPieces = [];
 
+      let rollsLeft = 2;
+      const maxRolls = 2;
+
+      let help1Remaining = 1;
+      const maxHelp1 = 1;
+
+      // Trạng thái trợ giúp 1
+      let helpMode = null; // 'select' khi đang chọn vùng
+      let isSelecting = false;
+      let selectStartRow = -1, selectStartCol = -1;
+      let selectEndRow = -1, selectEndCol = -1;
+      let selectedCells = []; // lưu chỉ số cell được chọn
+
       window.addEventListener('resize', () => {
         CELL_SIZE = getCSSVar('--cell-size') || 45;
         CELL_GAP = getCSSVar('--cell-gap') || 2;
@@ -289,7 +403,6 @@
         PIECE_GAP = getCSSVar('--piece-gap') || 2;
       });
 
-      // Phân loại khối
       const SHAPES_EASY = [
         [[0,0]],[[0,0],[0,1]],[[0,0],[1,0]],[[0,0],[0,1],[0,2]],[[0,0],[1,0],[2,0]],
         [[0,0],[0,1],[1,0]],[[0,0],[0,1],[1,1]],[[0,0],[1,0],[1,1]],[[0,1],[1,0],[1,1]],
@@ -307,6 +420,8 @@
         [[0,0],[0,1],[1,0],[1,1],[2,2]],[[0,2],[0,1],[1,1],[1,2],[2,0]]
       ];
 
+      const ALL_SHAPES = SHAPES_EASY.concat(SHAPES_HARD);
+
       const COLORS = [
         '#3B3C40', '#D98C5F', '#F2E3D5', '#7C6A5C', '#A3B5C6', '#D4A373', '#B5838D', '#E6B89C'
       ];
@@ -317,16 +432,20 @@
       const gameoverEl = document.getElementById('gameover');
       const finalScoreEl = document.getElementById('finalScore');
       const customCursor = document.getElementById('customCursor');
+      const rollButton = document.getElementById('rollButton');
+      const rollBadge = document.getElementById('rollBadge');
+      const help1Button = document.getElementById('help1Button');
+      const help1Badge = document.getElementById('help1Badge');
+      const toast = document.getElementById('toast');
+
       let cellElements = [];
 
-      // Trạng thái kéo desktop (không dùng drag API, chỉ dùng mouse events)
       let isDragging = false;
       let draggedPieceIndex = null;
       let dragPiece = null;
       let dragOffsetX = 0, dragOffsetY = 0;
       let previewCells = [];
 
-      // Touch
       let touchActive = false;
       let touchPieceIndex = null;
       let touchPiece = null;
@@ -341,25 +460,32 @@
 
       function updateCursor() {
         if (customCursor.style.display === 'none') return;
+        if (helpMode === 'select') {
+          setCursor('Chi.png');
+          return;
+        }
         if (isDragging) {
-          setCursor('Nam.png'); // grabbing
+          setCursor('Nam.png');
           return;
         }
         const x = parseInt(customCursor.style.left) || 0;
         const y = parseInt(customCursor.style.top) || 0;
         const el = document.elementFromPoint(x + 16, y + 16);
         if (el?.closest('.piece')) {
-          setCursor('Gio.png'); // grab
+          setCursor('Gio.png');
         } else {
-          setCursor('Chi.png'); // point
+          setCursor('Chi.png');
         }
       }
 
       document.addEventListener('mousemove', e => {
         customCursor.style.left = e.clientX + 'px';
         customCursor.style.top = e.clientY + 'px';
-        if (isDragging && dragPiece) {
+        if (isDragging && dragPiece && helpMode !== 'select') {
           handleDragMove(e.clientX, e.clientY);
+        }
+        if (helpMode === 'select' && isSelecting) {
+          handleHelpSelectMove(e.clientX, e.clientY);
         }
         updateCursor();
       });
@@ -377,6 +503,12 @@
             gridEl.appendChild(cell);
             cellElements.push(cell);
           }
+
+        gridEl.addEventListener('mousedown', onGridMouseDown);
+        gridEl.addEventListener('mouseup', onGridMouseUp);
+        gridEl.addEventListener('touchstart', onGridTouchStart, { passive: false });
+        gridEl.addEventListener('touchmove', onGridTouchMove, { passive: false });
+        gridEl.addEventListener('touchend', onGridTouchEnd);
       }
 
       function randomFilter() {
@@ -404,7 +536,13 @@
               delete cell.dataset.filter;
             }
             cell.classList.remove('preview');
+            cell.classList.remove('help-selected');
           }
+        if (helpMode === 'select' && selectedCells.length > 0) {
+          selectedCells.forEach(idx => {
+            if (cellElements[idx]) cellElements[idx].classList.add('help-selected');
+          });
+        }
       }
 
       // --- Pieces ---
@@ -449,10 +587,7 @@
           }
           el.appendChild(inner);
 
-          // Desktop: kéo bằng mouse events (không dùng drag API)
           el.addEventListener('mousedown', onMouseDown);
-
-          // Mobile: touch events
           el.addEventListener('touchstart', onTouchStart, { passive: false });
           el.addEventListener('touchmove', onTouchMove, { passive: false });
           el.addEventListener('touchend', onTouchEnd);
@@ -462,10 +597,10 @@
         });
       }
 
-      // ========== DESKTOP MOUSE DRAG (custom) ==========
+      // ========== DESKTOP MOUSE DRAG (pieces) ==========
       function onMouseDown(e) {
-        if (e.button !== 0) return; // chỉ chuột trái
-        if (isDragging || touchActive) return;
+        if (e.button !== 0) return;
+        if (isDragging || touchActive || helpMode === 'select') return;
         const pieceEl = e.currentTarget;
         draggedPieceIndex = parseInt(pieceEl.dataset.index);
         dragPiece = currentPieces[draggedPieceIndex];
@@ -480,13 +615,12 @@
         isDragging = true;
         updateCursor();
 
-        // Bắt sự kiện mouseup và mousemove toàn cục
         document.addEventListener('mousemove', onMouseMove);
         document.addEventListener('mouseup', onMouseUp);
       }
 
       function onMouseMove(e) {
-        if (!isDragging || !dragPiece) return;
+        if (!isDragging || !dragPiece || helpMode === 'select') return;
         e.preventDefault();
         handleDragMove(e.clientX, e.clientY);
       }
@@ -508,7 +642,7 @@
       }
 
       function onMouseUp(e) {
-        if (!isDragging) return;
+        if (!isDragging || helpMode === 'select') return;
         e.preventDefault();
         document.removeEventListener('mousemove', onMouseMove);
         document.removeEventListener('mouseup', onMouseUp);
@@ -540,9 +674,9 @@
         updateCursor();
       }
 
-      // ========== TOUCH DRAG (MOBILE) ==========
+      // ========== TOUCH DRAG (pieces) ==========
       function onTouchStart(e) {
-        if (isDragging) return;
+        if (isDragging || helpMode === 'select') return;
         e.preventDefault();
         const pieceEl = e.currentTarget;
         const touch = e.touches[0];
@@ -589,7 +723,7 @@
       }
 
       function onTouchMove(e) {
-        if (!touchActive || !touchPiece) return;
+        if (!touchActive || !touchPiece || helpMode === 'select') return;
         e.preventDefault();
         const touch = e.touches[0];
         updateTouchGhostPosition(touch.clientX, touch.clientY);
@@ -606,7 +740,7 @@
       }
 
       function onTouchEnd(e) {
-        if (!touchActive) return;
+        if (!touchActive || helpMode === 'select') return;
         e.preventDefault();
         const touch = e.changedTouches[0];
         let placed = false;
@@ -640,7 +774,195 @@
         }
       }
 
-      // ========== UTILS ==========
+      // ========== HELP 1: SELECTION (4x4) ==========
+      function toggleHelp1() {
+        if (help1Remaining <= 0) {
+          showToast('Đã hết lượt xóa vùng!');
+          return;
+        }
+
+        if (helpMode === 'select') {
+          if (selectedCells.length > 0) {
+            for (const idx of selectedCells) {
+              const r = Math.floor(idx / COLS);
+              const c = idx % COLS;
+              grid[r][c] = null;
+            }
+            help1Remaining--;
+            updateHelp1UI();
+            renderGrid();
+            showToast('Đã xóa vùng được chọn!');
+          } else {
+            showToast('Chưa chọn vùng nào, đã thoát chế độ.');
+          }
+          exitHelpMode();
+        } else {
+          if (isDragging || touchActive) {
+            showToast('Đang thao tác, không thể vào chế độ chọn.');
+            return;
+          }
+          helpMode = 'select';
+          clearHelpSelection();
+          updateCursor();
+          showToast('Kéo trên lưới để chọn vùng (dòng/cột/4x4). Nhấn lại nút để xóa.');
+        }
+      }
+
+      function exitHelpMode() {
+        helpMode = null;
+        clearHelpSelection();
+        updateCursor();
+      }
+
+      function clearHelpSelection() {
+        selectedCells.forEach(idx => {
+          if (cellElements[idx]) cellElements[idx].classList.remove('help-selected');
+        });
+        selectedCells = [];
+        isSelecting = false;
+        selectStartRow = selectEndRow = -1;
+        selectStartCol = selectEndCol = -1;
+      }
+
+      function onGridMouseDown(e) {
+        if (helpMode !== 'select') return;
+        e.preventDefault();
+        const rect = gridEl.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const col = Math.floor((x - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        const row = Math.floor((y - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
+          startHelpSelection(row, col);
+          document.addEventListener('mousemove', onHelpMouseMove);
+          document.addEventListener('mouseup', onHelpMouseUp);
+        }
+      }
+
+      function onHelpMouseMove(e) {
+        if (helpMode !== 'select' || !isSelecting) return;
+        e.preventDefault();
+        handleHelpSelectMove(e.clientX, e.clientY);
+      }
+
+      function onHelpMouseUp(e) {
+        if (helpMode !== 'select' || !isSelecting) return;
+        e.preventDefault();
+        document.removeEventListener('mousemove', onHelpMouseMove);
+        document.removeEventListener('mouseup', onHelpMouseUp);
+        finishHelpSelection();
+      }
+
+      function onGridMouseUp(e) {
+        // handled globally
+      }
+
+      function onGridTouchStart(e) {
+        if (helpMode !== 'select') return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        const rect = gridEl.getBoundingClientRect();
+        const x = touch.clientX - rect.left;
+        const y = touch.clientY - rect.top;
+        const col = Math.floor((x - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        const row = Math.floor((y - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
+          startHelpSelection(row, col);
+        }
+      }
+
+      function onGridTouchMove(e) {
+        if (helpMode !== 'select' || !isSelecting) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        handleHelpSelectMove(touch.clientX, touch.clientY);
+      }
+
+      function onGridTouchEnd(e) {
+        if (helpMode !== 'select' || !isSelecting) return;
+        e.preventDefault();
+        finishHelpSelection();
+      }
+
+      function startHelpSelection(row, col) {
+        clearHelpSelection();
+        selectStartRow = row;
+        selectStartCol = col;
+        selectEndRow = row;
+        selectEndCol = col;
+        isSelecting = true;
+        updateHelpSelection();
+      }
+
+      function handleHelpSelectMove(clientX, clientY) {
+        if (!isSelecting) return;
+        const rect = gridEl.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        const col = Math.floor((x - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        const row = Math.floor((y - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        const clampedRow = Math.max(0, Math.min(ROWS - 1, row));
+        const clampedCol = Math.max(0, Math.min(COLS - 1, col));
+        if (clampedRow !== selectEndRow || clampedCol !== selectEndCol) {
+          selectEndRow = clampedRow;
+          selectEndCol = clampedCol;
+          updateHelpSelection();
+        }
+      }
+
+      function finishHelpSelection() {
+        isSelecting = false;
+      }
+
+      function updateHelpSelection() {
+        selectedCells.forEach(idx => {
+          if (cellElements[idx]) cellElements[idx].classList.remove('help-selected');
+        });
+        selectedCells = [];
+
+        if (selectStartRow === -1) return;
+
+        let cells = [];
+        if (selectStartRow === selectEndRow && selectStartCol !== selectEndCol) {
+          // Hàng ngang
+          for (let c = 0; c < COLS; c++) {
+            cells.push(selectStartRow * COLS + c);
+          }
+        } else if (selectStartCol === selectEndCol && selectStartRow !== selectEndRow) {
+          // Cột dọc
+          for (let r = 0; r < ROWS; r++) {
+            cells.push(r * COLS + selectStartCol);
+          }
+        } else if (selectStartRow !== selectEndRow || selectStartCol !== selectEndCol) {
+          // Vùng 4x4 (thay vì 3x3)
+          const minRow = Math.min(selectStartRow, selectEndRow);
+          const minCol = Math.min(selectStartCol, selectEndCol);
+          const maxRow = Math.min(minRow + 3, ROWS - 1);
+          const maxCol = Math.min(minCol + 3, COLS - 1);
+          for (let r = minRow; r <= maxRow; r++) {
+            for (let c = minCol; c <= maxCol; c++) {
+              cells.push(r * COLS + c);
+            }
+          }
+        }
+        // Nếu start == end (cùng một ô) thì cells rỗng
+
+        selectedCells = cells;
+        selectedCells.forEach(idx => {
+          if (cellElements[idx]) cellElements[idx].classList.add('help-selected');
+        });
+      }
+
+      function updateHelp1UI() {
+        help1Badge.textContent = help1Remaining;
+        if (help1Remaining <= 0) {
+          help1Button.disabled = true;
+        } else {
+          help1Button.disabled = false;
+        }
+      }
+
+      // ========== UTILS (chung) ==========
       function clearPreviews() {
         previewCells.forEach(idx => {
           if (cellElements[idx]) cellElements[idx].classList.remove('preview');
@@ -730,10 +1052,133 @@
         scoreDisplay.textContent = totalPaws;
       }
 
+      // ========== ROLL LOGIC ==========
+      function performRoll() {
+        if (rollsLeft <= 0) {
+          showToast('Đã hết lượt roll!');
+          return;
+        }
+        if (helpMode === 'select') {
+          showToast('Đang ở chế độ chọn vùng, hãy thoát trước.');
+          return;
+        }
+
+        const { usefulShapes, normalShapes } = analyzeAllShapes();
+        const allPlaceableShapes = [...usefulShapes, ...normalShapes];
+
+        if (allPlaceableShapes.length === 0) {
+          showToast('Không có hình nào khả dụng! Giữ nguyên lượt roll.');
+          return;
+        }
+
+        let selectedShapes = [];
+        if (usefulShapes.length > 0) {
+          const usefulShape = usefulShapes[Math.floor(Math.random() * usefulShapes.length)];
+          selectedShapes.push(usefulShape);
+          for (let i = 0; i < 2; i++) {
+            const randomShape = allPlaceableShapes[Math.floor(Math.random() * allPlaceableShapes.length)];
+            selectedShapes.push(randomShape);
+          }
+        } else {
+          for (let i = 0; i < 3; i++) {
+            const randomShape = allPlaceableShapes[Math.floor(Math.random() * allPlaceableShapes.length)];
+            selectedShapes.push(randomShape);
+          }
+        }
+
+        currentPieces = selectedShapes.map(shape => ({
+          shape,
+          color: COLORS[Math.floor(Math.random() * COLORS.length)]
+        }));
+
+        renderPieces();
+        rollsLeft--;
+        updateRollUI();
+
+        if (isGameOver()) gameOver();
+      }
+
+      function analyzeAllShapes() {
+        const usefulShapes = [];
+        const normalShapes = [];
+
+        for (const shape of ALL_SHAPES) {
+          let placeable = false;
+          let triggersLine = false;
+
+          for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+              if (!canPlace(shape, r, c)) continue;
+              placeable = true;
+
+              const gridCopy = grid.map(row => [...row]);
+              for (const [dr, dc] of shape) {
+                gridCopy[r + dr][c + dc] = 'temp';
+              }
+
+              let lineFormed = false;
+              for (let row = 0; row < ROWS; row++) {
+                if (gridCopy[row].every(cell => cell !== null)) {
+                  lineFormed = true;
+                  break;
+                }
+              }
+              if (!lineFormed) {
+                for (let col = 0; col < COLS; col++) {
+                  if (gridCopy.every(row => row[col] !== null)) {
+                    lineFormed = true;
+                    break;
+                  }
+                }
+              }
+
+              if (lineFormed) {
+                triggersLine = true;
+                r = ROWS;
+                break;
+              }
+            }
+          }
+
+          if (placeable) {
+            if (triggersLine) {
+              usefulShapes.push(shape);
+            } else {
+              normalShapes.push(shape);
+            }
+          }
+        }
+
+        return { usefulShapes, normalShapes };
+      }
+
+      function updateRollUI() {
+        rollBadge.textContent = rollsLeft;
+        if (rollsLeft <= 0) {
+          rollButton.disabled = true;
+        } else {
+          rollButton.disabled = false;
+        }
+      }
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2000);
+      }
+
+      // ========== RESTART ==========
       function restartGame() {
         grid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
         totalPaws = 0;
         updateScore();
+        rollsLeft = maxRolls;
+        updateRollUI();
+        help1Remaining = maxHelp1;
+        updateHelp1UI();
+        exitHelpMode();
         generatePieces();
         renderGrid();
         gameoverEl.style.display = 'none';
@@ -743,10 +1188,11 @@
         draggedPieceIndex = null;
         dragPiece = null;
         touchActive = false;
-        if (pieceDragging) pieceDragging.classList.remove('dragging');
         updateCursor();
       }
       window.restartGame = restartGame;
+      window.performRoll = performRoll;
+      window.toggleHelp1 = toggleHelp1;
 
       createGrid();
       restartGame();
