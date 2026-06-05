@@ -34,6 +34,7 @@
       margin: 0;
       overflow: hidden;
       padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+      cursor: none;
     }
     #game-layout {
       display: flex;
@@ -80,11 +81,8 @@
       left: 0;
       width: 100%;
       height: 100%;
-      cursor: grab;
+      cursor: none;
       z-index: 5;
-    }
-    canvas:active {
-      cursor: grabbing;
     }
 
     /* ========== PANEL DESKTOP ========== */
@@ -131,7 +129,7 @@
       font-size: 0.8rem;
       border: 2px solid var(--border-color);
       background: var(--surface);
-      cursor: pointer;
+      cursor: none;
       transition: all 0.2s;
       text-transform: uppercase;
       font-weight: 600;
@@ -164,20 +162,20 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      aspect-ratio: 1 / 1;
-      width: 80%;
-      max-width: 180px;
+      width: 90%;
+      max-width: 220px;
       background: var(--surface);
       border: 2px solid var(--border-color);
       box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
-      cursor: pointer;
+      cursor: none;
       transition: all var(--transition);
       text-transform: uppercase;
       font-family: inherit;
       font-weight: 600;
       color: var(--text);
-      padding: 12px 8px;
+      padding: 18px 12px;
       gap: 6px;
+      border-radius: 4px;
     }
     .mode-btn:hover {
       background: var(--accent);
@@ -187,14 +185,14 @@
       transform: translate(1px, 1px);
     }
     .mode-btn .mode-title {
-      font-size: 1.1rem;
+      font-size: 1.3rem;
       font-weight: 800;
       line-height: 1.2;
     }
     .mode-btn .mode-desc {
-      font-size: 0.6rem;
+      font-size: 0.7rem;
       font-weight: 400;
-      opacity: 0.7;
+      opacity: 0.75;
       line-height: 1.3;
       white-space: normal;
       word-break: break-word;
@@ -210,7 +208,7 @@
       border: 2px solid var(--border-color);
       background: var(--surface);
       box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
-      cursor: pointer;
+      cursor: none;
       transition: all var(--transition);
       display: flex;
       flex-direction: column;
@@ -263,7 +261,7 @@
       border: 2px solid var(--border-color);
       font-family: inherit;
       font-weight: 600;
-      cursor: pointer;
+      cursor: none;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
@@ -319,6 +317,18 @@
       background: var(--accent) !important;
       color: #fff !important;
       border-color: var(--accent) !important;
+    }
+
+    /* Custom cursor */
+    #customCursor {
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      width: 32px;
+      height: 32px;
+      background: url('Chi.png') center/contain no-repeat;
+      transform: translate(-50%, -50%);
+      display: block;
     }
 
     /* ========== MOBILE HEADER & FOOTER ========== */
@@ -424,21 +434,24 @@
       }
       .mode-list {
         flex-direction: row;
-        gap: 4px;
+        gap: 8px;
       }
       .mode-btn {
         flex: 1 1 0;
         aspect-ratio: auto;
-        padding: 6px 4px;
-        font-size: 0.65rem;
-        gap: 3px;
+        padding: 16px 8px;
+        font-size: 0.8rem;
+        gap: 4px;
+        max-width: none;
+        width: auto;
+        border-radius: 4px;
       }
       .mode-btn .mode-title {
-        font-size: 0.8rem;
+        font-size: 1rem;
       }
       .mode-btn .mode-desc {
-        font-size: 0.5rem;
-        opacity: 0.8;
+        font-size: 0.6rem;
+        opacity: 0.85;
       }
       .action-group button {
         padding: 8px 4px;
@@ -476,10 +489,16 @@
       .mode-switch {
         flex-wrap: wrap;
       }
+
+      #customCursor {
+        display: none;
+      }
     }
   </style>
 </head>
 <body>
+  <div id="customCursor"></div>
+
   <div id="game-layout" class="selecting-mode">
     <!-- MOBILE HEADER -->
     <div id="mobile-header">
@@ -505,7 +524,6 @@
         </div>
         <div class="mode-description">Chọn mốc thắng:</div>
         <div class="mode-list">
-          <button class="mode-btn" data-mode="4"><span class="mode-title">Mốc 4</span><span class="mode-desc">4 quân</span></button>
           <button class="mode-btn" data-mode="5"><span class="mode-title">Mốc 5</span><span class="mode-desc">5 quân</span></button>
           <button class="mode-btn" data-mode="6"><span class="mode-title">Mốc 6</span><span class="mode-desc">6 quân</span></button>
         </div>
@@ -537,7 +555,6 @@
           </div>
           <div class="mode-description">Chọn mốc thắng:</div>
           <div class="mode-list">
-            <button class="mode-btn" data-mode="4"><span class="mode-title">Mốc 4</span><span class="mode-desc">Thắng khi xếp 4 quân liên tiếp</span></button>
             <button class="mode-btn" data-mode="5"><span class="mode-title">Mốc 5</span><span class="mode-desc">Thắng khi xếp 5 quân liên tiếp</span></button>
             <button class="mode-btn" data-mode="6"><span class="mode-title">Mốc 6</span><span class="mode-desc">Thắng khi xếp 6 quân liên tiếp</span></button>
           </div>
@@ -576,7 +593,7 @@
       let gameState = new Map();
       let history = [];
       let currentPlayer = "Tieu";
-      let undoTieuRemaining = Infinity;  // vô hạn khi đấu máy, sẽ gán lại trong resetGame
+      let undoTieuRemaining = Infinity;
       let undoTungRemaining = 3;
       let gameOver = false;
       let winner = null;
@@ -584,10 +601,13 @@
       let preWinCamera = null;
       let lastMovePos = null;
       let gameActive = false;
-      let gameMode = 'pvp'; // 'pvp' hoặc 'ai'
+      let gameMode = 'pvp';
       let allowInput = true;
       let aiThinking = false;
       let rafId = null;
+
+      const customCursor = document.getElementById('customCursor');
+      let isMouseDown = false;
 
       const canvas = document.getElementById("boardCanvas");
       const boardContainer = document.getElementById("board-container");
@@ -633,6 +653,45 @@
 
       const gameLayout = document.getElementById("game-layout");
       const panel = document.getElementById("panel");
+
+      function setCursor(img) {
+        if (customCursor.style.display === 'none') return;
+        customCursor.style.backgroundImage = `url('${img}')`;
+      }
+
+      function updateCursor() {
+        if (customCursor.style.display === 'none') return;
+        let cursorImg = 'Chi.png';
+        if (isMouseDown) {
+          const el = document.elementFromPoint(
+            parseInt(customCursor.style.left) + 16,
+            parseInt(customCursor.style.top) + 16
+          );
+          if (el && (el.closest('canvas') || el.closest('#board-inner'))) {
+            cursorImg = 'Nam.png';
+          }
+        } else {
+          const x = parseInt(customCursor.style.left) || 0;
+          const y = parseInt(customCursor.style.top) || 0;
+          const el = document.elementFromPoint(x + 16, y + 16);
+          if (el && (el.closest('canvas') || el.closest('button') || el.closest('.mode-btn') || el.closest('.switch-btn') || el.closest('.undo-btn'))) {
+            cursorImg = 'Gio.png';
+          }
+        }
+        setCursor(cursorImg);
+      }
+
+      document.addEventListener('mousemove', (e) => {
+        if (customCursor.style.display === 'none') return;
+        customCursor.style.left = e.clientX + 'px';
+        customCursor.style.top = e.clientY + 'px';
+        updateCursor();
+      });
+
+      if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+        customCursor.style.display = 'none';
+        document.body.style.cursor = 'auto';
+      }
 
       function setGameMode(mode) {
         gameMode = mode;
@@ -846,7 +905,6 @@
         updateUndoButtons();
         requestDrawBoard();
 
-        // Nếu là chế độ AI và đến lượt máy
         if (gameMode === 'ai' && currentPlayer === 'Tung' && !gameOver) {
           scheduleAIMove();
         }
@@ -993,7 +1051,6 @@
       function undoNormal(player) {
         if (!gameActive || history.length === 0) return;
         if (gameMode === 'ai') {
-          // AI mode: Tiêu undo, xoá cặp Tùng + Tiêu gần nhất
           if (player !== 'Tieu') return;
           if (history.length < 2) return;
           const last = history[history.length-1];
@@ -1004,7 +1061,6 @@
           gameState.delete(`${prev.col},${prev.row}`);
           history.pop(); history.pop();
 
-          // Không giới hạn số lần undo (undotieuRemaining = Infinity, không giảm)
           if (undoTieuRemaining !== Infinity) undoTieuRemaining--;
 
           lastMovePos = history.length > 0 ? {col: history[history.length-1].col, row: history[history.length-1].row} : null;
@@ -1015,7 +1071,6 @@
           return;
         }
 
-        // PvP
         const last = history[history.length - 1];
         if (last.player !== player) return;
         if ((player === "Tieu" && undoTieuRemaining <= 0) || (player === "Tung" && undoTungRemaining <= 0)) return;
@@ -1098,11 +1153,9 @@
       }
 
       function updateUndoButtons() {
-        // Hiển thị số lượt undo
         if (gameMode === 'ai') {
           undoTieuCountSpan.textContent = '∞';
           mobileUndoTieuCount.textContent = '∞';
-          // Ẩn nút Tùng
           undoTungBtn.style.display = 'none';
           mobileUndoTungBtn.style.display = 'none';
 
@@ -1125,7 +1178,6 @@
           return;
         }
 
-        // PvP
         undoTungBtn.style.display = '';
         mobileUndoTungBtn.style.display = '';
         undoTieuCountSpan.textContent = undoTieuRemaining;
@@ -1165,7 +1217,6 @@
         gameState.clear();
         history = [];
         currentPlayer = "Tieu";
-        // Khi đấu máy, undo Tiêu không giới hạn
         undoTieuRemaining = (gameMode === 'ai') ? Infinity : 3;
         undoTungRemaining = 3;
         gameOver = false;
@@ -1243,13 +1294,17 @@
         };
       }
 
-      /* ========== CẢM ỨNG & ZOOM ========== */
       let isPanning = false, lastPan = null, panStart = null, panStartTime = 0;
       let isPinching = false, pinchStartDist = 0, pinchStartScale = 1, pinchStartMid = null;
 
       function onPointerDown(e) {
         if (!gameActive || !allowInput) return;
         e.preventDefault();
+        if (e.type === 'mousedown') {
+          isMouseDown = true;
+          updateCursor();
+        }
+
         if (e.touches && e.touches.length === 2) {
           isPinching = true; isPanning = false;
           const dx = e.touches[0].clientX - e.touches[1].clientX;
@@ -1307,6 +1362,11 @@
       function onPointerUp(e) {
         if (!gameActive || !allowInput) return;
         e.preventDefault();
+        if (e.type === 'mouseup') {
+          isMouseDown = false;
+          updateCursor();
+        }
+
         if (isPinching && e.touches && e.touches.length === 1) {
           isPinching = false;
           const pos = getCanvasPos(e);
