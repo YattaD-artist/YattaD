@@ -2,14 +2,16 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tiêu Thụ Măng Cụt</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Thu Thập Măng Cụt</title>
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/icons/icon32.png">
 
   <style>
     * {
       box-sizing: border-box;
       user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -19,23 +21,26 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 30px 20px;
+      padding: 20px 10px;
       margin: 0;
       min-height: 100vh;
       cursor: none;
+      touch-action: manipulation;
     }
 
     h1 {
       margin: 0 0 5px 0;
-      font-size: 2rem;
+      font-size: clamp(1.5rem, 5vw, 2rem);
       font-weight: 600;
       letter-spacing: 1px;
+      text-align: center;
     }
 
     .score {
-      font-size: 1.3rem;
-      margin-bottom: 20px;
+      font-size: clamp(1rem, 3.5vw, 1.3rem);
+      margin-bottom: 15px;
       color: #f1f5f4;
+      text-align: center;
     }
 
     .score span {
@@ -45,16 +50,17 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(8, 50px);
-      grid-template-rows: repeat(8, 50px);
-      gap: 2px;
+      grid-template-columns: repeat(10, var(--cell-size, 45px));
+      grid-template-rows: repeat(10, var(--cell-size, 45px));
+      gap: var(--cell-gap, 2px);
       background: #f1f5f4;
-      padding: 4px;
+      padding: var(--grid-pad, 4px);
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
       width: fit-content;
       margin: 0 auto;
       position: relative;
+      touch-action: none;
     }
 
     .grid::before {
@@ -69,10 +75,10 @@
     }
 
     .cell {
-      width: 50px;
-      height: 50px;
+      width: var(--cell-size, 45px);
+      height: var(--cell-size, 45px);
       background-color: #ffffff;
-      border-radius: 6px;
+      border-radius: 5px;
       position: relative;
       z-index: 0;
       transition: background-color 0.1s ease;
@@ -101,19 +107,25 @@
 
     .pieces-area {
       display: flex;
-      gap: 24px;
-      margin: 24px 0 20px 0;
+      gap: 15px;
+      margin: 20px 0;
       justify-content: center;
       flex-wrap: wrap;
+      padding: 0 10px;
     }
 
     .piece {
       padding: 6px;
       background: rgba(241, 245, 244, 0.08);
       border-radius: 12px;
-      transition: transform 0.1s ease;
+      transition: opacity 0.2s;
       display: inline-block;
       cursor: none;
+      touch-action: none;
+    }
+
+    .piece.dragging {
+      opacity: 0.4;
     }
 
     .piece-inner {
@@ -122,12 +134,12 @@
 
     .piece-row {
       display: flex;
-      gap: 2px;
+      gap: var(--piece-gap, 2px);
     }
 
     .piece-cell {
-      width: 40px;
-      height: 40px;
+      width: var(--piece-size, 36px);
+      height: var(--piece-size, 36px);
       background: var(--piece-color, #d33b3a) url('TieuThu/Paw.png') center/80% no-repeat;
       border-radius: 5px;
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
@@ -143,12 +155,13 @@
       color: #fff;
       border: none;
       padding: 12px 32px;
-      font-size: 1.1rem;
+      font-size: clamp(1rem, 3.5vw, 1.1rem);
       font-weight: 600;
       border-radius: 30px;
       cursor: none;
       transition: background 0.2s, transform 0.1s;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      margin-top: 10px;
     }
 
     button:hover {
@@ -166,14 +179,16 @@
       transform: translate(-50%, -50%);
       background: rgba(0, 43, 62, 0.95);
       color: #f1f5f4;
-      padding: 30px 50px;
+      padding: 25px 40px;
       border-radius: 20px;
       text-align: center;
       border: 1px solid #d33b3a;
       display: none;
-      z-index: 10;
+      z-index: 100;
       backdrop-filter: blur(4px);
       cursor: none;
+      width: 90%;
+      max-width: 400px;
     }
 
     .gameover h2 {
@@ -190,22 +205,60 @@
     .gameover button:hover {
       background: #6b7280;
     }
+
+    /* Responsive cho grid 10x10 */
+    @media (max-width: 400px) {
+      :root {
+        --cell-size: 30px;
+        --cell-gap: 1.5px;
+        --grid-pad: 3px;
+        --piece-size: 26px;
+        --piece-gap: 1.5px;
+      }
+    }
+
+    @media (min-width: 401px) and (max-width: 600px) {
+      :root {
+        --cell-size: 36px;
+        --cell-gap: 2px;
+        --grid-pad: 4px;
+        --piece-size: 30px;
+        --piece-gap: 2px;
+      }
+    }
+
+    @media (min-width: 601px) {
+      :root {
+        --cell-size: 45px;
+        --cell-gap: 2px;
+        --grid-pad: 4px;
+        --piece-size: 36px;
+        --piece-gap: 2px;
+      }
+    }
+
+    /* Ẩn custom cursor trên mobile */
+    @media (hover: none) and (pointer: coarse) {
+      #customCursor {
+        display: none;
+      }
+      body {
+        cursor: auto;
+      }
+    }
   </style>
 </head>
 <body>
-
-  <h1>Tiêu Thụ Măng Cụt</h1>
-  <div class="score">Số Măng Cụt đã tiêu thụ: <span id="scoreDisplay">0</span></div>
+  <h1>Thu Thập Măng Cụt</h1>
+  <div class="score">Số Măng Cụt đã thu thập: <span id="scoreDisplay">0</span></div>
 
   <div class="grid" id="grid"></div>
-
   <div class="pieces-area" id="piecesArea"></div>
-
   <button onclick="restartGame()">Chơi lại</button>
 
   <div class="gameover" id="gameover">
     <h2>Game Over</h2>
-    <p>Số Măng Cụt đã tiêu thụ: <span id="finalScore"></span></p>
+    <p>Số Măng Cụt đã thu thập: <span id="finalScore"></span></p>
     <button onclick="restartGame()">Chơi lại</button>
   </div>
 
@@ -213,33 +266,49 @@
 
   <script>
     (function() {
-      const ROWS = 8, COLS = 8;
-      const CELL_SIZE = 50, CELL_GAP = 2, GRID_PADDING = 4, PIECE_CELL_SIZE = 40;
+      function getCSSVar(name) {
+        return parseFloat(getComputedStyle(document.documentElement).getPropertyValue(name).trim());
+      }
+
+      let CELL_SIZE = getCSSVar('--cell-size') || 45;
+      let CELL_GAP = getCSSVar('--cell-gap') || 2;
+      let GRID_PADDING = getCSSVar('--grid-pad') || 4;
+      let PIECE_CELL_SIZE = getCSSVar('--piece-size') || 36;
+      let PIECE_GAP = getCSSVar('--piece-gap') || 2;
+
+      const ROWS = 10, COLS = 10;
       let grid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
       let totalPaws = 0;
       let currentPieces = [];
 
-      const SHAPES = [
+      window.addEventListener('resize', () => {
+        CELL_SIZE = getCSSVar('--cell-size') || 45;
+        CELL_GAP = getCSSVar('--cell-gap') || 2;
+        GRID_PADDING = getCSSVar('--grid-pad') || 4;
+        PIECE_CELL_SIZE = getCSSVar('--piece-size') || 36;
+        PIECE_GAP = getCSSVar('--piece-gap') || 2;
+      });
+
+      // Phân loại khối
+      const SHAPES_EASY = [
         [[0,0]],[[0,0],[0,1]],[[0,0],[1,0]],[[0,0],[0,1],[0,2]],[[0,0],[1,0],[2,0]],
         [[0,0],[0,1],[1,0]],[[0,0],[0,1],[1,1]],[[0,0],[1,0],[1,1]],[[0,1],[1,0],[1,1]],
+        [[0,0],[1,1]],[[0,1],[1,0]]
+      ];
+      const SHAPES_HARD = [
         [[0,0],[0,1],[0,2],[1,1]],[[0,0],[0,1],[1,0],[1,1]],[[0,0],[0,1],[0,2],[0,3]],
         [[0,0],[1,0],[2,0],[3,0]],[[0,0],[0,1],[0,2],[1,0]],[[0,0],[1,0],[2,0],[2,1]],
         [[0,2],[1,0],[1,1],[1,2]],[[0,0],[0,1],[1,1],[1,2]],[[0,1],[0,2],[1,0],[1,1]],
-        [[0,0],[1,1]],[[0,1],[1,0]],[[0,0],[1,1],[2,2]],[[0,2],[1,1],[2,0]],
-        [[0,0],[0,1],[1,2]],[[0,1],[1,0],[1,2]],[[0,0],[1,1],[2,0]],[[0,2],[1,1],[2,2]],
-        [[0,0],[0,2],[1,1]],[[0,0],[1,1],[2,1],[2,2]],[[0,1],[1,0],[1,1],[2,0]]
+        [[0,0],[1,1],[2,2]],[[0,2],[1,1],[2,0]],[[0,0],[0,1],[1,2]],[[0,1],[1,0],[1,2]],
+        [[0,0],[1,1],[2,0]],[[0,2],[1,1],[2,2]],[[0,0],[0,2],[1,1]],[[0,0],[1,1],[2,1],[2,2]],
+        [[0,1],[1,0],[1,1],[2,0]],[[0,1],[1,0],[1,1],[1,2],[2,1]],[[0,0],[0,1],[0,2],[1,1],[2,1]],
+        [[0,1],[1,0],[1,1],[2,1],[3,1]],[[0,0],[1,0],[2,0],[2,1],[2,2]],[[0,2],[1,2],[2,0],[2,1],[2,2]],
+        [[0,0],[0,1],[1,1],[2,1],[2,0]],[[0,0],[0,2],[1,0],[1,1],[1,2]],[[0,0],[0,1],[0,2],[1,0],[1,2]],
+        [[0,0],[0,1],[1,0],[1,1],[2,2]],[[0,2],[0,1],[1,1],[1,2],[2,0]]
       ];
 
-      // Bộ màu "mèo" - 8 màu lấy cảm hứng từ màu lông mèo
       const COLORS = [
-        '#3B3C40', // Xám đen (mèo mun)
-        '#D98C5F', // Cam gừng (mèo vàng)
-        '#F2E3D5', // Kem trắng (mèo trắng)
-        '#7C6A5C', // Nâu tabby (mèo mướp)
-        '#A3B5C6', // Xám xanh (mèo Nga)
-        '#D4A373', // Vàng mướp nhạt
-        '#B5838D', // Hồng đệm thịt
-        '#E6B89C'  // Da mèo hồng nhạt
+        '#3B3C40', '#D98C5F', '#F2E3D5', '#7C6A5C', '#A3B5C6', '#D4A373', '#B5838D', '#E6B89C'
       ];
 
       const gridEl = document.getElementById('grid');
@@ -250,36 +319,61 @@
       const customCursor = document.getElementById('customCursor');
       let cellElements = [];
 
-      const dragCanvas = document.createElement('canvas');
-      dragCanvas.style.display = 'none';
-      document.body.appendChild(dragCanvas);
+      // Trạng thái kéo desktop (không dùng drag API, chỉ dùng mouse events)
+      let isDragging = false;
+      let draggedPieceIndex = null;
+      let dragPiece = null;
+      let dragOffsetX = 0, dragOffsetY = 0;
+      let previewCells = [];
+
+      // Touch
+      let touchActive = false;
+      let touchPieceIndex = null;
+      let touchPiece = null;
+      let touchOffsetX = 0, touchOffsetY = 0;
+      let touchGhost = null;
 
       // --- Cursor ---
-      let isDragging = false;
-      function setCursor(img) { customCursor.style.backgroundImage = `url('${img}')`; }
-      function updateCursor() {
-        if (isDragging) { setCursor('Nam.png'); return; }
-        const x = parseInt(customCursor.style.left)||0, y = parseInt(customCursor.style.top)||0;
-        const el = document.elementFromPoint(x+16, y+16);
-        setCursor(el?.closest('.piece') ? 'Gio.png' : 'Chi.png');
+      function setCursor(img) {
+        if (customCursor.style.display === 'none') return;
+        customCursor.style.backgroundImage = `url('${img}')`;
       }
+
+      function updateCursor() {
+        if (customCursor.style.display === 'none') return;
+        if (isDragging) {
+          setCursor('Nam.png'); // grabbing
+          return;
+        }
+        const x = parseInt(customCursor.style.left) || 0;
+        const y = parseInt(customCursor.style.top) || 0;
+        const el = document.elementFromPoint(x + 16, y + 16);
+        if (el?.closest('.piece')) {
+          setCursor('Gio.png'); // grab
+        } else {
+          setCursor('Chi.png'); // point
+        }
+      }
+
       document.addEventListener('mousemove', e => {
-        customCursor.style.left = e.clientX+'px';
-        customCursor.style.top = e.clientY+'px';
+        customCursor.style.left = e.clientX + 'px';
+        customCursor.style.top = e.clientY + 'px';
+        if (isDragging && dragPiece) {
+          handleDragMove(e.clientX, e.clientY);
+        }
         updateCursor();
       });
-      function dragStartCursor() { isDragging = true; setCursor('Nam.png'); }
-      function dragEndCursor() { isDragging = false; updateCursor(); }
 
       // --- Grid ---
       function createGrid() {
         gridEl.innerHTML = '';
         cellElements = [];
-        for (let r=0; r<ROWS; r++)
-          for (let c=0; c<COLS; c++) {
+        for (let r = 0; r < ROWS; r++)
+          for (let c = 0; c < COLS; c++) {
             const cell = document.createElement('div');
             cell.className = 'cell';
-            cell.dataset.row = r; cell.dataset.col = c;
+            cell.dataset.row = r;
+            cell.dataset.col = c;
             gridEl.appendChild(cell);
             cellElements.push(cell);
           }
@@ -293,9 +387,11 @@
       }
 
       function renderGrid() {
-        for (let r=0; r<ROWS; r++)
-          for (let c=0; c<COLS; c++) {
-            const idx = r*COLS+c, cell = cellElements[idx], color = grid[r][c];
+        for (let r = 0; r < ROWS; r++)
+          for (let c = 0; c < COLS; c++) {
+            const idx = r * COLS + c;
+            const cell = cellElements[idx];
+            const color = grid[r][c];
             if (color) {
               cell.classList.add('filled');
               cell.style.setProperty('--color', color);
@@ -313,137 +409,284 @@
 
       // --- Pieces ---
       function randomPiece() {
-        return { shape: SHAPES[Math.floor(Math.random()*SHAPES.length)], color: COLORS[Math.floor(Math.random()*COLORS.length)] };
+        const threshold = totalPaws < 150 ? 0.8 : 0.5;
+        const shape = Math.random() < threshold
+          ? SHAPES_EASY[Math.floor(Math.random() * SHAPES_EASY.length)]
+          : SHAPES_HARD[Math.floor(Math.random() * SHAPES_HARD.length)];
+        return {
+          shape,
+          color: COLORS[Math.floor(Math.random() * COLORS.length)]
+        };
       }
-      function generatePieces() { currentPieces = [randomPiece(), randomPiece(), randomPiece()]; renderPieces(); }
+
+      function generatePieces() {
+        currentPieces = [randomPiece(), randomPiece(), randomPiece()];
+        renderPieces();
+      }
 
       function renderPieces() {
         piecesArea.innerHTML = '';
         currentPieces.forEach((piece, idx) => {
           const el = document.createElement('div');
-          el.className = 'piece'; el.draggable = true; el.dataset.index = idx;
+          el.className = 'piece';
+          el.dataset.index = idx;
           el.style.setProperty('--piece-color', piece.color);
-          const inner = document.createElement('div'); inner.className = 'piece-inner';
-          const rows = Math.max(...piece.shape.map(p=>p[0]))+1, cols = Math.max(...piece.shape.map(p=>p[1]))+1;
-          for (let r=0; r<rows; r++) {
-            const rowDiv = document.createElement('div'); rowDiv.className = 'piece-row';
-            for (let c=0; c<cols; c++) {
-              const cellDiv = document.createElement('div'); cellDiv.className = 'piece-cell';
-              if (!piece.shape.some(([pr,pc])=>pr===r&&pc===c)) cellDiv.classList.add('empty');
+          const inner = document.createElement('div');
+          inner.className = 'piece-inner';
+          const rows = Math.max(...piece.shape.map(p => p[0])) + 1;
+          const cols = Math.max(...piece.shape.map(p => p[1])) + 1;
+          for (let r = 0; r < rows; r++) {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'piece-row';
+            for (let c = 0; c < cols; c++) {
+              const cellDiv = document.createElement('div');
+              cellDiv.className = 'piece-cell';
+              if (!piece.shape.some(([pr, pc]) => pr === r && pc === c))
+                cellDiv.classList.add('empty');
               rowDiv.appendChild(cellDiv);
             }
             inner.appendChild(rowDiv);
           }
           el.appendChild(inner);
-          el.addEventListener('dragstart', onDragStart);
-          el.addEventListener('dragend', onDragEnd);
+
+          // Desktop: kéo bằng mouse events (không dùng drag API)
+          el.addEventListener('mousedown', onMouseDown);
+
+          // Mobile: touch events
+          el.addEventListener('touchstart', onTouchStart, { passive: false });
+          el.addEventListener('touchmove', onTouchMove, { passive: false });
+          el.addEventListener('touchend', onTouchEnd);
+          el.addEventListener('touchcancel', onTouchEnd);
+
           piecesArea.appendChild(el);
         });
       }
 
-      // --- Drag & Drop ---
-      let draggedPieceIndex = null, dragOffsetX = 0, dragOffsetY = 0, dragPiece = null;
-
-      function onDragStart(e) {
+      // ========== DESKTOP MOUSE DRAG (custom) ==========
+      function onMouseDown(e) {
+        if (e.button !== 0) return; // chỉ chuột trái
+        if (isDragging || touchActive) return;
         const pieceEl = e.currentTarget;
         draggedPieceIndex = parseInt(pieceEl.dataset.index);
         dragPiece = currentPieces[draggedPieceIndex];
         if (!dragPiece) return;
-        dragStartCursor();
-        const inner = pieceEl.querySelector('.piece-inner');
-        const rect = inner.getBoundingClientRect();
-        dragOffsetX = e.clientX - rect.left;
-        dragOffsetY = e.clientY - rect.top;
-        createDragImage(dragPiece, dragOffsetX, dragOffsetY, e);
-        pieceEl.style.opacity = '0.4';
+
+        e.preventDefault();
+        const pieceRect = pieceEl.getBoundingClientRect();
+        dragOffsetX = e.clientX - pieceRect.left;
+        dragOffsetY = e.clientY - pieceRect.top;
+
+        pieceEl.classList.add('dragging');
+        isDragging = true;
+        updateCursor();
+
+        // Bắt sự kiện mouseup và mousemove toàn cục
+        document.addEventListener('mousemove', onMouseMove);
+        document.addEventListener('mouseup', onMouseUp);
       }
 
-      function createDragImage(piece, offX, offY, event) {
-        const shape = piece.shape, color = piece.color;
-        const rows = Math.max(...shape.map(p=>p[0]))+1, cols = Math.max(...shape.map(p=>p[1]))+1;
-        const canvas = dragCanvas;
-        canvas.width = cols*PIECE_CELL_SIZE; canvas.height = rows*PIECE_CELL_SIZE;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        ctx.fillStyle = color;
-        for (const [r,c] of shape) ctx.fillRect(c*PIECE_CELL_SIZE, r*PIECE_CELL_SIZE, PIECE_CELL_SIZE, PIECE_CELL_SIZE);
-        event.dataTransfer.setDragImage(canvas, offX, offY);
+      function onMouseMove(e) {
+        if (!isDragging || !dragPiece) return;
+        e.preventDefault();
+        handleDragMove(e.clientX, e.clientY);
       }
 
-      function onDragEnd(e) {
-        e.currentTarget.style.opacity = '1';
-        draggedPieceIndex = null; dragPiece = null;
+      function handleDragMove(clientX, clientY) {
+        const gridRect = gridEl.getBoundingClientRect();
+        const overGrid = (clientX >= gridRect.left && clientX <= gridRect.right &&
+                          clientY >= gridRect.top && clientY <= gridRect.bottom);
+        if (overGrid) {
+          const pos = getGridPositionFromClient(clientX, clientY, dragOffsetX, dragOffsetY);
+          if (canPlace(dragPiece.shape, pos.row, pos.col)) {
+            showPreview(dragPiece.shape, pos.row, pos.col);
+          } else {
+            clearPreviews();
+          }
+        } else {
+          clearPreviews();
+        }
+      }
+
+      function onMouseUp(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+
+        const pieceEl = piecesArea.querySelector(`.piece[data-index='${draggedPieceIndex}']`);
+        if (pieceEl) pieceEl.classList.remove('dragging');
+
+        const gridRect = gridEl.getBoundingClientRect();
+        const dropOnGrid = (e.clientX >= gridRect.left && e.clientX <= gridRect.right &&
+                            e.clientY >= gridRect.top && e.clientY <= gridRect.bottom);
+        if (dropOnGrid && dragPiece) {
+          const pos = getGridPositionFromClient(e.clientX, e.clientY, dragOffsetX, dragOffsetY);
+          if (canPlace(dragPiece.shape, pos.row, pos.col)) {
+            placePiece(dragPiece.shape, dragPiece.color, pos.row, pos.col);
+            currentPieces.splice(draggedPieceIndex, 1);
+            renderPieces();
+            checkClearLines();
+            renderGrid();
+            updateScore();
+            if (currentPieces.length === 0) generatePieces();
+            if (isGameOver()) gameOver();
+          }
+        }
+
         clearPreviews();
-        dragEndCursor();
+        isDragging = false;
+        draggedPieceIndex = null;
+        dragPiece = null;
+        updateCursor();
       }
 
-      let previewCells = [];
+      // ========== TOUCH DRAG (MOBILE) ==========
+      function onTouchStart(e) {
+        if (isDragging) return;
+        e.preventDefault();
+        const pieceEl = e.currentTarget;
+        const touch = e.touches[0];
+        touchPieceIndex = parseInt(pieceEl.dataset.index);
+        touchPiece = currentPieces[touchPieceIndex];
+        if (!touchPiece) return;
+
+        createTouchGhost(touchPiece, pieceEl);
+        const pieceRect = pieceEl.getBoundingClientRect();
+        touchOffsetX = touch.clientX - pieceRect.left;
+        touchOffsetY = touch.clientY - pieceRect.top;
+        pieceEl.classList.add('dragging');
+        touchActive = true;
+        updateTouchGhostPosition(touch.clientX, touch.clientY);
+        if (customCursor.style.display !== 'none') customCursor.style.display = 'none';
+      }
+
+      function createTouchGhost(piece, sourceEl) {
+        removeTouchGhost();
+        touchGhost = document.createElement('div');
+        touchGhost.className = 'piece';
+        touchGhost.style.position = 'fixed';
+        touchGhost.style.zIndex = '1000';
+        touchGhost.style.pointerEvents = 'none';
+        touchGhost.style.opacity = '0.85';
+        touchGhost.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
+        touchGhost.style.setProperty('--piece-color', piece.color);
+        const innerClone = sourceEl.querySelector('.piece-inner').cloneNode(true);
+        touchGhost.appendChild(innerClone);
+        document.body.appendChild(touchGhost);
+      }
+
+      function updateTouchGhostPosition(clientX, clientY) {
+        if (!touchGhost) return;
+        touchGhost.style.left = (clientX - touchOffsetX) + 'px';
+        touchGhost.style.top = (clientY - touchOffsetY) + 'px';
+      }
+
+      function removeTouchGhost() {
+        if (touchGhost) {
+          touchGhost.remove();
+          touchGhost = null;
+        }
+      }
+
+      function onTouchMove(e) {
+        if (!touchActive || !touchPiece) return;
+        e.preventDefault();
+        const touch = e.touches[0];
+        updateTouchGhostPosition(touch.clientX, touch.clientY);
+
+        const pos = getGridPositionFromClient(touch.clientX, touch.clientY, touchOffsetX, touchOffsetY);
+        const gridRect = gridEl.getBoundingClientRect();
+        const overGrid = (touch.clientX >= gridRect.left && touch.clientX <= gridRect.right &&
+                          touch.clientY >= gridRect.top && touch.clientY <= gridRect.bottom);
+        if (overGrid && canPlace(touchPiece.shape, pos.row, pos.col)) {
+          showPreview(touchPiece.shape, pos.row, pos.col);
+        } else {
+          clearPreviews();
+        }
+      }
+
+      function onTouchEnd(e) {
+        if (!touchActive) return;
+        e.preventDefault();
+        const touch = e.changedTouches[0];
+        let placed = false;
+        if (touchPiece) {
+          const pos = getGridPositionFromClient(touch.clientX, touch.clientY, touchOffsetX, touchOffsetY);
+          if (canPlace(touchPiece.shape, pos.row, pos.col)) {
+            placePiece(touchPiece.shape, touchPiece.color, pos.row, pos.col);
+            currentPieces.splice(touchPieceIndex, 1);
+            renderPieces();
+            checkClearLines();
+            renderGrid();
+            updateScore();
+            placed = true;
+          }
+        }
+        removeTouchGhost();
+        if (touchPieceIndex !== null && currentPieces[touchPieceIndex]) {
+          const pieceEl = piecesArea.querySelector(`.piece[data-index='${touchPieceIndex}']`);
+          if (pieceEl) pieceEl.classList.remove('dragging');
+        }
+        clearPreviews();
+        touchActive = false;
+        touchPieceIndex = null;
+        touchPiece = null;
+        if (placed) {
+          if (currentPieces.length === 0) generatePieces();
+          if (isGameOver()) gameOver();
+        }
+        if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+          customCursor.style.display = 'block';
+        }
+      }
+
+      // ========== UTILS ==========
       function clearPreviews() {
-        previewCells.forEach(idx => cellElements[idx]?.classList.remove('preview'));
+        previewCells.forEach(idx => {
+          if (cellElements[idx]) cellElements[idx].classList.remove('preview');
+        });
         previewCells = [];
       }
+
       function showPreview(shape, baseRow, baseCol) {
         clearPreviews();
-        if (baseRow===undefined) return;
-        for (const [dr,dc] of shape) {
-          const r = baseRow+dr, c = baseCol+dc;
-          if (r>=0 && r<ROWS && c>=0 && c<COLS && grid[r][c]===null) {
-            const idx = r*COLS+c;
-            cellElements[idx].classList.add('preview');
-            previewCells.push(idx);
+        if (baseRow === undefined) return;
+        for (const [dr, dc] of shape) {
+          const r = baseRow + dr;
+          const c = baseCol + dc;
+          if (r >= 0 && r < ROWS && c >= 0 && c < COLS && grid[r][c] === null) {
+            const idx = r * COLS + c;
+            if (cellElements[idx]) {
+              cellElements[idx].classList.add('preview');
+              previewCells.push(idx);
+            }
           }
         }
       }
 
-      function getGridPosition(e) {
+      function getGridPositionFromClient(clientX, clientY, offsetX, offsetY) {
         const rect = gridEl.getBoundingClientRect();
-        const mx = e.clientX - rect.left, my = e.clientY - rect.top;
-        const tx = mx - dragOffsetX, ty = my - dragOffsetY;
-        const col = Math.round((tx - GRID_PADDING)/(CELL_SIZE+CELL_GAP));
-        const row = Math.round((ty - GRID_PADDING)/(CELL_SIZE+CELL_GAP));
-        return {row, col};
+        const mx = clientX - rect.left;
+        const my = clientY - rect.top;
+        const tx = mx - offsetX;
+        const ty = my - offsetY;
+        const col = Math.round((tx - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        const row = Math.round((ty - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        return { row, col };
       }
-
-      gridEl.addEventListener('dragover', e => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = 'move';
-        if (draggedPieceIndex===null || !dragPiece) return;
-        const {row, col} = getGridPosition(e);
-        if (canPlace(dragPiece.shape, row, col)) showPreview(dragPiece.shape, row, col);
-        else clearPreviews();
-      });
-      gridEl.addEventListener('dragleave', e => {
-        if (!gridEl.contains(e.relatedTarget)) clearPreviews();
-      });
-      gridEl.addEventListener('drop', e => {
-        e.preventDefault();
-        clearPreviews();
-        if (draggedPieceIndex===null || !dragPiece) return;
-        const {row, col} = getGridPosition(e);
-        if (canPlace(dragPiece.shape, row, col)) {
-          placePiece(dragPiece.shape, dragPiece.color, row, col);
-          currentPieces.splice(draggedPieceIndex,1);
-          renderPieces();
-          checkClearLines();
-          renderGrid();
-          updateScore();
-          if (currentPieces.length===0) generatePieces();
-          if (isGameOver()) gameOver();
-        }
-        draggedPieceIndex=null; dragPiece=null;
-        dragEndCursor();
-      });
-      document.addEventListener('dragover', e => e.preventDefault());
-      document.addEventListener('drop', e => e.preventDefault());
 
       function canPlace(shape, baseRow, baseCol) {
-        return shape.every(([dr,dc]) => {
-          const r = baseRow+dr, c = baseCol+dc;
-          return r>=0 && r<ROWS && c>=0 && c<COLS && grid[r][c]===null;
+        return shape.every(([dr, dc]) => {
+          const r = baseRow + dr;
+          const c = baseCol + dc;
+          return r >= 0 && r < ROWS && c >= 0 && c < COLS && grid[r][c] === null;
         });
       }
+
       function placePiece(shape, color, baseRow, baseCol) {
-        shape.forEach(([dr,dc]) => { grid[baseRow+dr][baseCol+dc] = color; });
+        shape.forEach(([dr, dc]) => {
+          grid[baseRow + dr][baseCol + dc] = color;
+        });
       }
 
       function checkClearLines() {
@@ -471,26 +714,46 @@
 
       function isGameOver() {
         return currentPieces.every(piece => {
-          for (let r=0; r<ROWS; r++) for (let c=0; c<COLS; c++) if (canPlace(piece.shape,r,c)) return false;
+          for (let r = 0; r < ROWS; r++)
+            for (let c = 0; c < COLS; c++)
+              if (canPlace(piece.shape, r, c)) return false;
           return true;
         });
       }
-      function gameOver() { finalScoreEl.textContent = totalPaws; gameoverEl.style.display = 'block'; }
-      function updateScore() { scoreDisplay.textContent = totalPaws; }
+
+      function gameOver() {
+        finalScoreEl.textContent = totalPaws;
+        gameoverEl.style.display = 'block';
+      }
+
+      function updateScore() {
+        scoreDisplay.textContent = totalPaws;
+      }
 
       function restartGame() {
-        grid = Array(ROWS).fill().map(()=>Array(COLS).fill(null));
-        totalPaws = 0; updateScore();
-        generatePieces(); renderGrid();
+        grid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
+        totalPaws = 0;
+        updateScore();
+        generatePieces();
+        renderGrid();
         gameoverEl.style.display = 'none';
         clearPreviews();
-        draggedPieceIndex=null; dragPiece=null;
-        isDragging=false; updateCursor();
+        removeTouchGhost();
+        isDragging = false;
+        draggedPieceIndex = null;
+        dragPiece = null;
+        touchActive = false;
+        if (pieceDragging) pieceDragging.classList.remove('dragging');
+        updateCursor();
       }
       window.restartGame = restartGame;
 
       createGrid();
       restartGame();
+
+      if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+        customCursor.style.display = 'none';
+      }
     })();
   </script>
 </body>
