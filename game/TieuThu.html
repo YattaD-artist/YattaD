@@ -221,6 +221,7 @@
       height: 32px;
       object-fit: contain;
       display: block;
+      pointer-events: none;
     }
 
     .round-btn:disabled {
@@ -245,6 +246,28 @@
       justify-content: center;
       box-shadow: 0 1px 4px rgba(0,0,0,0.4);
       pointer-events: none;
+    }
+
+    .help-tooltip {
+      position: fixed;
+      background: rgba(0, 0, 0, 0.85);
+      color: #f1f5f4;
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      max-width: 220px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+      z-index: 500;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .help-tooltip.visible {
+      opacity: 1;
     }
 
     .gameover {
@@ -275,13 +298,22 @@
       background: #9ca3af;
       color: #fff;
       box-shadow: none;
+      margin: 5px;
     }
 
     .gameover button:hover {
       background: #6b7280;
     }
 
-    /* Modal chọn hình Help2 */
+    .gameover .revive-btn {
+      background: #d33b3a;
+      color: white;
+    }
+
+    .gameover .revive-btn:hover {
+      background: #b91c1c;
+    }
+
     .help2-modal-overlay {
       position: fixed;
       inset: 0;
@@ -291,6 +323,11 @@
       justify-content: center;
       z-index: 300;
       backdrop-filter: blur(2px);
+      cursor: none;
+    }
+
+    .help2-modal-overlay * {
+      cursor: none;
     }
 
     .help2-modal {
@@ -323,20 +360,14 @@
     }
 
     .shape-option {
-    background: rgba(255,255,255,0.08);
-    border-radius: 10px;
-    padding: 8px;
-    /* cursor: pointer; */  /* ĐÃ XÓA DÒNG NÀY */
-    transition: background 0.2s, transform 0.1s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Thêm rule để ẩn con trỏ hệ thống trong modal */
-  .help2-modal-overlay, .help2-modal-overlay * {
-    cursor: none;
-  }
+      background: rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 8px;
+      transition: background 0.2s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
     .shape-option:hover {
       background: rgba(255,255,255,0.2);
@@ -450,24 +481,27 @@
 
   <div class="action-buttons">
     <button onclick="restartGame()">Chơi lại</button>
-    <button class="round-btn" id="rollButton" onclick="performRoll()">
+    <button class="round-btn" id="rollButton">
       <img src="TieuThu/Help3.png" alt="Roll">
       <span class="badge" id="rollBadge">2</span>
     </button>
-    <button class="round-btn" id="help1Button" onclick="toggleHelp1()">
+    <button class="round-btn" id="help1Button">
       <img src="TieuThu/Help1.png" alt="Xóa vùng">
       <span class="badge" id="help1Badge">1</span>
     </button>
-    <button class="round-btn" id="help2Button" onclick="toggleHelp2()">
+    <button class="round-btn" id="help2Button">
       <img src="TieuThu/Help2.png" alt="Chọn hình">
       <span class="badge" id="help2Badge">2</span>
     </button>
   </div>
 
+  <div class="help-tooltip" id="helpTooltip"></div>
+
   <div class="gameover" id="gameover">
     <h2>Game Over</h2>
     <p>Số Măng Cụt đã thu thập: <span id="finalScore"></span></p>
     <button onclick="restartGame()">Chơi lại</button>
+    <button class="revive-btn" id="reviveButton" onclick="reviveGame()">Đổi 50 điểm để xóa bảng (1 lần)</button>
   </div>
 
   <div class="toast" id="toast"></div>
@@ -507,10 +541,23 @@
       let selectedCells = [];
 
       // Trạng thái Help2
-      let help2Active = false;        // modal đang mở hoặc đang chờ chọn mảnh
+      let help2Active = false;
       let help2ModalVisible = false;
       let replacePieceMode = false;
       let pendingHelp2Shape = null;
+
+      // Hồi sinh
+      let reviveUsed = false;
+
+      const tooltipEl = document.getElementById('helpTooltip');
+      let longPressTimer = null;
+      const LONG_PRESS_DURATION = 800;
+
+      const HELP_TEXTS = {
+        rollButton: "Roll hình ưu tiên: Đổi 3 mảnh mới, ưu tiên những hình có thể tạo hàng/cột đầy. Giữ nguyên lượt nếu không tìm thấy.",
+        help1Button: "Xóa một vùng: Kéo trên lưới để chọn hình chữ nhật (tối đa 4x4), hoặc kéo dài để chọn toàn bộ hàng/cột. Nhấn nút lần nữa để xác nhận xóa.",
+        help2Button: "Chọn mảnh mong muốn: Mở danh sách các hình, chọn một hình khả dụng, sau đó chạm vào mảnh cần thay thế."
+      };
 
       window.addEventListener('resize', () => {
         CELL_SIZE = getCSSVar('--cell-size') || 45;
@@ -539,7 +586,6 @@
 
       const ALL_SHAPES = SHAPES_EASY.concat(SHAPES_HARD);
 
-      // Danh sách shape duy nhất cho Help2
       const UNIQUE_SHAPES = [];
       const seen = new Set();
       for (const shape of ALL_SHAPES) {
@@ -559,6 +605,7 @@
       const scoreDisplay = document.getElementById('scoreDisplay');
       const gameoverEl = document.getElementById('gameover');
       const finalScoreEl = document.getElementById('finalScore');
+      const reviveButton = document.getElementById('reviveButton');
       const customCursor = document.getElementById('customCursor');
       const rollButton = document.getElementById('rollButton');
       const rollBadge = document.getElementById('rollBadge');
@@ -582,6 +629,69 @@
       let touchOffsetX = 0, touchOffsetY = 0;
       let touchGhost = null;
 
+      // --- Long press handlers ---
+      function startLongPress(e, btnId) {
+        if (longPressTimer) clearTimeout(longPressTimer);
+        longPressTimer = setTimeout(() => {
+          showTooltip(e, HELP_TEXTS[btnId]);
+          longPressTimer = null;
+        }, LONG_PRESS_DURATION);
+      }
+
+      function cancelLongPress() {
+        if (longPressTimer) {
+          clearTimeout(longPressTimer);
+          longPressTimer = null;
+        }
+        hideTooltip();
+      }
+
+      function showTooltip(event, text) {
+        const x = event.clientX || (event.touches && event.touches[0].clientX) || 0;
+        const y = event.clientY || (event.touches && event.touches[0].clientY) || 0;
+        tooltipEl.textContent = text;
+        tooltipEl.style.left = Math.min(x, window.innerWidth - 230) + 'px';
+        tooltipEl.style.top = (y - 80) + 'px';
+        tooltipEl.classList.add('visible');
+      }
+
+      function hideTooltip() {
+        tooltipEl.classList.remove('visible');
+      }
+
+      function bindLongPress(btn, btnId, clickHandler) {
+        btn.addEventListener('mousedown', (e) => {
+          startLongPress(e, btnId);
+        });
+        btn.addEventListener('mouseup', (e) => {
+          if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+            if (clickHandler) clickHandler(e);
+          }
+          cancelLongPress();
+        });
+        btn.addEventListener('mouseleave', cancelLongPress);
+        btn.addEventListener('touchstart', (e) => {
+          e.preventDefault();
+          startLongPress(e.touches[0], btnId);
+        });
+        btn.addEventListener('touchend', (e) => {
+          if (longPressTimer) {
+            clearTimeout(longPressTimer);
+            longPressTimer = null;
+            if (clickHandler) clickHandler(e);
+          }
+          cancelLongPress();
+        });
+        btn.addEventListener('touchmove', cancelLongPress);
+        btn.addEventListener('touchcancel', cancelLongPress);
+      }
+
+      bindLongPress(rollButton, 'rollButton', performRoll);
+      bindLongPress(help1Button, 'help1Button', toggleHelp1);
+      bindLongPress(help2Button, 'help2Button', toggleHelp2);
+
       // --- Cursor ---
       function setCursor(img) {
         if (customCursor.style.display === 'none') return;
@@ -601,7 +711,7 @@
         const x = parseInt(customCursor.style.left) || 0;
         const y = parseInt(customCursor.style.top) || 0;
         const el = document.elementFromPoint(x + 16, y + 16);
-        if (el?.closest('.piece')) {
+        if (el?.closest('.piece') || el?.closest('.shape-option') || el?.closest('.round-btn')) {
           setCursor('Gio.png');
         } else {
           setCursor('Chi.png');
@@ -801,7 +911,7 @@
             renderGrid();
             updateScore();
             if (currentPieces.length === 0) generatePieces();
-            if (isGameOver()) gameOver();
+            checkGameOverOrHelp();
           }
         }
 
@@ -905,15 +1015,15 @@
         touchPiece = null;
         if (placed) {
           if (currentPieces.length === 0) generatePieces();
-          if (isGameOver()) gameOver();
+          checkGameOverOrHelp();
         }
         if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
           customCursor.style.display = 'block';
         }
       }
 
-      // ========== HELP 1: SELECTION (4x4) ==========
-      function toggleHelp1() {
+      // ========== HELP 1: SELECTION (cải tiến) ==========
+      function toggleHelp1(e) {
         if (help1Remaining <= 0) {
           showToast('Đã hết lượt xóa vùng!');
           return;
@@ -934,6 +1044,7 @@
             updateHelp1UI();
             renderGrid();
             showToast('Đã xóa vùng được chọn!');
+            checkGameOverOrHelp();
           } else {
             showToast('Chưa chọn vùng nào, đã thoát chế độ.');
           }
@@ -946,7 +1057,7 @@
           helpMode = 'select';
           clearHelpSelection();
           updateCursor();
-          showToast('Kéo trên lưới để chọn vùng (dòng/cột/4x4). Nhấn lại nút để xóa.');
+          showToast('Kéo trên lưới để chọn vùng (tự do 1-4 ô, hoặc hàng/cột). Nhấn lại nút để xóa.');
         }
       }
 
@@ -1061,21 +1172,40 @@
         if (selectStartRow === -1) return;
 
         let cells = [];
-        if (selectStartRow === selectEndRow && selectStartCol !== selectEndCol) {
-          for (let c = 0; c < COLS; c++) {
-            cells.push(selectStartRow * COLS + c);
-          }
-        } else if (selectStartCol === selectEndCol && selectStartRow !== selectEndRow) {
-          for (let r = 0; r < ROWS; r++) {
-            cells.push(r * COLS + selectStartCol);
-          }
-        } else if (selectStartRow !== selectEndRow || selectStartCol !== selectEndCol) {
-          const minRow = Math.min(selectStartRow, selectEndRow);
-          const minCol = Math.min(selectStartCol, selectEndCol);
-          const maxRow = Math.min(minRow + 3, ROWS - 1);
-          const maxCol = Math.min(minCol + 3, COLS - 1);
-          for (let r = minRow; r <= maxRow; r++) {
+        const minRow = Math.min(selectStartRow, selectEndRow);
+        const maxRow = Math.max(selectStartRow, selectEndRow);
+        const minCol = Math.min(selectStartCol, selectEndCol);
+        const maxCol = Math.max(selectStartCol, selectEndCol);
+
+        if (selectStartRow === selectEndRow) {
+          // Cùng hàng
+          if (maxCol - minCol + 1 > 4) {
+            // Chọn toàn bộ hàng
+            for (let c = 0; c < COLS; c++) {
+              cells.push(selectStartRow * COLS + c);
+            }
+          } else {
             for (let c = minCol; c <= maxCol; c++) {
+              cells.push(selectStartRow * COLS + c);
+            }
+          }
+        } else if (selectStartCol === selectEndCol) {
+          // Cùng cột
+          if (maxRow - minRow + 1 > 4) {
+            for (let r = 0; r < ROWS; r++) {
+              cells.push(r * COLS + selectStartCol);
+            }
+          } else {
+            for (let r = minRow; r <= maxRow; r++) {
+              cells.push(r * COLS + selectStartCol);
+            }
+          }
+        } else {
+          // Vùng chữ nhật, giới hạn 4x4
+          const limitedMaxRow = Math.min(minRow + 3, ROWS - 1);
+          const limitedMaxCol = Math.min(minCol + 3, COLS - 1);
+          for (let r = minRow; r <= limitedMaxRow; r++) {
+            for (let c = minCol; c <= limitedMaxCol; c++) {
               cells.push(r * COLS + c);
             }
           }
@@ -1097,7 +1227,7 @@
       }
 
       // ========== HELP 2: CHỌN HÌNH ==========
-      function toggleHelp2() {
+      function toggleHelp2(e) {
         if (help2Remaining <= 0 && !help2ModalVisible && !replacePieceMode) {
           showToast('Đã hết lượt chọn hình!');
           return;
@@ -1112,7 +1242,6 @@
         }
 
         if (help2ModalVisible || replacePieceMode) {
-          // Đóng modal / hủy chọn
           closeHelp2Modal();
         } else {
           openHelp2Modal();
@@ -1125,12 +1254,11 @@
         replacePieceMode = false;
         pendingHelp2Shape = null;
 
-        // Tạo modal
         const overlay = document.createElement('div');
         overlay.className = 'help2-modal-overlay';
         overlay.id = 'help2Overlay';
         overlay.addEventListener('click', (e) => {
-          if (e.target === overlay) closeHelp2Modal(); // click ra ngoài đóng
+          if (e.target === overlay) closeHelp2Modal();
         });
 
         const modal = document.createElement('div');
@@ -1154,7 +1282,6 @@
             selectHelp2Shape(shape);
           });
 
-          // Vẽ hình nhỏ
           const miniPiece = document.createElement('div');
           miniPiece.className = 'mini-piece';
           const rows = Math.max(...shape.map(p => p[0])) + 1;
@@ -1194,20 +1321,19 @@
         replacePieceMode = false;
         pendingHelp2Shape = null;
         help2Active = false;
-        renderPieces(); // xóa replaceable
+        renderPieces();
         updateCursor();
         showToast('Đã thoát chọn hình.');
       }
 
       function selectHelp2Shape(shape) {
         pendingHelp2Shape = shape;
-        // Đóng modal, chuyển sang chế độ chọn mảnh
         const overlay = document.getElementById('help2Overlay');
         if (overlay) overlay.remove();
         help2ModalVisible = false;
         replacePieceMode = true;
         help2Active = true;
-        renderPieces(); // thêm class replaceable cho các mảnh
+        renderPieces();
         updateCursor();
         showToast('Chạm vào mảnh muốn thay thế.');
       }
@@ -1242,10 +1368,9 @@
         renderPieces();
         updateCursor();
         showToast('Đã thay thế mảnh!');
-        if (isGameOver()) gameOver();
+        checkGameOverOrHelp();
       }
 
-      // Click ra ngoài khi replace mode để hủy
       document.addEventListener('click', function(e) {
         if (replacePieceMode && !e.target.closest('.piece')) {
           replacePieceMode = false;
@@ -1354,9 +1479,64 @@
         });
       }
 
+      function hasAvailableHelp() {
+        // Roll còn lượt và có thể tạo ra ít nhất một hình khả dụng
+        if (rollsLeft > 0) {
+          const { usefulShapes, normalShapes } = analyzeAllShapes();
+          if (usefulShapes.length > 0 || normalShapes.length > 0) return true;
+        }
+        // Help1 còn lượt và có ít nhất một ô trống trên lưới
+        if (help1Remaining > 0) {
+          for (let r = 0; r < ROWS; r++)
+            for (let c = 0; c < COLS; c++)
+              if (grid[r][c] === null) return true;
+        }
+        // Help2 còn lượt và tồn tại ít nhất một hình khả dụng
+        if (help2Remaining > 0) {
+          for (const shape of UNIQUE_SHAPES) {
+            if (canPlaceAnywhere(shape)) return true;
+          }
+        }
+        return false;
+      }
+
+      function checkGameOverOrHelp() {
+        if (isGameOver()) {
+          if (!hasAvailableHelp() && !reviveAvailable()) {
+            gameOver();
+          } else {
+            showToast('Hết nước đi! Hãy dùng trợ giúp để tiếp tục.');
+          }
+        }
+      }
+
+      function reviveAvailable() {
+        return !reviveUsed && totalPaws >= 50;
+      }
+
       function gameOver() {
         finalScoreEl.textContent = totalPaws;
         gameoverEl.style.display = 'block';
+        reviveButton.style.display = reviveAvailable() ? 'inline-block' : 'none';
+        if (reviveAvailable()) {
+          reviveButton.disabled = false;
+        }
+      }
+
+      function reviveGame() {
+        if (!reviveAvailable()) return;
+        totalPaws -= 50;
+        updateScore();
+        // Xóa toàn bộ lưới
+        for (let r = 0; r < ROWS; r++)
+          for (let c = 0; c < COLS; c++)
+            grid[r][c] = null;
+        reviveUsed = true;
+        gameoverEl.style.display = 'none';
+        renderGrid();
+        generatePieces(); // sinh 3 mảnh mới
+        showToast('Đã xóa bảng bằng 50 điểm! Tiếp tục chơi.');
+        // Không reset các trợ giúp, giữ nguyên số lượt
       }
 
       function updateScore() {
@@ -1364,7 +1544,7 @@
       }
 
       // ========== ROLL LOGIC ==========
-      function performRoll() {
+      function performRoll(e) {
         if (rollsLeft <= 0) {
           showToast('Đã hết lượt roll!');
           return;
@@ -1406,7 +1586,7 @@
         rollsLeft--;
         updateRollUI();
 
-        if (isGameOver()) gameOver();
+        checkGameOverOrHelp();
       }
 
       function analyzeAllShapes() {
@@ -1491,6 +1671,7 @@
         updateHelp1UI();
         help2Remaining = maxHelp2;
         updateHelp2UI();
+        reviveUsed = false;
         exitHelpMode();
         if (help2ModalVisible || replacePieceMode) closeHelp2Modal();
         generatePieces();
@@ -1508,6 +1689,7 @@
       window.performRoll = performRoll;
       window.toggleHelp1 = toggleHelp1;
       window.toggleHelp2 = toggleHelp2;
+      window.reviveGame = reviveGame;
 
       createGrid();
       restartGame();
