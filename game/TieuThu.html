@@ -118,13 +118,6 @@
       transition: background 0.3s;
     }
 
-    .cell.hint-glow-light {
-      background: rgba(59, 130, 246, 0.08);
-      box-shadow: inset 0 0 4px rgba(59, 130, 246, 0.2);
-      z-index: 1;
-      transition: background 0.3s;
-    }
-
     .pieces-area {
       display: flex;
       gap: 15px;
@@ -138,7 +131,7 @@
       padding: 6px;
       background: rgba(241, 245, 244, 0.08);
       border-radius: 12px;
-      transition: opacity 0.2s;
+      transition: opacity 0.2s, box-shadow 0.3s;
       display: inline-block;
       cursor: none;
       touch-action: none;
@@ -160,6 +153,10 @@
       opacity: 0.35;
       filter: grayscale(0.6);
       pointer-events: none;
+    }
+
+    .piece.hint-suggested {
+      box-shadow: 0 0 12px rgba(59, 130, 246, 0.6), 0 0 24px rgba(59, 130, 246, 0.3);
     }
 
     .piece-inner {
@@ -570,7 +567,7 @@
       let idleTimer = null;
       const IDLE_DELAY = 10000;
       let hintGlowActive = false;
-      let hintCells = [];
+      let hintPieceIndex = -1;
 
       // Hồi sinh
       let reviveUsed = false;
@@ -805,22 +802,10 @@
             cell.classList.remove('preview');
             cell.classList.remove('help-selected');
             cell.classList.remove('hint-glow');
-            cell.classList.remove('hint-glow-light');
           }
         if (helpMode === 'select' && selectedCells.length > 0) {
           selectedCells.forEach(idx => {
             if (cellElements[idx]) cellElements[idx].classList.add('help-selected');
-          });
-        }
-        if (hintGlowActive) {
-          hintCells.forEach((data, idx) => {
-            if (cellElements[idx]) {
-              if (data.isMain) {
-                cellElements[idx].classList.add('hint-glow');
-              } else {
-                cellElements[idx].classList.add('hint-glow-light');
-              }
-            }
           });
         }
       }
@@ -872,6 +857,13 @@
             el.classList.add('unavailable');
           } else {
             el.classList.remove('unavailable');
+          }
+
+          // Add hint glow if this is the suggested piece
+          if (hintGlowActive && idx === hintPieceIndex) {
+            el.classList.add('hint-suggested');
+          } else {
+            el.classList.remove('hint-suggested');
           }
 
           if (replacePieceMode) {
@@ -1252,46 +1244,26 @@
       }
 
       function startIdleHint() {
-        hintCells = [];
         hintGlowActive = true;
-        const availablePieces = currentPieces.filter(p => canPlaceAnywhere(p.shape));
+        hintPieceIndex = -1;
+
+        const availablePieces = currentPieces.map((p, idx) => ({ piece: p, index: idx }))
+          .filter(item => canPlaceAnywhere(item.piece.shape));
+
         if (availablePieces.length === 0) {
           hintGlowActive = false;
           return;
         }
+
         const bestPiece = availablePieces[0];
-        const positions = [];
-        for (let r = 0; r < ROWS; r++)
-          for (let c = 0; c < COLS; c++)
-            if (canPlace(bestPiece.shape, r, c))
-              positions.push({ r, c });
-        if (positions.length === 0) {
-          hintGlowActive = false;
-          return;
-        }
-        const pos = positions[Math.floor(Math.random() * positions.length)];
-        for (const [dr, dc] of bestPiece.shape) {
-          const idx = (pos.r + dr) * COLS + (pos.c + dc);
-          hintCells[idx] = { isMain: true };
-        }
-        const surroundingOffsets = [[-1, 0], [1, 0], [0, -1], [0, 1]];
-        for (const [dr, dc] of bestPiece.shape) {
-          for (const [sdr, sdc] of surroundingOffsets) {
-            const nr = pos.r + dr + sdr;
-            const nc = pos.c + dc + sdc;
-            if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && !grid[nr][nc]) {
-              const idx = nr * COLS + nc;
-              if (!hintCells[idx]) hintCells[idx] = { isMain: false };
-            }
-          }
-        }
-        renderGrid();
+        hintPieceIndex = bestPiece.index;
+        renderPieces();
       }
 
       function clearHintGlow() {
         hintGlowActive = false;
-        hintCells = [];
-        renderGrid();
+        hintPieceIndex = -1;
+        renderPieces();
       }
 
       // ========== HELP FUNCTIONS ==========
