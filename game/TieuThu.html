@@ -112,8 +112,8 @@
     }
 
     .cell.hint-glow {
-      background: rgba(59, 130, 246, 0.15);
-      box-shadow: inset 0 0 6px rgba(59, 130, 246, 0.4);
+      background: rgba(59, 130, 246, 0.3);
+      box-shadow: inset 0 0 8px rgba(59, 130, 246, 0.7);
       z-index: 1;
       transition: background 0.3s;
     }
@@ -131,7 +131,7 @@
       padding: 6px;
       background: rgba(241, 245, 244, 0.08);
       border-radius: 12px;
-      transition: opacity 0.2s, box-shadow 0.3s;
+      transition: opacity 0.2s;
       display: inline-block;
       cursor: none;
       touch-action: none;
@@ -153,10 +153,6 @@
       opacity: 0.35;
       filter: grayscale(0.6);
       pointer-events: none;
-    }
-
-    .piece.hint-suggested {
-      box-shadow: 0 0 12px rgba(59, 130, 246, 0.6), 0 0 24px rgba(59, 130, 246, 0.3);
     }
 
     .piece-inner {
@@ -565,9 +561,9 @@
 
       // Idle hint
       let idleTimer = null;
-      const IDLE_DELAY = 10000;
+      const IDLE_DELAY = 5000;
       let hintGlowActive = false;
-      let hintPieceIndex = -1;
+      let hintCells = [];
 
       // Hồi sinh
       let reviveUsed = false;
@@ -580,7 +576,7 @@
 
       const HELP_TEXTS = {
         rollButton: "Roll hình ưu tiên: Đổi 3 mảnh mới, ưu tiên những hình có thể tạo hàng/cột đầy. Giữ nguyên lượt nếu không tìm thấy.",
-        help1Button: "Xóa một vùng: Kéo trên lưới để chọn hình chữ nhật (tối đa 4x4), hoặc kéo dài để chọn toàn bộ hàng/cột. Nhấn nút lần nữa để xác nhận.",
+        help1Button: "Xóa một vùng: Kéo trên lưới để chọn hình chữ nhật (tối đa 4x4), hoặc kéo dài để chọn toàn bộ hàng/cột. Nhấn nút lần nữa để xác nhận xóa.",
         help2Button: "Chọn mảnh mong muốn: Mở danh sách các hình, chọn một hình khả dụng, sau đó chạm vào mảnh cần thay thế."
       };
 
@@ -808,6 +804,11 @@
             if (cellElements[idx]) cellElements[idx].classList.add('help-selected');
           });
         }
+        if (hintGlowActive) {
+          hintCells.forEach(idx => {
+            if (cellElements[idx]) cellElements[idx].classList.add('hint-glow');
+          });
+        }
       }
 
       // --- Pieces ---
@@ -857,13 +858,6 @@
             el.classList.add('unavailable');
           } else {
             el.classList.remove('unavailable');
-          }
-
-          // Add hint glow if this is the suggested piece
-          if (hintGlowActive && idx === hintPieceIndex) {
-            el.classList.add('hint-suggested');
-          } else {
-            el.classList.remove('hint-suggested');
           }
 
           if (replacePieceMode) {
@@ -1045,128 +1039,477 @@
             placed = true;
           }
         }
-        const pieceEl = piecesArea.querySelector(`.piece[data-index='${touchPieceIndex}']`);
-        if (pieceEl) pieceEl.classList.remove('dragging');
-        clearPreviews();
         removeTouchGhost();
+        if (touchPieceIndex !== null && currentPieces[touchPieceIndex]) {
+          const pieceEl = piecesArea.querySelector(`.piece[data-index='${touchPieceIndex}']`);
+          if (pieceEl) pieceEl.classList.remove('dragging');
+        }
+        clearPreviews();
         touchActive = false;
         touchPieceIndex = null;
         touchPiece = null;
-        if (customCursor.style.display === 'none') customCursor.style.display = 'block';
+        if (!placed) {
+          resetIdleTimer();
+        }
+        if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+          customCursor.style.display = 'block';
+        }
+      }
+
+      // --- Hàm xử lý chung sau khi đặt quân ---
+      function handlePiecePlaced() {
+        checkClearLines();
+        renderGrid();
+        refreshPieceAvailability();
+        updateScore();
+        if (currentPieces.length === 0) generatePieces();
+        checkGameOverOrHelp();
+        clearHintGlow();
+      }
+
+      function refreshPieceAvailability() {
+        if (!replacePieceMode && !help2ModalVisible) {
+          renderPieces();
+        }
+      }
+
+      // ========== IDLE HINT ==========
+      function resetIdleTimer() {
+        if (idleTimer) clearTimeout(idleTimer);
+        if (gameoverEl.style.display === 'block') return;
+        idleTimer = setTimeout(() => {
+          if (isDragging || touchActive || helpMode === 'select' || replacePieceMode || help2ModalVisible) return;
+          showHintGlow();
+        }, IDLE_DELAY);
+      }
+
+      function clearIdleTimer() {
+        if (idleTimer) {
+          clearTimeout(idleTimer);
+          idleTimer = null;
+        }
+      }
+
+      function showHintGlow() {
+        const placeablePiece = currentPieces.find(p => canPlaceAnywhere(p.shape));
+        if (!placeablePiece) return;
+
+        hintCells = [];
+        const shape = placeablePiece.shape;
+        const cellSet = new Set();
+
+        for (let r = 0; r < ROWS; r++) {
+          for (let c = 0; c < COLS; c++) {
+            if (canPlace(shape, r, c)) {
+              for (const [dr, dc] of shape) {
+                const idx = (r + dr) * COLS + (c + dc);
+                if (grid[r + dr][c + dc] === null) {
+                  cellSet.add(idx);
+                }
+              }
+            }
+          }
+        }
+
+        hintCells = Array.from(cellSet);
+        hintGlowActive = true;
+        renderGrid();
+      }
+
+      function clearHintGlow() {
+        if (!hintGlowActive) return;
+        hintGlowActive = false;
+        hintCells = [];
+        renderGrid();
+        clearIdleTimer();
         resetIdleTimer();
       }
 
-      // ========== GRID INTERACTIONS ==========
+      // ========== HELP 1: SELECTION ==========
+      function toggleHelp1(e) {
+        clearToast();
+        if (help1Remaining <= 0) {
+          showToast('Đã hết lượt xóa vùng!');
+          return;
+        }
+        if (help2ModalVisible || replacePieceMode) {
+          showToast('Đang dùng trợ giúp khác.');
+          return;
+        }
+
+        if (helpMode === 'select') {
+          if (selectedCells.length > 0) {
+            for (const idx of selectedCells) {
+              const r = Math.floor(idx / COLS);
+              const c = idx % COLS;
+              grid[r][c] = null;
+            }
+            help1Remaining--;
+            updateHelp1UI();
+            renderGrid();
+            refreshPieceAvailability();
+            showToast('Đã xóa vùng được chọn!');
+            checkGameOverOrHelp();
+          } else {
+            showToast('Chưa chọn vùng nào, đã thoát chế độ.');
+          }
+          exitHelpMode();
+        } else {
+          if (isDragging || touchActive) {
+            showToast('Đang thao tác, không thể vào chế độ chọn.');
+            return;
+          }
+          helpMode = 'select';
+          clearHelpSelection();
+          updateCursor();
+          showToast('Kéo trên lưới để chọn vùng (tự do 1-4 ô, hoặc hàng/cột). Nhấn lại nút để xóa.');
+        }
+        resetIdleTimer();
+        clearHintGlow();
+      }
+
+      function exitHelpMode() {
+        helpMode = null;
+        clearHelpSelection();
+        updateCursor();
+      }
+
+      function clearHelpSelection() {
+        selectedCells.forEach(idx => {
+          if (cellElements[idx]) cellElements[idx].classList.remove('help-selected');
+        });
+        selectedCells = [];
+        isSelecting = false;
+        selectStartRow = selectEndRow = -1;
+        selectStartCol = selectEndCol = -1;
+      }
+
       function onGridMouseDown(e) {
-        if (helpMode !== 'select' || !help1Remaining) return;
+        if (helpMode !== 'select') {
+          resetIdleTimer();
+          clearHintGlow();
+          return;
+        }
         e.preventDefault();
-        isSelecting = true;
+        resetIdleTimer();
+        clearHintGlow();
         const rect = gridEl.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
-        const cellSize = CELL_SIZE + CELL_GAP;
-        selectStartCol = Math.floor(x / cellSize);
-        selectStartRow = Math.floor(y / cellSize);
-        selectEndCol = selectStartCol;
-        selectEndRow = selectStartRow;
-        updateSelection();
+        const col = Math.floor((x - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        const row = Math.floor((y - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
+          startHelpSelection(row, col);
+          document.addEventListener('mousemove', onHelpMouseMove);
+          document.addEventListener('mouseup', onHelpMouseUp);
+        }
+      }
+
+      function onHelpMouseMove(e) {
+        if (helpMode !== 'select' || !isSelecting) return;
+        e.preventDefault();
+        handleHelpSelectMove(e.clientX, e.clientY);
+      }
+
+      function onHelpMouseUp(e) {
+        if (helpMode !== 'select' || !isSelecting) return;
+        e.preventDefault();
+        document.removeEventListener('mousemove', onHelpMouseMove);
+        document.removeEventListener('mouseup', onHelpMouseUp);
+        finishHelpSelection();
       }
 
       function onGridTouchStart(e) {
-        if (helpMode !== 'select' || !help1Remaining) return;
+        if (helpMode !== 'select') {
+          resetIdleTimer();
+          clearHintGlow();
+          return;
+        }
         e.preventDefault();
-        isSelecting = true;
+        resetIdleTimer();
+        clearHintGlow();
         const touch = e.touches[0];
         const rect = gridEl.getBoundingClientRect();
         const x = touch.clientX - rect.left;
         const y = touch.clientY - rect.top;
-        const cellSize = CELL_SIZE + CELL_GAP;
-        selectStartCol = Math.floor(x / cellSize);
-        selectStartRow = Math.floor(y / cellSize);
-        selectEndCol = selectStartCol;
-        selectEndRow = selectStartRow;
-        updateSelection();
+        const col = Math.floor((x - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        const row = Math.floor((y - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        if (row >= 0 && row < ROWS && col >= 0 && col < COLS) {
+          startHelpSelection(row, col);
+        }
       }
 
       function onGridTouchMove(e) {
-        if (!isSelecting || helpMode !== 'select') return;
+        if (helpMode !== 'select' || !isSelecting) return;
         e.preventDefault();
         const touch = e.touches[0];
-        const rect = gridEl.getBoundingClientRect();
-        const x = touch.clientX - rect.left;
-        const y = touch.clientY - rect.top;
-        const cellSize = CELL_SIZE + CELL_GAP;
-        selectEndCol = Math.floor(x / cellSize);
-        selectEndRow = Math.floor(y / cellSize);
-        updateSelection();
+        handleHelpSelectMove(touch.clientX, touch.clientY);
       }
 
       function onGridTouchEnd(e) {
-        if (!isSelecting) return;
-        isSelecting = false;
+        if (helpMode !== 'select' || !isSelecting) return;
+        e.preventDefault();
+        finishHelpSelection();
+      }
+
+      function startHelpSelection(row, col) {
+        clearHelpSelection();
+        selectStartRow = row;
+        selectStartCol = col;
+        selectEndRow = row;
+        selectEndCol = col;
+        isSelecting = true;
+        updateHelpSelection();
       }
 
       function handleHelpSelectMove(clientX, clientY) {
-        if (!isSelecting || helpMode !== 'select') return;
+        if (!isSelecting) return;
         const rect = gridEl.getBoundingClientRect();
         const x = clientX - rect.left;
         const y = clientY - rect.top;
-        const cellSize = CELL_SIZE + CELL_GAP;
-        selectEndCol = Math.floor(x / cellSize);
-        selectEndRow = Math.floor(y / cellSize);
-        updateSelection();
+        const col = Math.floor((x - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        const row = Math.floor((y - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        const clampedRow = Math.max(0, Math.min(ROWS - 1, row));
+        const clampedCol = Math.max(0, Math.min(COLS - 1, col));
+        if (clampedRow !== selectEndRow || clampedCol !== selectEndCol) {
+          selectEndRow = clampedRow;
+          selectEndCol = clampedCol;
+          updateHelpSelection();
+        }
       }
 
-      function updateSelection() {
+      function finishHelpSelection() {
+        isSelecting = false;
+      }
+
+      function updateHelpSelection() {
+        selectedCells.forEach(idx => {
+          if (cellElements[idx]) cellElements[idx].classList.remove('help-selected');
+        });
         selectedCells = [];
+
+        if (selectStartRow === -1) return;
+
+        let cells = [];
         const minRow = Math.min(selectStartRow, selectEndRow);
         const maxRow = Math.max(selectStartRow, selectEndRow);
         const minCol = Math.min(selectStartCol, selectEndCol);
         const maxCol = Math.max(selectStartCol, selectEndCol);
-        const height = maxRow - minRow + 1;
-        const width = maxCol - minCol + 1;
-        if (height > 4 || width > 4) return;
-        for (let r = minRow; r <= maxRow; r++)
-          for (let c = minCol; c <= maxCol; c++)
-            if (r >= 0 && r < ROWS && c >= 0 && c < COLS)
-              selectedCells.push(r * COLS + c);
-        renderGrid();
-      }
 
-      function clearSelection() {
-        helpMode = null;
-        isSelecting = false;
-        selectedCells = [];
-        renderGrid();
-      }
+        if (selectStartRow === selectEndRow) {
+          if (maxCol - minCol + 1 > 4) {
+            for (let c = 0; c < COLS; c++) {
+              cells.push(selectStartRow * COLS + c);
+            }
+          } else {
+            for (let c = minCol; c <= maxCol; c++) {
+              cells.push(selectStartRow * COLS + c);
+            }
+          }
+        } else if (selectStartCol === selectEndCol) {
+          if (maxRow - minRow + 1 > 4) {
+            for (let r = 0; r < ROWS; r++) {
+              cells.push(r * COLS + selectStartCol);
+            }
+          } else {
+            for (let r = minRow; r <= maxRow; r++) {
+              cells.push(r * COLS + selectStartCol);
+            }
+          }
+        } else {
+          const limitedMaxRow = Math.min(minRow + 3, ROWS - 1);
+          const limitedMaxCol = Math.min(minCol + 3, COLS - 1);
+          for (let r = minRow; r <= limitedMaxRow; r++) {
+            for (let c = minCol; c <= limitedMaxCol; c++) {
+              cells.push(r * COLS + c);
+            }
+          }
+        }
 
-      function confirmSelection() {
-        if (selectedCells.length === 0) return;
+        selectedCells = cells;
         selectedCells.forEach(idx => {
-          const r = Math.floor(idx / COLS);
-          const c = idx % COLS;
-          grid[r][c] = null;
+          if (cellElements[idx]) cellElements[idx].classList.add('help-selected');
         });
-        help1Remaining -= 1;
-        help1Badge.textContent = help1Remaining;
-        clearSelection();
-        renderGrid();
-        checkClearLines();
-        updateScore();
-        checkGameOverOrHelp();
       }
 
-      // ========== PREVIEW & PLACEMENT ==========
-      function showPreview(shape, row, col) {
-        clearPreviews();
-        previewCells = [];
-        for (const [r, c] of shape) {
-          const idx = (row + r) * COLS + (col + c);
-          previewCells.push(idx);
-          if (cellElements[idx]) cellElements[idx].classList.add('preview');
+      function updateHelp1UI() {
+        help1Badge.textContent = help1Remaining;
+        if (help1Remaining <= 0) {
+          help1Button.disabled = true;
+        } else {
+          help1Button.disabled = false;
         }
       }
 
+      // ========== HELP 2: CHỌN HÌNH ==========
+      function toggleHelp2(e) {
+        clearToast();
+        if (help2Remaining <= 0 && !help2ModalVisible && !replacePieceMode) {
+          showToast('Đã hết lượt chọn hình!');
+          return;
+        }
+        if (helpMode === 'select') {
+          showToast('Đang dùng trợ giúp xóa vùng.');
+          return;
+        }
+        if (isDragging || touchActive) {
+          showToast('Đang thao tác, không thể mở chọn hình.');
+          return;
+        }
+
+        if (help2ModalVisible || replacePieceMode) {
+          closeHelp2Modal();
+        } else {
+          openHelp2Modal();
+        }
+        resetIdleTimer();
+        clearHintGlow();
+      }
+
+      function openHelp2Modal() {
+        help2Active = true;
+        help2ModalVisible = true;
+        replacePieceMode = false;
+        pendingHelp2Shape = null;
+
+        const overlay = document.createElement('div');
+        overlay.className = 'help2-modal-overlay';
+        overlay.id = 'help2Overlay';
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) closeHelp2Modal();
+        });
+
+        const modal = document.createElement('div');
+        modal.className = 'help2-modal';
+        modal.innerHTML = '<h3>Chọn một mảnh</h3>';
+
+        const shapeGrid = document.createElement('div');
+        shapeGrid.className = 'shape-grid';
+
+        UNIQUE_SHAPES.forEach(shape => {
+          const available = canPlaceAnywhere(shape);
+          const option = document.createElement('div');
+          option.className = 'shape-option' + (available ? '' : ' unavailable');
+          option.style.setProperty('--piece-color', COLORS[Math.floor(Math.random() * COLORS.length)]);
+          option.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!available) {
+              showToast('Hình này không thể đặt vào lưới hiện tại.');
+              return;
+            }
+            selectHelp2Shape(shape);
+          });
+
+          const miniPiece = document.createElement('div');
+          miniPiece.className = 'mini-piece';
+          const rows = Math.max(...shape.map(p => p[0])) + 1;
+          const cols = Math.max(...shape.map(p => p[1])) + 1;
+          for (let r = 0; r < rows; r++) {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'mini-row';
+            for (let c = 0; c < cols; c++) {
+              const cellDiv = document.createElement('div');
+              cellDiv.className = 'mini-cell';
+              if (!shape.some(([pr, pc]) => pr === r && pc === c)) {
+                cellDiv.classList.add('empty');
+              }
+              rowDiv.appendChild(cellDiv);
+            }
+            miniPiece.appendChild(rowDiv);
+          }
+          option.appendChild(miniPiece);
+          shapeGrid.appendChild(option);
+        });
+
+        modal.appendChild(shapeGrid);
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'close-modal-btn';
+        closeBtn.textContent = 'Đóng';
+        closeBtn.addEventListener('click', closeHelp2Modal);
+        modal.appendChild(closeBtn);
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+        updateCursor();
+      }
+
+      function closeHelp2Modal() {
+        const overlay = document.getElementById('help2Overlay');
+        if (overlay) overlay.remove();
+        help2ModalVisible = false;
+        replacePieceMode = false;
+        pendingHelp2Shape = null;
+        help2Active = false;
+        renderPieces();
+        updateCursor();
+        showToast('Đã thoát chọn hình.');
+      }
+
+      function selectHelp2Shape(shape) {
+        pendingHelp2Shape = shape;
+        const overlay = document.getElementById('help2Overlay');
+        if (overlay) overlay.remove();
+        help2ModalVisible = false;
+        replacePieceMode = true;
+        help2Active = true;
+        renderPieces();
+        updateCursor();
+        showToast('Chạm vào mảnh muốn thay thế.');
+      }
+
+      function onReplacePieceClick(e) {
+        e.stopPropagation();
+        if (!replacePieceMode || !pendingHelp2Shape) return;
+        const pieceEl = e.currentTarget;
+        const index = parseInt(pieceEl.dataset.index);
+        replacePieceAtIndex(index);
+      }
+
+      function onReplacePieceTouch(e) {
+        e.stopPropagation();
+        if (!replacePieceMode || !pendingHelp2Shape) return;
+        const pieceEl = e.currentTarget;
+        const index = parseInt(pieceEl.dataset.index);
+        replacePieceAtIndex(index);
+      }
+
+      function replacePieceAtIndex(index) {
+        if (help2Remaining <= 0) return;
+        currentPieces[index] = {
+          shape: pendingHelp2Shape,
+          color: COLORS[Math.floor(Math.random() * COLORS.length)]
+        };
+        help2Remaining--;
+        updateHelp2UI();
+        replacePieceMode = false;
+        pendingHelp2Shape = null;
+        help2Active = false;
+        renderPieces();
+        updateCursor();
+        showToast('Đã thay thế mảnh!');
+        checkGameOverOrHelp();
+      }
+
+      document.addEventListener('click', function(e) {
+        if (replacePieceMode && !e.target.closest('.piece')) {
+          replacePieceMode = false;
+          pendingHelp2Shape = null;
+          help2Active = false;
+          renderPieces();
+          updateCursor();
+          showToast('Đã hủy chọn mảnh.');
+        }
+      });
+
+      function updateHelp2UI() {
+        help2Badge.textContent = help2Remaining;
+        if (help2Remaining <= 0) {
+          help2Button.disabled = true;
+        } else {
+          help2Button.disabled = false;
+        }
+      }
+
+      // ========== UTILS ==========
       function clearPreviews() {
         previewCells.forEach(idx => {
           if (cellElements[idx]) cellElements[idx].classList.remove('preview');
@@ -1174,12 +1517,39 @@
         previewCells = [];
       }
 
-      function canPlace(shape, row, col) {
-        for (const [r, c] of shape) {
-          const nr = row + r, nc = col + c;
-          if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS || grid[nr][nc]) return false;
+      function showPreview(shape, baseRow, baseCol) {
+        clearPreviews();
+        if (baseRow === undefined) return;
+        for (const [dr, dc] of shape) {
+          const r = baseRow + dr;
+          const c = baseCol + dc;
+          if (r >= 0 && r < ROWS && c >= 0 && c < COLS && grid[r][c] === null) {
+            const idx = r * COLS + c;
+            if (cellElements[idx]) {
+              cellElements[idx].classList.add('preview');
+              previewCells.push(idx);
+            }
+          }
         }
-        return true;
+      }
+
+      function getGridPositionFromClient(clientX, clientY, offsetX, offsetY) {
+        const rect = gridEl.getBoundingClientRect();
+        const mx = clientX - rect.left;
+        const my = clientY - rect.top;
+        const tx = mx - offsetX;
+        const ty = my - offsetY;
+        const col = Math.round((tx - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        const row = Math.round((ty - GRID_PADDING) / (CELL_SIZE + CELL_GAP));
+        return { row, col };
+      }
+
+      function canPlace(shape, baseRow, baseCol) {
+        return shape.every(([dr, dc]) => {
+          const r = baseRow + dr;
+          const c = baseCol + dc;
+          return r >= 0 && r < ROWS && c >= 0 && c < COLS && grid[r][c] === null;
+        });
       }
 
       function canPlaceAnywhere(shape) {
@@ -1189,344 +1559,274 @@
         return false;
       }
 
-      function placePiece(shape, color, row, col) {
-        for (const [r, c] of shape) {
-          grid[row + r][col + c] = color;
-          totalPaws++;
-        }
-        renderGrid();
-        checkClearLines();
-        renderGrid();
-        updateScore();
-        if (currentPieces.length === 0) generatePieces();
-        checkGameOverOrHelp();
+      function placePiece(shape, color, baseRow, baseCol) {
+        shape.forEach(([dr, dc]) => {
+          grid[baseRow + dr][baseCol + dc] = color;
+        });
       }
 
-      function handlePiecePlaced() {
-        renderPieces();
-        checkClearLines();
-        renderGrid();
-        updateScore();
-        if (currentPieces.length === 0) generatePieces();
-        checkGameOverOrHelp();
-      }
-
-      // ========== CLEAR LINES ==========
       function checkClearLines() {
-        const toRemove = new Set();
+        const cellsToClear = new Set();
         for (let r = 0; r < ROWS; r++) {
-          let full = true;
-          for (let c = 0; c < COLS; c++) {
-            if (!grid[r][c]) { full = false; break; }
+          if (grid[r].every(cell => cell !== null)) {
+            for (let c = 0; c < COLS; c++) cellsToClear.add(`${r},${c}`);
           }
-          if (full) for (let c = 0; c < COLS; c++) toRemove.add(r * COLS + c);
         }
         for (let c = 0; c < COLS; c++) {
-          let full = true;
-          for (let r = 0; r < ROWS; r++) {
-            if (!grid[r][c]) { full = false; break; }
+          if (grid.every(row => row[c] !== null)) {
+            for (let r = 0; r < ROWS; r++) cellsToClear.add(`${r},${c}`);
           }
-          if (full) for (let r = 0; r < ROWS; r++) toRemove.add(r * COLS + c);
         }
-        toRemove.forEach(idx => {
-          const r = Math.floor(idx / COLS);
-          const c = idx % COLS;
-          grid[r][c] = null;
-        });
-        return toRemove.size;
+        const clearedCount = cellsToClear.size;
+        if (clearedCount > 0) {
+          cellsToClear.forEach(key => {
+            const [r, c] = key.split(',').map(Number);
+            grid[r][c] = null;
+          });
+          totalPaws += clearedCount;
+          updateScore();
+        }
       }
 
-      // ========== IDLE HINT SYSTEM ==========
-      function resetIdleTimer() {
-        if (idleTimer) clearTimeout(idleTimer);
+      function isGameOver() {
+        return currentPieces.every(piece => {
+          return !canPlaceAnywhere(piece.shape);
+        });
+      }
+
+      function hasAvailableHelp() {
+        if (rollsLeft > 0) {
+          const { usefulShapes, normalShapes } = analyzeAllShapes();
+          if (usefulShapes.length > 0 || normalShapes.length > 0) return true;
+        }
+        if (help1Remaining > 0) {
+          for (let r = 0; r < ROWS; r++)
+            for (let c = 0; c < COLS; c++)
+              if (grid[r][c] === null) return true;
+        }
+        if (help2Remaining > 0) {
+          for (const shape of UNIQUE_SHAPES) {
+            if (canPlaceAnywhere(shape)) return true;
+          }
+        }
+        return false;
+      }
+
+      function reviveAvailable() {
+        return !reviveUsed && totalPaws >= 50;
+      }
+
+      function checkGameOverOrHelp() {
+        if (isGameOver()) {
+          if (hasAvailableHelp()) {
+            showToast('Hết nước đi! Hãy dùng trợ giúp để tiếp tục.');
+          } else {
+            gameOver();
+          }
+        }
+      }
+
+      function gameOver() {
+        finalScoreEl.textContent = totalPaws;
+        gameoverEl.style.display = 'block';
+        if (reviveAvailable()) {
+          reviveButton.style.display = 'inline-block';
+          reviveButton.disabled = false;
+        } else {
+          reviveButton.style.display = 'none';
+        }
+        clearIdleTimer();
         clearHintGlow();
-        idleTimer = setTimeout(startIdleHint, IDLE_DELAY);
       }
 
-      function startIdleHint() {
-        hintGlowActive = true;
-        hintPieceIndex = -1;
-
-        const availablePieces = currentPieces.map((p, idx) => ({ piece: p, index: idx }))
-          .filter(item => canPlaceAnywhere(item.piece.shape));
-
-        if (availablePieces.length === 0) {
-          hintGlowActive = false;
-          return;
-        }
-
-        const bestPiece = availablePieces[0];
-        hintPieceIndex = bestPiece.index;
-        renderPieces();
-      }
-
-      function clearHintGlow() {
-        hintGlowActive = false;
-        hintPieceIndex = -1;
-        renderPieces();
-      }
-
-      // ========== HELP FUNCTIONS ==========
-      function toggleHelp1(e) {
-        if (help1Remaining <= 0) {
-          showToast('Không còn lượt xóa vùng!');
-          return;
-        }
-        if (helpMode === 'select') {
-          if (selectedCells.length > 0) {
-            confirmSelection();
-          }
-          clearSelection();
-        } else {
-          clearHintGlow();
-          helpMode = 'select';
-          renderGrid();
-          showToast('Kéo để chọn vùng cần xóa (tối đa 4x4)');
-        }
-        updateCursor();
-      }
-
-      function toggleHelp2(e) {
-        if (help2Remaining <= 0) {
-          showToast('Không còn lượt chọn hình!');
-          return;
-        }
-        if (help2ModalVisible) {
-          closeHelp2Modal();
-        } else {
-          clearHintGlow();
-          openHelp2Modal();
-        }
-      }
-
-      function openHelp2Modal() {
-        help2ModalVisible = true;
-        const overlay = document.createElement('div');
-        overlay.className = 'help2-modal-overlay';
-        overlay.id = 'help2Overlay';
-        const modal = document.createElement('div');
-        modal.className = 'help2-modal';
-        const title = document.createElement('h3');
-        title.textContent = 'Chọn hình mong muốn';
-        modal.appendChild(title);
-        const shapeGrid = document.createElement('div');
-        shapeGrid.className = 'shape-grid';
-        const availableShapes = [];
-        for (let i = 0; i < UNIQUE_SHAPES.length; i++) {
-          const canPlace = false;
-          for (let r = 0; r < ROWS; r++) {
-            for (let c = 0; c < COLS; c++) {
-              let valid = true;
-              for (const [dr, dc] of UNIQUE_SHAPES[i]) {
-                if (r + dr >= ROWS || c + dc >= COLS || grid[r + dr][c + dc]) {
-                  valid = false;
-                  break;
-                }
-              }
-              if (valid) {
-                availableShapes.push({ shape: UNIQUE_SHAPES[i], index: i, available: true });
-                break;
-              }
-            }
-            if (availableShapes.some(s => s.index === i)) break;
-          }
-        }
-        const allShapesSet = new Set(availableShapes.map(s => JSON.stringify(s.shape)));
-        UNIQUE_SHAPES.forEach((shape, idx) => {
-          const available = allShapesSet.has(JSON.stringify(shape));
-          const option = document.createElement('div');
-          option.className = 'shape-option';
-          if (!available) option.classList.add('unavailable');
-          const miniPiece = document.createElement('div');
-          miniPiece.className = 'mini-piece';
-          const rows = Math.max(...shape.map(p => p[0])) + 1;
-          const cols = Math.max(...shape.map(p => p[1])) + 1;
-          for (let r = 0; r < rows; r++) {
-            const miniRow = document.createElement('div');
-            miniRow.className = 'mini-row';
-            for (let c = 0; c < cols; c++) {
-              const miniCell = document.createElement('div');
-              miniCell.className = 'mini-cell';
-              if (!shape.some(([pr, pc]) => pr === r && pc === c))
-                miniCell.classList.add('empty');
-              miniRow.appendChild(miniCell);
-            }
-            miniPiece.appendChild(miniRow);
-          }
-          option.appendChild(miniPiece);
-          if (available) {
-            option.addEventListener('click', () => onSelectShape(shape));
-            option.addEventListener('touchend', (e) => {
-              e.preventDefault();
-              onSelectShape(shape);
-            });
-          }
-          shapeGrid.appendChild(option);
-        });
-        modal.appendChild(shapeGrid);
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'close-modal-btn';
-        closeBtn.textContent = 'Đóng';
-        closeBtn.onclick = closeHelp2Modal;
-        modal.appendChild(closeBtn);
-        overlay.appendChild(modal);
-        overlay.addEventListener('click', (e) => {
-          if (e.target === overlay) closeHelp2Modal();
-        });
-        document.body.appendChild(overlay);
-      }
-
-      function onSelectShape(shape) {
-        pendingHelp2Shape = shape;
-        replacePieceMode = true;
-        closeHelp2Modal();
-        renderPieces();
-        showToast('Chạm vào mảnh cần thay thế');
-      }
-
-      function onReplacePieceClick(e) {
-        if (!replacePieceMode || !pendingHelp2Shape) return;
-        e.preventDefault();
-        const idx = parseInt(e.currentTarget.dataset.index);
-        currentPieces[idx] = { shape: pendingHelp2Shape, color: COLORS[Math.floor(Math.random() * COLORS.length)] };
-        replacePieceMode = false;
-        pendingHelp2Shape = null;
-        help2Remaining -= 1;
-        help2Badge.textContent = help2Remaining;
-        renderPieces();
-        checkGameOverOrHelp();
+      function reviveGame() {
+        if (!reviveAvailable()) return;
+        totalPaws -= 50;
+        updateScore();
+        for (let r = 0; r < ROWS; r++)
+          for (let c = 0; c < COLS; c++)
+            grid[r][c] = null;
+        reviveUsed = true;
+        gameoverEl.style.display = 'none';
+        renderGrid();
+        generatePieces();
+        showToast('Đã xóa bảng bằng 50 điểm! Tiếp tục chơi.');
         resetIdleTimer();
-      }
-
-      function onReplacePieceTouch(e) {
-        if (!replacePieceMode || !pendingHelp2Shape) return;
-        e.preventDefault();
-        const idx = parseInt(e.currentTarget.dataset.index);
-        currentPieces[idx] = { shape: pendingHelp2Shape, color: COLORS[Math.floor(Math.random() * COLORS.length)] };
-        replacePieceMode = false;
-        pendingHelp2Shape = null;
-        help2Remaining -= 1;
-        help2Badge.textContent = help2Remaining;
-        renderPieces();
-        checkGameOverOrHelp();
-        resetIdleTimer();
-      }
-
-      function closeHelp2Modal() {
-        const overlay = document.getElementById('help2Overlay');
-        if (overlay) overlay.remove();
-        help2ModalVisible = false;
-        replacePieceMode = false;
-        pendingHelp2Shape = null;
-      }
-
-      function performRoll(e) {
-        if (rollsLeft <= 0) {
-          showToast('Không còn lượt Roll!');
-          return;
-        }
-        clearHintGlow();
-        const availablePieces = currentPieces.filter(p => canPlaceAnywhere(p.shape));
-        if (availablePieces.length < 3) {
-          currentPieces = [randomPiece(), randomPiece(), randomPiece()];
-          rollsLeft -= 1;
-          rollBadge.textContent = rollsLeft;
-          renderPieces();
-          checkGameOverOrHelp();
-          resetIdleTimer();
-        } else {
-          showToast('Tất cả mảnh đều đặt được, không cần Roll');
-        }
-      }
-
-      function getGridPositionFromClient(clientX, clientY, offsetX, offsetY) {
-        const rect = gridEl.getBoundingClientRect();
-        const x = clientX - rect.left - offsetX;
-        const y = clientY - rect.top - offsetY;
-        const cellSize = CELL_SIZE + CELL_GAP;
-        return {
-          row: Math.floor(y / cellSize),
-          col: Math.floor(x / cellSize)
-        };
       }
 
       function updateScore() {
         scoreDisplay.textContent = totalPaws;
       }
 
-      function showToast(message, duration = 2000) {
+      // ========== ROLL LOGIC ==========
+      function performRoll(e) {
         clearToast();
-        toast.textContent = message;
-        toast.classList.add('show');
-        toastTimer = setTimeout(clearToast, duration);
-      }
-
-      function clearToast() {
-        if (toastTimer) clearTimeout(toastTimer);
-        toast.classList.remove('show');
-        toastTimer = null;
-      }
-
-      function checkGameOverOrHelp() {
-        const canPlaceAny = currentPieces.some(p => canPlaceAnywhere(p.shape));
-        if (!canPlaceAny) {
-          endGame();
-        }
-      }
-
-      function endGame() {
-        finalScoreEl.textContent = totalPaws;
-        gameoverEl.style.display = 'block';
-        reviveButton.disabled = reviveUsed;
-        clearHintGlow();
-      }
-
-      function reviveGame() {
-        if (reviveUsed) return;
-        if (totalPaws < 50) {
-          showToast('Không đủ 50 điểm để hồi sinh!');
+        if (rollsLeft <= 0) {
+          showToast('Đã hết lượt roll!');
           return;
         }
-        totalPaws -= 50;
-        reviveUsed = true;
-        for (let r = 0; r < ROWS; r++)
-          for (let c = 0; c < COLS; c++)
-            grid[r][c] = null;
-        gameoverEl.style.display = 'none';
-        updateScore();
-        renderGrid();
+        if (helpMode === 'select' || help2ModalVisible || replacePieceMode) {
+          showToast('Đang dùng trợ giúp khác.');
+          return;
+        }
+
+        const { usefulShapes, normalShapes } = analyzeAllShapes();
+        const allPlaceableShapes = [...usefulShapes, ...normalShapes];
+
+        if (allPlaceableShapes.length === 0) {
+          showToast('Không có hình nào khả dụng! Giữ nguyên lượt roll.');
+          return;
+        }
+
+        let selectedShapes = [];
+        if (usefulShapes.length > 0) {
+          const usefulShape = usefulShapes[Math.floor(Math.random() * usefulShapes.length)];
+          selectedShapes.push(usefulShape);
+          for (let i = 0; i < 2; i++) {
+            const randomShape = allPlaceableShapes[Math.floor(Math.random() * allPlaceableShapes.length)];
+            selectedShapes.push(randomShape);
+          }
+        } else {
+          for (let i = 0; i < 3; i++) {
+            const randomShape = allPlaceableShapes[Math.floor(Math.random() * allPlaceableShapes.length)];
+            selectedShapes.push(randomShape);
+          }
+        }
+
+        currentPieces = selectedShapes.map(shape => ({
+          shape,
+          color: COLORS[Math.floor(Math.random() * COLORS.length)]
+        }));
+
+        renderPieces();
+        rollsLeft--;
+        updateRollUI();
+        clearHintGlow();
         checkGameOverOrHelp();
         resetIdleTimer();
       }
 
-      window.restartGame = function() {
+      function analyzeAllShapes() {
+        const usefulShapes = [];
+        const normalShapes = [];
+
+        for (const shape of ALL_SHAPES) {
+          let placeable = false;
+          let triggersLine = false;
+
+          for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+              if (!canPlace(shape, r, c)) continue;
+              placeable = true;
+
+              const gridCopy = grid.map(row => [...row]);
+              for (const [dr, dc] of shape) {
+                gridCopy[r + dr][c + dc] = 'temp';
+              }
+
+              let lineFormed = false;
+              for (let row = 0; row < ROWS; row++) {
+                if (gridCopy[row].every(cell => cell !== null)) {
+                  lineFormed = true;
+                  break;
+                }
+              }
+              if (!lineFormed) {
+                for (let col = 0; col < COLS; col++) {
+                  if (gridCopy.every(row => row[col] !== null)) {
+                    lineFormed = true;
+                    break;
+                  }
+                }
+              }
+
+              if (lineFormed) {
+                triggersLine = true;
+                r = ROWS;
+                break;
+              }
+            }
+          }
+
+          if (placeable) {
+            if (triggersLine) {
+              usefulShapes.push(shape);
+            } else {
+              normalShapes.push(shape);
+            }
+          }
+        }
+
+        return { usefulShapes, normalShapes };
+      }
+
+      function updateRollUI() {
+        rollBadge.textContent = rollsLeft;
+        if (rollsLeft <= 0) {
+          rollButton.disabled = true;
+        } else {
+          rollButton.disabled = false;
+        }
+      }
+
+      function showToast(message, duration = 7000) {
+        clearToast();
+        toast.textContent = message;
+        toast.classList.add('show');
+        toastTimer = setTimeout(() => {
+          toast.classList.remove('show');
+          toastTimer = null;
+        }, duration);
+      }
+
+      function clearToast() {
+        if (toastTimer) {
+          clearTimeout(toastTimer);
+          toastTimer = null;
+        }
+        toast.classList.remove('show');
+      }
+
+      // ========== RESTART ==========
+      function restartGame() {
+        clearToast();
         grid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
         totalPaws = 0;
-        currentPieces = [];
-        rollsLeft = maxRolls;
-        help1Remaining = maxHelp1;
-        help2Remaining = maxHelp2;
-        reviveUsed = false;
-        helpMode = null;
-        replacePieceMode = false;
-        help2ModalVisible = false;
-        selectedCells = [];
-        clearHintGlow();
-        clearToast();
-        rollBadge.textContent = rollsLeft;
-        help1Badge.textContent = help1Remaining;
-        help2Badge.textContent = help2Remaining;
         updateScore();
-        gameoverEl.style.display = 'none';
-        renderGrid();
+        rollsLeft = maxRolls;
+        updateRollUI();
+        help1Remaining = maxHelp1;
+        updateHelp1UI();
+        help2Remaining = maxHelp2;
+        updateHelp2UI();
+        reviveUsed = false;
+        exitHelpMode();
+        if (help2ModalVisible || replacePieceMode) closeHelp2Modal();
+        clearHintGlow();
         generatePieces();
+        renderGrid();
+        gameoverEl.style.display = 'none';
+        clearPreviews();
+        removeTouchGhost();
+        isDragging = false;
+        draggedPieceIndex = null;
+        dragPiece = null;
+        touchActive = false;
+        updateCursor();
         resetIdleTimer();
-      };
-
+      }
+      window.restartGame = restartGame;
+      window.performRoll = performRoll;
+      window.toggleHelp1 = toggleHelp1;
+      window.toggleHelp2 = toggleHelp2;
       window.reviveGame = reviveGame;
 
       createGrid();
       restartGame();
+
+      if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+        customCursor.style.display = 'none';
+      }
     })();
   </script>
 </body>
