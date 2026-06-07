@@ -26,7 +26,6 @@
       min-height: 100vh;
       cursor: none;
       touch-action: manipulation;
-      /* cho phép scroll trên body, nhưng grid sẽ ngăn scroll khi chạm */
     }
 
     h1 {
@@ -61,7 +60,7 @@
       width: fit-content;
       margin: 0 auto;
       position: relative;
-      touch-action: none; /* ngăn scroll khi chạm vào grid */
+      touch-action: none;
     }
 
     .grid::before {
@@ -141,7 +140,7 @@
       transition: opacity 0.2s, box-shadow 0.2s;
       display: inline-block;
       cursor: none;
-      touch-action: none; /* quan trọng cho kéo trên mobile */
+      touch-action: none;
       position: relative;
     }
 
@@ -232,7 +231,7 @@
       justify-content: center;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
       transition: background 0.2s, transform 0.1s;
-      cursor: pointer; /* cho mobile */
+      cursor: pointer;
     }
 
     .round-btn:hover {
@@ -596,7 +595,7 @@
       let pendingHelp2Shape = null;
 
       let idleTimer = null;
-      const IDLE_DELAY = 5000;
+      const IDLE_DELAY = 15000;  /* Đã sửa thành 15 giây */
       let hintGlowActive = false;
       let hintCells = [];
       let hintPieceIndex = null;
@@ -839,6 +838,7 @@
           });
         }
 
+        // hint cells được áp dụng riêng, không cần renderGrid toàn bộ
         if (hintGlowActive) {
           hintCells.forEach(idx => {
             if (cellElements[idx]) cellElements[idx].classList.add('hint-glow');
@@ -913,14 +913,16 @@
         if (e.button !== 0) return;
         if (isDragging || touchActive || helpMode === 'select' || replacePieceMode || help2ModalVisible) return;
         const pieceEl = e.currentTarget;
+        // Lưu index trước khi clearHintGlow để đảm bảo
         draggedPieceIndex = parseInt(pieceEl.dataset.index);
         dragPiece = currentPieces[draggedPieceIndex];
         if (!dragPiece) return;
 
         resetIdleTimer();
-        clearHintGlow();
+        clearHintGlow();   // Bây giờ clearHintGlow không render lại pieces, nên pieceEl vẫn tồn tại
         clearToast();
         e.preventDefault();
+
         const pieceRect = pieceEl.getBoundingClientRect();
         dragOffsetX = e.clientX - pieceRect.left;
         dragOffsetY = e.clientY - pieceRect.top;
@@ -1073,7 +1075,7 @@
       function handlePiecePlaced() {
         checkClearLines();
         renderGrid();
-        refreshPieceAvailability();
+        renderPieces();  // renderPieces sẽ xóa sạch và tạo mới, bình thường
         updateScore();
         if (currentPieces.length === 0) generatePieces();
         checkGameOverOrHelp();
@@ -1152,6 +1154,15 @@
           }
         }
 
+        // Xóa hint cũ trực tiếp trên DOM, không render lại toàn bộ
+        if (hintGlowActive || hintPieceIndex !== null) {
+          hintCells.forEach(idx => {
+            if (cellElements[idx]) cellElements[idx].classList.remove('hint-glow');
+          });
+          const oldPieceEls = piecesArea.querySelectorAll('.piece');
+          oldPieceEls.forEach(el => el.classList.remove('piece-hint-glow'));
+        }
+
         if (bestCombos.length > 0) {
           const chosen = bestCombos[Math.floor(Math.random() * bestCombos.length)];
           hintPieceIndex = chosen.pieceIndex;
@@ -1164,22 +1175,35 @@
               hintCells.push(rr * COLS + cc);
             }
           }
+          // Thêm class hint-glow cho cells
+          hintCells.forEach(idx => {
+            if (cellElements[idx]) cellElements[idx].classList.add('hint-glow');
+          });
+          // Thêm class piece-hint-glow cho piece
+          const pieceEls = piecesArea.querySelectorAll('.piece');
+          if (pieceEls[hintPieceIndex]) {
+            pieceEls[hintPieceIndex].classList.add('piece-hint-glow');
+          }
         } else {
           hintPieceIndex = null;
           hintGlowActive = false;
           hintCells = [];
         }
-        renderGrid();
-        renderPieces();
       }
 
       function clearHintGlow() {
         if (!hintGlowActive && hintPieceIndex === null) return;
+        // Xóa class trên cells
+        hintCells.forEach(idx => {
+          if (cellElements[idx]) cellElements[idx].classList.remove('hint-glow');
+        });
+        // Xóa class trên piece elements
+        const pieceEls = piecesArea.querySelectorAll('.piece');
+        pieceEls.forEach(el => el.classList.remove('piece-hint-glow'));
+
         hintGlowActive = false;
         hintCells = [];
         hintPieceIndex = null;
-        renderGrid();
-        renderPieces();
         clearIdleTimer();
         resetIdleTimer();
       }
@@ -1258,7 +1282,7 @@
         updateHelp1UI();
         exitHelp1Mode();
         renderGrid();
-        refreshPieceAvailability();
+        renderPieces();
         showToast('Đã xóa vùng được chọn!');
         checkGameOverOrHelp();
       }
