@@ -623,7 +623,6 @@
     <p>Số Măng Cụt đã thu thập: <span id="finalScore"></span></p>
     <button onclick="restartGame()">Chơi lại</button>
     <button class="revive-btn" id="reviveButton" onclick="reviveGame()">Đổi 50 điểm để xóa bảng (1 lần)</button>
-    <button id="clearSaveBtn" style="background:#4b5563; font-size:0.9rem;" onclick="clearSavedGame()">Xóa dữ liệu lưu</button>
   </div>
 
   <div class="toast" id="toast"></div>
@@ -1204,7 +1203,6 @@
           const { usefulShapes, normalShapes } = analyzeAllShapes();
           if (usefulShapes.length > 0 || normalShapes.length > 0) return true;
         }
-        // FIX: help1 có thể xóa bất kỳ ô nào (kể cả ô đã có)
         if (help1Remaining > 0) {
           for (let r = 0; r < ROWS; r++)
             for (let c = 0; c < COLS; c++)
@@ -1231,7 +1229,7 @@
         const existingMsg = gameoverEl.querySelector('.new-record');
         if (existingMsg) existingMsg.remove();
         if (isNewRecord) {
-          recordToastShown = true; // Đảm bảo không hiện lại toast
+          recordToastShown = true;
           const recordMsg = document.createElement('p');
           recordMsg.textContent = '🏆 Kỷ lục mới!';
           recordMsg.className = 'new-record';
@@ -1279,7 +1277,7 @@
         }
         currentPieces = selected.map(shape => ({ shape, color: COLORS[Math.floor(Math.random() * COLORS.length)] }));
         renderPieces(); rollsLeft--; updateRollUI();
-        streakWithoutClear = 0; // Reset vì người chơi chủ động thay đổi tình thế
+        streakWithoutClear = 0;
         clearHintGlow(); saveGame(); checkGameOverOrHelp(); resetIdleTimer();
       }
 
@@ -1327,7 +1325,6 @@
         for (const idx of selectedCells) { const r = Math.floor(idx / COLS), c = idx % COLS; grid[r][c] = null; }
         help1Remaining--; updateHelp1UI();
         exitHelp1Mode();
-        // FIX: Kích hoạt kiểm tra dòng sau khi xóa
         checkClearLines();
         renderGrid();
         renderPieces();
@@ -1412,7 +1409,6 @@
       }
 
       function openHelp2Modal() {
-        // FIX: Kiểm tra xem có hình nào khả dụng không
         const hasPlaceable = ALL_VARIANTS.some(shape => canPlaceAnywhere(shape));
         if (!hasPlaceable) {
           showToast('Hiện không có hình nào đặt được!');
@@ -1658,7 +1654,6 @@
           renderGrid();
           renderPieces();
           gameoverEl.style.display = 'none';
-          // FIX: Kiểm tra game over sau khi load
           checkGameOverOrHelp();
           showToast('Đã tải lại trạng thái trước đó.', 2000);
           return true;
@@ -1666,14 +1661,6 @@
           return false;
         }
       }
-
-      function clearSavedGame() {
-        localStorage.removeItem(SAVE_KEY);
-        showToast('Đã xóa dữ liệu lưu. Bắt đầu game mới!');
-        restartGame(); // Tự động bắt đầu lại game mới
-      }
-
-      window.clearSavedGame = clearSavedGame;
 
       // ---------- Initialization ----------
       function restartGame() {
