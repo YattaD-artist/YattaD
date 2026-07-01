@@ -353,6 +353,12 @@
       background: #b91c1c;
     }
 
+    .new-record {
+      color: #fbbf24;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
     .help2-modal-overlay {
       position: fixed;
       inset: 0;
@@ -524,6 +530,7 @@
 <body>
   <h1>Thu Thập Măng Cụt</h1>
   <div class="score">Số Măng Cụt đã thu thập: <span id="scoreDisplay">0</span></div>
+  <div class="score">Kỷ lục: <span id="highScoreDisplay">0</span></div>
 
   <div class="grid" id="grid"></div>
   <div class="pieces-area" id="piecesArea"></div>
@@ -571,6 +578,7 @@
       const ROWS = 10, COLS = 10;
       let grid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
       let totalPaws = 0;
+      let highScore = 0;
       let currentPieces = [];
 
       let rollsLeft = 2;
@@ -595,7 +603,7 @@
       let pendingHelp2Shape = null;
 
       let idleTimer = null;
-      const IDLE_DELAY = 15000;  /* Đã sửa thành 15 giây */
+      const IDLE_DELAY = 15000;
       let hintGlowActive = false;
       let hintCells = [];
       let hintPieceIndex = null;
@@ -613,6 +621,28 @@
         help1Button: "Xóa một vùng: Kéo trên lưới để chọn hình chữ nhật (tối đa 4x4). Nhấn nút lần nữa để cố định, nhấn tiếp để xóa.",
         help2Button: "Chọn mảnh mong muốn: Mở danh sách các hình, chọn một hình khả dụng, sau đó chạm vào mảnh cần thay thế."
       };
+
+      // Hàm lưu và tải high score
+      function loadHighScore() {
+        const saved = localStorage.getItem('mangCutHighScore');
+        if (saved !== null) {
+          highScore = parseInt(saved, 10) || 0;
+        }
+        document.getElementById('highScoreDisplay').textContent = highScore;
+      }
+
+      function updateHighScoreIfNeeded() {
+        if (totalPaws > highScore) {
+          highScore = totalPaws;
+          localStorage.setItem('mangCutHighScore', highScore);
+          document.getElementById('highScoreDisplay').textContent = highScore;
+          return true;
+        }
+        return false;
+      }
+
+      // Gọi khi bắt đầu
+      loadHighScore();
 
       window.addEventListener('resize', () => {
         CELL_SIZE = getCSSVar('--cell-size') || 45;
@@ -838,7 +868,6 @@
           });
         }
 
-        // hint cells được áp dụng riêng, không cần renderGrid toàn bộ
         if (hintGlowActive) {
           hintCells.forEach(idx => {
             if (cellElements[idx]) cellElements[idx].classList.add('hint-glow');
@@ -913,13 +942,12 @@
         if (e.button !== 0) return;
         if (isDragging || touchActive || helpMode === 'select' || replacePieceMode || help2ModalVisible) return;
         const pieceEl = e.currentTarget;
-        // Lưu index trước khi clearHintGlow để đảm bảo
         draggedPieceIndex = parseInt(pieceEl.dataset.index);
         dragPiece = currentPieces[draggedPieceIndex];
         if (!dragPiece) return;
 
         resetIdleTimer();
-        clearHintGlow();   // Bây giờ clearHintGlow không render lại pieces, nên pieceEl vẫn tồn tại
+        clearHintGlow();
         clearToast();
         e.preventDefault();
 
@@ -1075,7 +1103,7 @@
       function handlePiecePlaced() {
         checkClearLines();
         renderGrid();
-        renderPieces();  // renderPieces sẽ xóa sạch và tạo mới, bình thường
+        renderPieces();
         updateScore();
         if (currentPieces.length === 0) generatePieces();
         checkGameOverOrHelp();
@@ -1154,7 +1182,6 @@
           }
         }
 
-        // Xóa hint cũ trực tiếp trên DOM, không render lại toàn bộ
         if (hintGlowActive || hintPieceIndex !== null) {
           hintCells.forEach(idx => {
             if (cellElements[idx]) cellElements[idx].classList.remove('hint-glow');
@@ -1175,11 +1202,9 @@
               hintCells.push(rr * COLS + cc);
             }
           }
-          // Thêm class hint-glow cho cells
           hintCells.forEach(idx => {
             if (cellElements[idx]) cellElements[idx].classList.add('hint-glow');
           });
-          // Thêm class piece-hint-glow cho piece
           const pieceEls = piecesArea.querySelectorAll('.piece');
           if (pieceEls[hintPieceIndex]) {
             pieceEls[hintPieceIndex].classList.add('piece-hint-glow');
@@ -1193,11 +1218,9 @@
 
       function clearHintGlow() {
         if (!hintGlowActive && hintPieceIndex === null) return;
-        // Xóa class trên cells
         hintCells.forEach(idx => {
           if (cellElements[idx]) cellElements[idx].classList.remove('hint-glow');
         });
-        // Xóa class trên piece elements
         const pieceEls = piecesArea.querySelectorAll('.piece');
         pieceEls.forEach(el => el.classList.remove('piece-hint-glow'));
 
@@ -1662,6 +1685,17 @@
 
       function gameOver() {
         finalScoreEl.textContent = totalPaws;
+        // Kiểm tra và cập nhật kỷ lục
+        const isNewRecord = updateHighScoreIfNeeded();
+        // Xóa dòng kỷ lục cũ nếu có
+        const existingMsg = gameoverEl.querySelector('.new-record');
+        if (existingMsg) existingMsg.remove();
+        if (isNewRecord) {
+          const recordMsg = document.createElement('p');
+          recordMsg.textContent = '🏆 Kỷ lục mới!';
+          recordMsg.className = 'new-record';
+          gameoverEl.insertBefore(recordMsg, gameoverEl.querySelector('button'));
+        }
         gameoverEl.style.display = 'block';
         if (reviveAvailable()) {
           reviveButton.style.display = 'inline-block';
@@ -1686,7 +1720,13 @@
         resetIdleTimer();
       }
 
-      function updateScore() { scoreDisplay.textContent = totalPaws; }
+      function updateScore() {
+        scoreDisplay.textContent = totalPaws;
+        const isNewRecord = updateHighScoreIfNeeded();
+        if (isNewRecord) {
+          showToast('🎉 Kỷ lục mới!', 2000);
+        }
+      }
 
       function performRoll(e) {
         clearToast();
@@ -1770,6 +1810,7 @@
 
       function restartGame() {
         clearToast();
+        loadHighScore(); // Đảm bảo hiển thị high score hiện tại
         grid = Array(ROWS).fill().map(() => Array(COLS).fill(null));
         totalPaws = 0; updateScore();
         rollsLeft = maxRolls; updateRollUI();
