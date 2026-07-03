@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Thu Thập Măng Cụt</title>
   <link rel="icon" type="image/png" sizes="32x32" href="../assets/icons/icon32.png">
-
   <style>
     * {
       box-sizing: border-box;
@@ -13,7 +12,6 @@
       -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent;
     }
-
     body {
       background: #002b3e;
       color: #f1f5f4;
@@ -27,7 +25,6 @@
       cursor: none;
       touch-action: manipulation;
     }
-
     h1 {
       margin: 0 0 5px 0;
       font-size: clamp(1.5rem, 5vw, 2rem);
@@ -35,19 +32,16 @@
       letter-spacing: 1px;
       text-align: center;
     }
-
     .score {
       font-size: clamp(1rem, 3.5vw, 1.3rem);
       margin-bottom: 15px;
       color: #f1f5f4;
       text-align: center;
     }
-
     .score span {
       font-weight: bold;
       color: #d33b3a;
     }
-
     .grid {
       display: grid;
       grid-template-columns: repeat(10, var(--cell-size, 45px));
@@ -62,7 +56,6 @@
       position: relative;
       touch-action: none;
     }
-
     .grid::before {
       content: "";
       position: absolute;
@@ -73,7 +66,6 @@
       pointer-events: none;
       z-index: 1;
     }
-
     .cell {
       width: var(--cell-size, 45px);
       height: var(--cell-size, 45px);
@@ -83,12 +75,10 @@
       z-index: 0;
       transition: background-color 0.1s ease, opacity 0.4s ease;
     }
-
     .cell.filled {
       background-color: var(--color, #d33b3a);
       box-shadow: inset 0 0 0 1px rgba(0,0,0,0.1);
     }
-
     .cell.filled::after {
       content: "";
       position: absolute;
@@ -99,31 +89,26 @@
       pointer-events: none;
       z-index: 0;
     }
-
     .cell.preview {
       background: rgba(211, 59, 58, 0.4);
       box-shadow: inset 0 0 0 2px rgba(211, 59, 58, 0.8);
     }
-
     .cell.help-selected {
       background: rgba(16, 185, 129, 0.5) !important;
       box-shadow: inset 0 0 0 3px #10b981 !important;
       z-index: 2;
     }
-
     .cell.help-confirmed {
       background: rgba(245, 158, 11, 0.6) !important;
       box-shadow: inset 0 0 0 3px #f59e0b !important;
       z-index: 2;
     }
-
     .cell.hint-glow {
       background: rgba(59, 130, 246, 0.3);
       box-shadow: inset 0 0 8px rgba(59, 130, 246, 0.7);
       z-index: 1;
       transition: background 0.3s;
     }
-
     .cell.line-clear {
       background-color: #ffb74d !important;
       box-shadow: inset 0 0 6px rgba(255, 152, 0, 0.8);
@@ -133,7 +118,6 @@
     .cell.line-clear.fade-out {
       opacity: 0;
     }
-
     .pieces-area {
       display: flex;
       gap: 15px;
@@ -142,7 +126,6 @@
       flex-wrap: wrap;
       padding: 0 10px;
     }
-
     .piece {
       padding: 6px;
       background: rgba(241, 245, 244, 0.08);
@@ -153,11 +136,9 @@
       touch-action: none;
       position: relative;
     }
-
     .piece.dragging {
       opacity: 0.4;
     }
-
     .piece.replaceable {
       outline: 3px solid #fbbf24;
       outline-offset: 2px;
@@ -165,27 +146,22 @@
       opacity: 1 !important;
       transition: outline 0.2s;
     }
-
     .piece.unavailable {
       opacity: 0.35;
       filter: grayscale(0.6);
       pointer-events: none;
     }
-
     .piece.piece-hint-glow {
       box-shadow: 0 0 12px 4px rgba(59, 130, 246, 0.8), 0 0 25px rgba(59, 130, 246, 0.5);
       background: rgba(59, 130, 246, 0.15);
     }
-
     .piece-inner {
       display: inline-block;
     }
-
     .piece-row {
       display: flex;
       gap: var(--piece-gap, 2px);
     }
-
     .piece-cell {
       width: var(--piece-size, 36px);
       height: var(--piece-size, 36px);
@@ -193,12 +169,10 @@
       border-radius: 5px;
       box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.15);
     }
-
     .piece-cell.empty {
       background: transparent;
       box-shadow: none;
     }
-
     .action-buttons {
       display: flex;
       gap: 12px;
@@ -207,7 +181,6 @@
       flex-wrap: wrap;
       justify-content: center;
     }
-
     button {
       background: #9ca3af;
       color: #fff;
@@ -220,15 +193,12 @@
       transition: background 0.2s, transform 0.1s;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
     }
-
     button:hover {
       background: #6b7280;
     }
-
     button:active {
       transform: scale(0.97);
     }
-
     .round-btn {
       position: relative;
       width: 56px;
@@ -243,26 +213,21 @@
       transition: background 0.2s, transform 0.1s;
       cursor: pointer;
     }
-
     .round-btn:hover {
       background: #475569;
     }
-
     .round-btn:active {
       transform: scale(0.95);
     }
-
     .round-btn.confirm-mode {
       background: #f59e0b;
       animation: pulse 1s infinite;
     }
-
     @keyframes pulse {
       0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
       70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
       100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
     }
-
     .round-btn img {
       width: 32px;
       height: 32px;
@@ -270,14 +235,12 @@
       display: block;
       pointer-events: none;
     }
-
     .round-btn:disabled {
       opacity: 0.5;
       pointer-events: none;
       background: #4b5563;
       animation: none;
     }
-
     .badge {
       position: absolute;
       top: -6px;
@@ -295,8 +258,6 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.4);
       pointer-events: none;
     }
-
-    /* Nút hủy nhỏ cho Help1 */
     .cancel-help1-btn {
       width: 44px;
       height: 44px;
@@ -315,11 +276,9 @@
       padding: 0;
       margin-left: 8px;
     }
-
     .cancel-help1-btn.visible {
       display: inline-flex;
     }
-
     .help-tooltip {
       position: fixed;
       background: rgba(0, 0, 0, 0.85);
@@ -337,11 +296,9 @@
       text-align: center;
       line-height: 1.4;
     }
-
     .help-tooltip.visible {
       opacity: 1;
     }
-
     .gameover {
       position: fixed;
       top: 50%;
@@ -360,12 +317,10 @@
       width: 90%;
       max-width: 400px;
     }
-
     .gameover h2 {
       margin: 0 0 15px 0;
       color: #d33b3a;
     }
-
     .gameover button {
       background: #9ca3af;
       color: #fff;
@@ -373,26 +328,21 @@
       margin: 5px;
       cursor: pointer;
     }
-
     .gameover button:hover {
       background: #6b7280;
     }
-
     .gameover .revive-btn {
       background: #d33b3a;
       color: white;
     }
-
     .gameover .revive-btn:hover {
       background: #b91c1c;
     }
-
     .new-record {
       color: #fbbf24;
       font-weight: bold;
       margin: 10px 0;
     }
-
     .help2-modal-overlay {
       position: fixed;
       inset: 0;
@@ -404,11 +354,9 @@
       backdrop-filter: blur(2px);
       cursor: default;
     }
-
     .help2-modal-overlay * {
       cursor: default;
     }
-
     .help2-modal {
       background: #1e293b;
       border-radius: 20px;
@@ -421,13 +369,11 @@
       flex-direction: column;
       align-items: center;
     }
-
     .help2-modal h3 {
       margin: 0 0 15px 0;
       color: #f1f5f4;
       font-weight: 600;
     }
-
     .shape-grid {
       display: flex;
       flex-wrap: wrap;
@@ -438,7 +384,6 @@
       padding: 8px;
       width: 100%;
     }
-
     .shape-option {
       background: rgba(255,255,255,0.08);
       border-radius: 12px;
@@ -451,45 +396,37 @@
       min-width: 70px;
       min-height: 70px;
     }
-
     .shape-option:hover {
       background: rgba(255,255,255,0.25);
       transform: scale(1.15);
       z-index: 10;
     }
-
     .shape-option:active {
       transform: scale(1.05);
     }
-
     .shape-option.unavailable {
       opacity: 0.35;
       filter: grayscale(0.6);
       pointer-events: none;
     }
-
     .shape-option .mini-piece {
       display: flex;
       flex-direction: column;
       gap: 3px;
     }
-
     .shape-option .mini-row {
       display: flex;
       gap: 3px;
     }
-
     .shape-option .mini-cell {
       width: 24px;
       height: 24px;
       background: var(--piece-color, #d33b3a) url('TieuThu/Paw.png') center/85% no-repeat;
       border-radius: 4px;
     }
-
     .shape-option .mini-cell.empty {
       background: transparent;
     }
-
     .close-modal-btn {
       margin-top: 15px;
       background: #64748b;
@@ -497,7 +434,6 @@
       font-size: 0.9rem;
       cursor: pointer;
     }
-
     .toast {
       position: fixed;
       top: 20px;
@@ -514,12 +450,9 @@
       transition: opacity 0.3s;
       pointer-events: none;
     }
-
     .toast.show {
       opacity: 1;
     }
-
-    /* Floating score animation */
     .floating-score {
       position: fixed;
       color: #fbbf24;
@@ -530,12 +463,10 @@
       text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
       animation: floatUp 1.2s ease-out forwards;
     }
-
     @keyframes floatUp {
       0% { opacity: 1; transform: translate(-50%, 0) scale(1); }
       100% { opacity: 0; transform: translate(-50%, -80px) scale(1.3); }
     }
-
     @media (max-width: 400px) {
       :root {
         --cell-size: 32px;
@@ -544,20 +475,10 @@
         --piece-size: 28px;
         --piece-gap: 1.5px;
       }
-      .round-btn {
-        width: 64px;
-        height: 64px;
-      }
-      .round-btn img {
-        width: 36px;
-        height: 36px;
-      }
-      .shape-option .mini-cell {
-        width: 20px;
-        height: 20px;
-      }
+      .round-btn { width: 64px; height: 64px; }
+      .round-btn img { width: 36px; height: 36px; }
+      .shape-option .mini-cell { width: 20px; height: 20px; }
     }
-
     @media (min-width: 401px) and (max-width: 600px) {
       :root {
         --cell-size: 36px;
@@ -567,7 +488,6 @@
         --piece-gap: 2px;
       }
     }
-
     @media (min-width: 601px) {
       :root {
         --cell-size: 45px;
@@ -577,17 +497,10 @@
         --piece-gap: 2px;
       }
     }
-
     @media (hover: none) and (pointer: coarse) {
-      #customCursor {
-        display: none;
-      }
-      body {
-        cursor: auto;
-      }
-      button, .round-btn, .shape-option, .piece, .cancel-help1-btn {
-        cursor: pointer;
-      }
+      #customCursor { display: none; }
+      body { cursor: auto; }
+      button, .round-btn, .shape-option, .piece, .cancel-help1-btn { cursor: pointer; }
     }
   </style>
 </head>
@@ -595,10 +508,8 @@
   <h1>Thu Thập Măng Cụt</h1>
   <div class="score">Số Măng Cụt đã thu thập: <span id="scoreDisplay">0</span></div>
   <div class="score">Kỷ lục: <span id="highScoreDisplay">0</span></div>
-
   <div class="grid" id="grid"></div>
   <div class="pieces-area" id="piecesArea"></div>
-
   <div class="action-buttons" id="actionButtons">
     <button onclick="restartGame()">Chơi lại</button>
     <button class="round-btn" id="rollButton">
@@ -615,19 +526,15 @@
       <span class="badge" id="help2Badge">2</span>
     </button>
   </div>
-
   <div class="help-tooltip" id="helpTooltip"></div>
-
   <div class="gameover" id="gameover">
     <h2>Game Over</h2>
     <p>Số Măng Cụt đã thu thập: <span id="finalScore"></span></p>
     <button onclick="restartGame()">Chơi lại</button>
     <button class="revive-btn" id="reviveButton" onclick="reviveGame()">Đổi 50 điểm để xóa bảng (1 lần)</button>
   </div>
-
   <div class="toast" id="toast"></div>
   <div id="customCursor" style="position:fixed; pointer-events:none; z-index:9999; width:32px; height:32px; background:url('Chi.png') center/contain no-repeat; transform:translate(-50%,-50%);"></div>
-
   <script>
     (function() {
       // ---------- CSS variable helpers ----------
@@ -645,46 +552,36 @@
       let totalPaws = 0;
       let highScore = 0;
       let currentPieces = [];
-
       let rollsLeft = 2;
       const maxRolls = 2;
-
       let help1Remaining = 1;
       const maxHelp1 = 1;
-
       let help2Remaining = 2;
       const maxHelp2 = 2;
-
       let helpMode = null;
       let isSelecting = false;
       let selectStartRow = -1, selectStartCol = -1;
       let selectEndRow = -1, selectEndCol = -1;
       let selectedCells = [];
       let help1ConfirmMode = false;
-
       let help2Active = false;
       let help2ModalVisible = false;
       let replacePieceMode = false;
       let pendingHelp2Shape = null;
-
       let idleTimer = null;
       const IDLE_DELAY = 15000;
       let hintGlowActive = false;
       let hintCells = [];
       let hintPieceIndex = null;
-
       let reviveUsed = false;
       let comboStreak = 0;
       let streakWithoutClear = 0;
       let recordToastShown = false;
-
       let clearingTimeouts = [];
-
       const tooltipEl = document.getElementById('helpTooltip');
       let longPressTimer = null;
       const LONG_PRESS_DURATION = 800;
       let toastTimer = null;
-
       const HELP_TEXTS = {
         rollButton: "Roll hình ưu tiên: Đổi 3 mảnh mới, ưu tiên những hình có thể tạo hàng/cột đầy. Giữ nguyên lượt nếu không tìm thấy.",
         help1Button: "Xóa một vùng: Kéo trên lưới để chọn hình chữ nhật (tối đa 4x4). Nhấn nút lần nữa để cố định, nhấn tiếp để xóa.",
@@ -720,7 +617,7 @@
       let touchOffsetX = 0, touchOffsetY = 0;
       let touchGhost = null;
 
-      // ---------- Shapes & colors ----------
+      // ---------- Shapes & colors (phân loại lại: thẳng 3-4 ô vào trung bình) ----------
       const SHAPES_RAW = [
         [[0,0]], [[0,0],[0,1]], [[0,0],[1,0]], [[0,0],[0,1],[0,2]], [[0,0],[1,0],[2,0]],
         [[0,0],[0,1],[1,0]], [[0,0],[0,1],[1,1]], [[0,0],[1,0],[1,1]], [[0,1],[1,0],[1,1]],
@@ -777,9 +674,27 @@
       });
       const ALL_VARIANTS = Array.from(allVariantsSet).map(str => JSON.parse(str));
 
+      // Phân loại lại: khối thẳng 3-4 ô vào MEDIUM
+      const isStraightLine = (shape) => {
+        if (shape.length < 3 || shape.length > 4) return false;
+        const rows = shape.map(p => p[0]);
+        const cols = shape.map(p => p[1]);
+        const allSameRow = rows.every(r => r === rows[0]);
+        const allSameCol = cols.every(c => c === cols[0]);
+        if (allSameRow) {
+          const sortedCols = [...cols].sort((a,b)=>a-b);
+          return sortedCols.every((c,i) => i===0 || c === sortedCols[i-1]+1);
+        }
+        if (allSameCol) {
+          const sortedRows = [...rows].sort((a,b)=>a-b);
+          return sortedRows.every((r,i) => i===0 || r === sortedRows[i-1]+1);
+        }
+        return false;
+      };
+
       const EASY_VARIANTS = ALL_VARIANTS.filter(s => s.length <= 2);
-      const MEDIUM_VARIANTS = ALL_VARIANTS.filter(s => s.length === 3);
-      const HARD_VARIANTS = ALL_VARIANTS.filter(s => s.length >= 4);
+      const MEDIUM_VARIANTS = ALL_VARIANTS.filter(s => s.length === 3 || (s.length === 4 && isStraightLine(s)));
+      const HARD_VARIANTS = ALL_VARIANTS.filter(s => s.length >= 4 && !isStraightLine(s));
 
       const COLORS = ['#3B3C40', '#D98C5F', '#F2E3D5', '#7C6A5C', '#A3B5C6', '#D4A373', '#B5838D', '#E6B89C'];
 
@@ -833,29 +748,32 @@
         if (hintGlowActive) hintCells.forEach(idx => { if (cellElements[idx]) cellElements[idx].classList.add('hint-glow'); });
       }
 
-      // ---------- Pieces generation ----------
+      // ---------- Pieces generation (tỉ lệ giảm EASY theo yêu cầu) ----------
       function randomPiece(forcePlaceable = true) {
         let attempts = 0;
         const maxAttempts = 80;
         while (attempts < maxAttempts) {
           let pool;
           let easyBias = 0;
-          if (streakWithoutClear > 4) easyBias = 30;
-          else if (streakWithoutClear > 2) easyBias = 15;
-          if (comboStreak >= 3) easyBias = Math.max(0, easyBias - 25);
+          if (streakWithoutClear > 4) easyBias = 10;
+          else if (streakWithoutClear > 2) easyBias = 5;
+          if (comboStreak >= 3) easyBias = Math.max(0, easyBias - 20);
 
           const rand = Math.random() * 100;
           if (totalPaws < 200) {
-            if (rand < 60 + easyBias) pool = EASY_VARIANTS;
-            else if (rand < 95 + easyBias * 0.5) pool = MEDIUM_VARIANTS;
+            // Giai đoạn đầu: giảm ~5% EASY => còn 57%
+            if (rand < 57 + easyBias) pool = EASY_VARIANTS;
+            else if (rand < 95) pool = MEDIUM_VARIANTS;
             else pool = HARD_VARIANTS;
           } else if (totalPaws <= 1000) {
-            if (rand < 45 + easyBias) pool = EASY_VARIANTS;
-            else if (rand < 85 + easyBias * 0.4) pool = MEDIUM_VARIANTS;
+            // Giai đoạn giữa: giảm ~15% EASY => còn 38%
+            if (rand < 38 + easyBias) pool = EASY_VARIANTS;
+            else if (rand < 90) pool = MEDIUM_VARIANTS;
             else pool = HARD_VARIANTS;
           } else {
-            if (rand < 30 + easyBias) pool = EASY_VARIANTS;
-            else if (rand < 80 + easyBias * 0.3) pool = MEDIUM_VARIANTS;
+            // Giai đoạn cuối: giảm ~30% EASY => còn 21%
+            if (rand < 21 + easyBias) pool = EASY_VARIANTS;
+            else if (rand < 85) pool = MEDIUM_VARIANTS;
             else pool = HARD_VARIANTS;
           }
           const shape = pool[Math.floor(Math.random() * pool.length)];
@@ -921,7 +839,7 @@
         });
       }
 
-      // ---------- Drag & Drop ----------
+      // ---------- Drag & Drop (giữ nguyên) ----------
       function onMouseDown(e) {
         if (e.button !== 0 || isDragging || touchActive || helpMode === 'select' || replacePieceMode || help2ModalVisible) return;
         const pieceEl = e.currentTarget;
@@ -977,7 +895,7 @@
         resetIdleTimer();
       }
 
-      // ---------- Touch handling ----------
+      // ---------- Touch handling (giữ nguyên) ----------
       function onTouchStart(e) {
         if (isDragging || helpMode === 'select' || replacePieceMode || help2ModalVisible) return;
         e.preventDefault();
@@ -1119,7 +1037,6 @@
         if (count === 0) return;
         const centerX = sumX / count;
         const centerY = sumY / count;
-
         const floatEl = document.createElement('div');
         floatEl.className = 'floating-score';
         floatEl.textContent = `+${points}`;
@@ -1135,33 +1052,27 @@
         const colsFull = [];
         for (let c = 0; c < COLS; c++) if (grid.every(row => row[c] !== null)) colsFull.push(c);
         const totalLines = rowsFull.length + colsFull.length;
-
         if (totalLines === 0) {
           comboStreak = 0;
           streakWithoutClear++;
           refreshAfterPlacement();
           return;
         }
-
         comboStreak++;
         streakWithoutClear = 0;
         const cellsToClear = new Set();
         rowsFull.forEach(r => { for (let c = 0; c < COLS; c++) cellsToClear.add(`${r},${c}`); });
         colsFull.forEach(c => { for (let r = 0; r < ROWS; r++) cellsToClear.add(`${r},${c}`); });
-
         cellsToClear.forEach(key => {
           const [r, c] = key.split(',').map(Number);
           grid[r][c] = null;
         });
-
         const clearedCount = cellsToClear.size;
         let points = clearedCount;
         if (comboStreak >= 2) points += Math.floor(clearedCount * 0.5);
         if (totalLines >= 2) points += 10;
         totalPaws += points;
-
         showFloatingScore(points, Array.from(cellsToClear));
-
         cellsToClear.forEach(key => {
           const [r, c] = key.split(',').map(Number);
           const idx = r * COLS + c;
@@ -1179,7 +1090,6 @@
           }, 400);
           clearingTimeouts.push(timeoutId);
         });
-
         refreshAfterPlacement();
       }
 
@@ -1304,7 +1214,7 @@
 
       function updateRollUI() { rollBadge.textContent = rollsLeft; rollButton.disabled = rollsLeft <= 0; }
 
-      // ---------- Help 1 ----------
+      // ---------- Help 1 (giữ nguyên) ----------
       function toggleHelp1() {
         clearToast();
         if (help1Remaining <= 0) { showToast('Đã hết lượt xóa vùng!'); return; }
@@ -1386,13 +1296,12 @@
       }
       function updateHelp1UI() { help1Badge.textContent = help1Remaining; help1Button.disabled = help1Remaining <= 0; }
 
-      // ---------- Help 2 ----------
+      // ---------- Help 2 (giữ nguyên) ----------
       function toggleHelp2() {
         clearToast();
         if (help2Remaining <= 0 && !help2ModalVisible && !replacePieceMode) { showToast('Đã hết lượt chọn hình!'); return; }
         if (helpMode === 'select') { showToast('Đang dùng trợ giúp xóa vùng.'); return; }
         if (isDragging || touchActive) { showToast('Đang thao tác, không thể mở chọn hình.'); return; }
-
         if (replacePieceMode) {
           replacePieceMode = false;
           pendingHelp2Shape = null;
@@ -1490,7 +1399,7 @@
 
       function updateHelp2UI() { help2Badge.textContent = help2Remaining; help2Button.disabled = help2Remaining <= 0; }
 
-      // ---------- Hint glow ----------
+      // ---------- Hint glow (giữ nguyên) ----------
       function countAdjacentEmpty(shape, baseRow, baseCol) {
         let count = 0;
         const checked = new Set();
@@ -1500,10 +1409,7 @@
             const ar = r + nr, ac = c + nc;
             if (ar >= 0 && ar < ROWS && ac >= 0 && ac < COLS && grid[ar][ac] === null) {
               const key = `${ar},${ac}`;
-              if (!checked.has(key)) {
-                checked.add(key);
-                count++;
-              }
+              if (!checked.has(key)) { checked.add(key); count++; }
             }
           });
         }
@@ -1512,10 +1418,8 @@
 
       function showHintGlow() {
         clearHintGlow();
-
         let bestScore = -Infinity;
         let bestCombos = [];
-
         for (let i = 0; i < currentPieces.length; i++) {
           const piece = currentPieces[i];
           if (!canPlaceAnywhere(piece.shape)) continue;
@@ -1527,15 +1431,9 @@
               const gridCopy = grid.map(row => [...row]);
               for (const [dr, dc] of shape) gridCopy[r + dr][c + dc] = 'temp';
               let linesFormed = 0;
-              for (let row = 0; row < ROWS; row++) {
-                if (gridCopy[row].every(cell => cell !== null)) linesFormed++;
-              }
-              for (let col = 0; col < COLS; col++) {
-                if (gridCopy.every(row => row[col] !== null)) linesFormed++;
-              }
-              if (linesFormed > 0) {
-                score += 1000 + linesFormed * 10;
-              }
+              for (let row = 0; row < ROWS; row++) if (gridCopy[row].every(cell => cell !== null)) linesFormed++;
+              for (let col = 0; col < COLS; col++) if (gridCopy.every(row => row[col] !== null)) linesFormed++;
+              if (linesFormed > 0) score += 1000 + linesFormed * 10;
               const adjacentEmpty = countAdjacentEmpty(shape, r, c);
               score += Math.max(0, 100 - adjacentEmpty);
               if (score > bestScore) {
@@ -1547,7 +1445,6 @@
             }
           }
         }
-
         if (bestCombos.length > 0) {
           const chosen = bestCombos[Math.floor(Math.random() * bestCombos.length)];
           hintPieceIndex = chosen.pieceIndex;
@@ -1560,13 +1457,9 @@
               hintCells.push(rr * COLS + cc);
             }
           }
-          hintCells.forEach(idx => {
-            if (cellElements[idx]) cellElements[idx].classList.add('hint-glow');
-          });
+          hintCells.forEach(idx => { if (cellElements[idx]) cellElements[idx].classList.add('hint-glow'); });
           const pieceEls = piecesArea.querySelectorAll('.piece');
-          if (pieceEls[hintPieceIndex]) {
-            pieceEls[hintPieceIndex].classList.add('piece-hint-glow');
-          }
+          if (pieceEls[hintPieceIndex]) pieceEls[hintPieceIndex].classList.add('piece-hint-glow');
         } else {
           hintPieceIndex = null;
           hintGlowActive = false;
@@ -1576,12 +1469,9 @@
 
       function clearHintGlow() {
         if (!hintGlowActive && hintPieceIndex === null) return;
-        hintCells.forEach(idx => {
-          if (cellElements[idx]) cellElements[idx].classList.remove('hint-glow');
-        });
+        hintCells.forEach(idx => { if (cellElements[idx]) cellElements[idx].classList.remove('hint-glow'); });
         const pieceEls = piecesArea.querySelectorAll('.piece');
         pieceEls.forEach(el => el.classList.remove('piece-hint-glow'));
-
         hintGlowActive = false;
         hintCells = [];
         hintPieceIndex = null;
@@ -1598,7 +1488,6 @@
           showHintGlow();
         }, IDLE_DELAY);
       }
-
       function clearIdleTimer() { if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; } }
 
       // ---------- Toast ----------
@@ -1611,7 +1500,6 @@
 
       // ---------- Save / Load ----------
       const SAVE_KEY = 'mangCutSaveState';
-
       function saveGame() {
         const state = {
           grid: grid.map(row => [...row]),
@@ -1625,9 +1513,7 @@
           streakWithoutClear,
           recordToastShown
         };
-        try {
-          localStorage.setItem(SAVE_KEY, JSON.stringify(state));
-        } catch (e) { /* ignore */ }
+        try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (e) {}
       }
 
       function loadGame() {
@@ -1635,9 +1521,7 @@
           const saved = localStorage.getItem(SAVE_KEY);
           if (!saved) return false;
           const state = JSON.parse(saved);
-          for (let r = 0; r < ROWS; r++)
-            for (let c = 0; c < COLS; c++)
-              grid[r][c] = state.grid[r][c] || null;
+          for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) grid[r][c] = state.grid[r][c] || null;
           totalPaws = state.totalPaws || 0;
           currentPieces = state.currentPieces || [];
           rollsLeft = state.rollsLeft ?? maxRolls;
@@ -1647,22 +1531,15 @@
           comboStreak = state.comboStreak || 0;
           streakWithoutClear = state.streakWithoutClear || 0;
           recordToastShown = state.recordToastShown || false;
-          updateRollUI();
-          updateHelp1UI();
-          updateHelp2UI();
-          updateScore();
-          renderGrid();
-          renderPieces();
+          updateRollUI(); updateHelp1UI(); updateHelp2UI(); updateScore();
+          renderGrid(); renderPieces();
           gameoverEl.style.display = 'none';
           checkGameOverOrHelp();
           showToast('Đã tải lại trạng thái trước đó.', 2000);
           return true;
-        } catch (e) {
-          return false;
-        }
+        } catch (e) { return false; }
       }
 
-      // ---------- Initialization ----------
       function restartGame() {
         clearToast(); loadHighScore();
         clearingTimeouts.forEach(t => clearTimeout(t));
@@ -1699,12 +1576,10 @@
           longPressTimer = null;
         }, LONG_PRESS_DURATION);
       }
-
       function cancelLongPress() {
         if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
         hideTooltip();
       }
-
       function showTooltip(event, text) {
         const x = event.clientX || (event.touches && event.touches[0].clientX) || 0;
         const y = event.clientY || (event.touches && event.touches[0].clientY) || 0;
@@ -1713,7 +1588,6 @@
         tooltipEl.style.top = (y - 80) + 'px';
         tooltipEl.classList.add('visible');
       }
-
       function hideTooltip() { tooltipEl.classList.remove('visible'); }
 
       function bindLongPress(btn, btnId, clickHandler) {
@@ -1736,7 +1610,6 @@
         if (customCursor.style.display === 'none') return;
         customCursor.style.backgroundImage = `url('${img}')`;
       }
-
       function updateCursor() {
         if (customCursor.style.display === 'none') return;
         if (helpMode === 'select' || replacePieceMode) { setCursor('Chi.png'); return; }
@@ -1759,7 +1632,6 @@
         if (saved !== null) highScore = parseInt(saved, 10) || 0;
         document.getElementById('highScoreDisplay').textContent = highScore;
       }
-
       function updateHighScoreIfNeeded() {
         if (totalPaws > highScore) {
           highScore = totalPaws;
@@ -1771,7 +1643,6 @@
       }
 
       loadHighScore();
-
       window.addEventListener('resize', () => {
         CELL_SIZE = getCSSVar('--cell-size') || 45;
         CELL_GAP = getCSSVar('--cell-gap') || 2;
@@ -1780,18 +1651,13 @@
         PIECE_GAP = getCSSVar('--piece-gap') || 2;
       });
 
-      // Bind events
       bindLongPress(rollButton, 'rollButton', performRoll);
       bindLongPress(help1Button, 'help1Button', toggleHelp1);
       bindLongPress(help2Button, 'help2Button', toggleHelp2);
-
       window.restartGame = restartGame;
       window.reviveGame = reviveGame;
-
       createGrid();
-      if (!loadGame()) {
-        restartGame();
-      }
+      if (!loadGame()) restartGame();
       if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) customCursor.style.display = 'none';
     })();
   </script>
