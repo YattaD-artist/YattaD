@@ -674,9 +674,9 @@
       });
       const ALL_VARIANTS = Array.from(allVariantsSet).map(str => JSON.parse(str));
 
-      // Phân loại lại: khối thẳng 3-4 ô vào MEDIUM
+      // ========== PHÂN LOẠI LẠI ĐỘ KHÓ ==========
       const isStraightLine = (shape) => {
-        if (shape.length < 3 || shape.length > 4) return false;
+        if (shape.length < 3) return false;
         const rows = shape.map(p => p[0]);
         const cols = shape.map(p => p[1]);
         const allSameRow = rows.every(r => r === rows[0]);
@@ -692,9 +692,15 @@
         return false;
       };
 
+      // Định nghĩa mới:
+      // EASY: 1-2 ô (luôn dễ đặt)
       const EASY_VARIANTS = ALL_VARIANTS.filter(s => s.length <= 2);
+      // MEDIUM: 3 ô, và 4 ô thẳng hàng (cơ hội tạo line tốt hơn)
       const MEDIUM_VARIANTS = ALL_VARIANTS.filter(s => s.length === 3 || (s.length === 4 && isStraightLine(s)));
-      const HARD_VARIANTS = ALL_VARIANTS.filter(s => s.length >= 4 && !isStraightLine(s));
+      // HARD: 4 ô phức tạp (L, T, Z, vuông...)
+      const HARD_VARIANTS = ALL_VARIANTS.filter(s => s.length === 4 && !isStraightLine(s));
+      // VERY_HARD: Tất cả các mảnh từ 5 ô trở lên (chiếm diện tích lớn, cực kỳ khó đặt khi bàn chật)
+      const VERY_HARD_VARIANTS = ALL_VARIANTS.filter(s => s.length >= 5);
 
       const COLORS = ['#3B3C40', '#D98C5F', '#F2E3D5', '#7C6A5C', '#A3B5C6', '#D4A373', '#B5838D', '#E6B89C'];
 
@@ -748,40 +754,59 @@
         if (hintGlowActive) hintCells.forEach(idx => { if (cellElements[idx]) cellElements[idx].classList.add('hint-glow'); });
       }
 
-      // ---------- Pieces generation (tỉ lệ giảm EASY theo yêu cầu) ----------
+      // ---------- Pieces generation (ĐIỀU CHỈNH TỈ LỆ KHÓ MỚI) ----------
       function randomPiece(forcePlaceable = true) {
         let attempts = 0;
         const maxAttempts = 80;
         while (attempts < maxAttempts) {
           let pool;
-          let easyBias = 0;
-          if (streakWithoutClear > 4) easyBias = 10;
-          else if (streakWithoutClear > 2) easyBias = 5;
-          if (comboStreak >= 3) easyBias = Math.max(0, easyBias - 20);
+          // Cơ chế hỗ trợ nhẹ khi gặp khó (streakWithoutClear), nhưng đã giảm tác động rất nhiều so với trước
+          let mercyBias = 0;
+          if (streakWithoutClear > 6) mercyBias = 5; // chỉ tăng nhẹ EASY khi quá bí
+          else if (streakWithoutClear > 3) mercyBias = 2;
 
           const rand = Math.random() * 100;
-          if (totalPaws < 200) {
-            // Giai đoạn đầu: giảm ~5% EASY => còn 57%
-            if (rand < 57 + easyBias) pool = EASY_VARIANTS;
-            else if (rand < 95) pool = MEDIUM_VARIANTS;
-            else pool = HARD_VARIANTS;
-          } else if (totalPaws <= 1000) {
-            // Giai đoạn giữa: giảm ~15% EASY => còn 38%
-            if (rand < 38 + easyBias) pool = EASY_VARIANTS;
-            else if (rand < 90) pool = MEDIUM_VARIANTS;
-            else pool = HARD_VARIANTS;
+          
+          // Phân phối tỉ lệ dựa trên điểm số (càng cao càng khó)
+          if (totalPaws < 100) {
+            // Giai đoạn 1: Làm quen - Dễ chịu
+            if (rand < 40 + mercyBias) pool = EASY_VARIANTS;        // 40%
+            else if (rand < 80) pool = MEDIUM_VARIANTS;             // 40%
+            else if (rand < 95) pool = HARD_VARIANTS;               // 15%
+            else pool = VERY_HARD_VARIANTS;                         // 5%
+          } else if (totalPaws < 400) {
+            // Giai đoạn 2: Tăng độ khó
+            if (rand < 20 + mercyBias) pool = EASY_VARIANTS;        // 20%
+            else if (rand < 65) pool = MEDIUM_VARIANTS;             // 45%
+            else if (rand < 85) pool = HARD_VARIANTS;               // 20%
+            else pool = VERY_HARD_VARIANTS;                         // 15%
+          } else if (totalPaws < 1000) {
+            // Giai đoạn 3: Thử thách thực sự
+            if (rand < 8 + mercyBias) pool = EASY_VARIANTS;         // 8%
+            else if (rand < 45) pool = MEDIUM_VARIANTS;             // 37%
+            else if (rand < 70) pool = HARD_VARIANTS;               // 25%
+            else pool = VERY_HARD_VARIANTS;                         // 30%
           } else {
-            // Giai đoạn cuối: giảm ~30% EASY => còn 21%
-            if (rand < 21 + easyBias) pool = EASY_VARIANTS;
-            else if (rand < 85) pool = MEDIUM_VARIANTS;
-            else pool = HARD_VARIANTS;
+            // Giai đoạn 4: Sinh tồn - Cực kỳ khó
+            if (rand < 3 + mercyBias) pool = EASY_VARIANTS;         // 3%
+            else if (rand < 25) pool = MEDIUM_VARIANTS;             // 22%
+            else if (rand < 55) pool = HARD_VARIANTS;               // 30%
+            else pool = VERY_HARD_VARIANTS;                         // 45%
           }
+          
+          // Đảm bảo pool không rỗng
+          if (!pool || pool.length === 0) {
+            // fallback an toàn
+            pool = MEDIUM_VARIANTS.length > 0 ? MEDIUM_VARIANTS : EASY_VARIANTS;
+          }
+          
           const shape = pool[Math.floor(Math.random() * pool.length)];
           if (!forcePlaceable || canPlaceAnywhere(shape)) {
             return { shape, color: COLORS[Math.floor(Math.random() * COLORS.length)] };
           }
           attempts++;
         }
+        // Fallback cuối cùng nếu không tìm được hình đặt được
         const fallbackShape = ALL_VARIANTS.find(s => s.length === 1 && canPlaceAnywhere(s)) || [[0,0]];
         return { shape: fallbackShape, color: COLORS[Math.floor(Math.random() * COLORS.length)] };
       }
