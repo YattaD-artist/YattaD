@@ -777,21 +777,21 @@
           } else if (totalPaws < 400) {
             // Giai đoạn 2: Tăng độ khó
             if (rand < 30 + mercyBias) pool = EASY_VARIANTS;        // 30%
-            else if (rand < 65) pool = MEDIUM_VARIANTS;             // 35%
-            else if (rand < 85) pool = HARD_VARIANTS;               // 20%
-            else pool = VERY_HARD_VARIANTS;                         // 15%
+            else if (rand < 60) pool = MEDIUM_VARIANTS;             // 30%
+            else if (rand < 90) pool = HARD_VARIANTS;               // 30%
+            else pool = VERY_HARD_VARIANTS;                         // 10%
           } else if (totalPaws < 1000) {
             // Giai đoạn 3: Thử thách thực sự
-            if (rand < 10 + mercyBias) pool = EASY_VARIANTS;         // 10%
-            else if (rand < 45) pool = MEDIUM_VARIANTS;             // 35%
-            else if (rand < 80) pool = HARD_VARIANTS;               // 35%
-            else pool = VERY_HARD_VARIANTS;                         // 20%
+            if (rand < 20 + mercyBias) pool = EASY_VARIANTS;         // 20%
+            else if (rand < 55) pool = MEDIUM_VARIANTS;             // 35%
+            else if (rand < 90) pool = HARD_VARIANTS;               // 35%
+            else pool = VERY_HARD_VARIANTS;                         // 10%
           } else {
             // Giai đoạn 4: Sinh tồn - Cực kỳ khó
-            if (rand < 3 + mercyBias) pool = EASY_VARIANTS;         // 5%
-            else if (rand < 25) pool = MEDIUM_VARIANTS;             // 20%
-            else if (rand < 75) pool = HARD_VARIANTS;               // 50%
-            else pool = VERY_HARD_VARIANTS;                         // 25%
+            if (rand < 10 + mercyBias) pool = EASY_VARIANTS;         // 10%
+            else if (rand < 30) pool = MEDIUM_VARIANTS;             // 20%
+            else if (rand < 80) pool = HARD_VARIANTS;               // 50%
+            else pool = VERY_HARD_VARIANTS;                         // 20%
           }
           
           // Đảm bảo pool không rỗng
