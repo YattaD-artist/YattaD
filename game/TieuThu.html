@@ -770,27 +770,27 @@
           // Phân phối tỉ lệ dựa trên điểm số (càng cao càng khó)
           if (totalPaws < 100) {
             // Giai đoạn 1: Làm quen - Dễ chịu
-            if (rand < 50 + mercyBias) pool = EASY_VARIANTS;        // 50%
-            else if (rand < 80) pool = MEDIUM_VARIANTS;             // 30%
-            else if (rand < 100) pool = HARD_VARIANTS;               // 20%
+            if (rand < 70 + mercyBias) pool = EASY_VARIANTS;        // 70%
+            else if (rand < 90) pool = MEDIUM_VARIANTS;             // 20%
+            else if (rand < 100) pool = HARD_VARIANTS;               // 10%
             else pool = VERY_HARD_VARIANTS;                         // 0%
           } else if (totalPaws < 400) {
             // Giai đoạn 2: Tăng độ khó
-            if (rand < 30 + mercyBias) pool = EASY_VARIANTS;        // 30%
+            if (rand < 50 + mercyBias) pool = EASY_VARIANTS;        // 50%
+            else if (rand < 80) pool = MEDIUM_VARIANTS;             // 30%
+            else if (rand < 95) pool = HARD_VARIANTS;               // 15%
+            else pool = VERY_HARD_VARIANTS;                         // 5%
+          } else if (totalPaws < 1000) {
+            // Giai đoạn 3: Thử thách thực sự
+            if (rand < 30 + mercyBias) pool = EASY_VARIANTS;         // 30%
             else if (rand < 60) pool = MEDIUM_VARIANTS;             // 30%
             else if (rand < 90) pool = HARD_VARIANTS;               // 30%
             else pool = VERY_HARD_VARIANTS;                         // 10%
-          } else if (totalPaws < 1000) {
-            // Giai đoạn 3: Thử thách thực sự
-            if (rand < 20 + mercyBias) pool = EASY_VARIANTS;         // 20%
-            else if (rand < 55) pool = MEDIUM_VARIANTS;             // 35%
-            else if (rand < 90) pool = HARD_VARIANTS;               // 35%
-            else pool = VERY_HARD_VARIANTS;                         // 10%
           } else {
             // Giai đoạn 4: Sinh tồn - Cực kỳ khó
-            if (rand < 10 + mercyBias) pool = EASY_VARIANTS;         // 10%
-            else if (rand < 30) pool = MEDIUM_VARIANTS;             // 20%
-            else if (rand < 80) pool = HARD_VARIANTS;               // 50%
+            if (rand < 15 + mercyBias) pool = EASY_VARIANTS;         // 15%
+            else if (rand < 40) pool = MEDIUM_VARIANTS;             // 25%
+            else if (rand < 80) pool = HARD_VARIANTS;               // 40%
             else pool = VERY_HARD_VARIANTS;                         // 20%
           }
           
