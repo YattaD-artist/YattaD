@@ -98,11 +98,6 @@
       box-shadow: inset 0 0 0 3px #10b981 !important;
       z-index: 2;
     }
-    .cell.help-confirmed {
-      background: rgba(245, 158, 11, 0.6) !important;
-      box-shadow: inset 0 0 0 3px #f59e0b !important;
-      z-index: 2;
-    }
     .cell.hint-glow {
       background: rgba(59, 130, 246, 0.3);
       box-shadow: inset 0 0 8px rgba(59, 130, 246, 0.7);
@@ -218,15 +213,6 @@
     }
     .round-btn:active {
       transform: scale(0.95);
-    }
-    .round-btn.confirm-mode {
-      background: #f59e0b;
-      animation: pulse 1s infinite;
-    }
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.7); }
-      70% { box-shadow: 0 0 0 8px rgba(245, 158, 11, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
     }
     .round-btn img {
       width: 32px;
@@ -520,7 +506,7 @@
       <img src="TieuThu/Help1.png" alt="Xóa vùng">
       <span class="badge" id="help1Badge">1</span>
     </button>
-    <button class="cancel-help1-btn" id="cancelHelp1Btn" title="Hủy chọn vùng">✕</button>
+    <button class="cancel-help1-btn" id="cancelHelp1Btn" title="Xóa vùng đã chọn">✕</button>
     <button class="round-btn" id="help2Button">
       <img src="TieuThu/Help2.png" alt="Chọn hình">
       <span class="badge" id="help2Badge">2</span>
@@ -563,7 +549,6 @@
       let selectStartRow = -1, selectStartCol = -1;
       let selectEndRow = -1, selectEndCol = -1;
       let selectedCells = [];
-      let help1ConfirmMode = false;
       let help2Active = false;
       let help2ModalVisible = false;
       let replacePieceMode = false;
@@ -582,9 +567,18 @@
       let longPressTimer = null;
       const LONG_PRESS_DURATION = 800;
       let toastTimer = null;
+
+      // Auto‑protection (ẩn – không hiển thị nút, không thông báo)
+      let protectionActive = false;
+      let protectionTurnsLeft = 0;
+      let protectionCooldownUntil = 0;
+      const PROTECTION_TURNS = 3;
+      const PROTECTION_COOLDOWN_MS = 300000; // 5 phút
+      const EMPTY_THRESHOLD = 12; // kích hoạt khi còn ≤ 12 ô trống
+
       const HELP_TEXTS = {
         rollButton: "Roll hình ưu tiên: Đổi 3 mảnh mới, ưu tiên những hình có thể tạo hàng/cột đầy. Giữ nguyên lượt nếu không tìm thấy.",
-        help1Button: "Xóa một vùng: Kéo trên lưới để chọn hình chữ nhật (tối đa 4x4). Nhấn nút lần nữa để cố định, nhấn tiếp để xóa.",
+        help1Button: "Xóa một vùng: Kéo trên lưới để chọn hình chữ nhật (tối đa 4x4). Nhấn X để xóa vùng đã chọn. Nhấn lại nút để hủy.",
         help2Button: "Chọn mảnh mong muốn: Mở danh sách các hình, chọn một hình khả dụng, sau đó chạm vào mảnh cần thay thế."
       };
 
@@ -617,7 +611,7 @@
       let touchOffsetX = 0, touchOffsetY = 0;
       let touchGhost = null;
 
-      // ---------- Shapes & colors (phân loại lại: thẳng 3-4 ô vào trung bình) ----------
+      // ---------- Shapes & colors ----------
       const SHAPES_RAW = [
         [[0,0]], [[0,0],[0,1]], [[0,0],[1,0]], [[0,0],[0,1],[0,2]], [[0,0],[1,0],[2,0]],
         [[0,0],[0,1],[1,0]], [[0,0],[0,1],[1,1]], [[0,0],[1,0],[1,1]], [[0,1],[1,0],[1,1]],
@@ -674,35 +668,48 @@
       });
       const ALL_VARIANTS = Array.from(allVariantsSet).map(str => JSON.parse(str));
 
-      // ========== PHÂN LOẠI LẠI ĐỘ KHÓ ==========
-      const isStraightLine = (shape) => {
-        if (shape.length < 3) return false;
+      const COLORS = ['#3B3C40', '#D98C5F', '#F2E3D5', '#7C6A5C', '#A3B5C6', '#D4A373', '#B5838D', '#E6B89C'];
+
+      function classifyShape(shape) {
+        const size = shape.length;
         const rows = shape.map(p => p[0]);
         const cols = shape.map(p => p[1]);
-        const allSameRow = rows.every(r => r === rows[0]);
-        const allSameCol = cols.every(c => c === cols[0]);
-        if (allSameRow) {
-          const sortedCols = [...cols].sort((a,b)=>a-b);
-          return sortedCols.every((c,i) => i===0 || c === sortedCols[i-1]+1);
+        const minR = Math.min(...rows), maxR = Math.max(...rows);
+        const minC = Math.min(...cols), maxC = Math.max(...cols);
+        const height = maxR - minR + 1;
+        const width = maxC - minC + 1;
+        const isStraight = (height === 1 || width === 1);
+        if (size === 1) return 'EASY';
+        if (size === 2) return 'EASY';
+        if (size === 3) {
+          if (isStraight) return 'EASY';
+          return 'MEDIUM';
         }
-        if (allSameCol) {
-          const sortedRows = [...rows].sort((a,b)=>a-b);
-          return sortedRows.every((r,i) => i===0 || r === sortedRows[i-1]+1);
+        if (size === 4) {
+          if (isStraight) return 'EASY';
+          if (height === 2 && width === 2) return 'MEDIUM';
+          return 'HARD';
         }
-        return false;
-      };
+        return 'VERY_HARD';
+      }
 
-      // Định nghĩa mới:
-      // EASY: 1-2 ô (luôn dễ đặt)
-      const EASY_VARIANTS = ALL_VARIANTS.filter(s => s.length <= 2);
-      // MEDIUM: 3 ô, và 4 ô thẳng hàng (cơ hội tạo line tốt hơn)
-      const MEDIUM_VARIANTS = ALL_VARIANTS.filter(s => s.length === 3 || (s.length === 4 && isStraightLine(s)));
-      // HARD: 4 ô phức tạp (L, T, Z, vuông...)
-      const HARD_VARIANTS = ALL_VARIANTS.filter(s => s.length === 4 && !isStraightLine(s));
-      // VERY_HARD: Tất cả các mảnh từ 5 ô trở lên (chiếm diện tích lớn, cực kỳ khó đặt khi bàn chật)
-      const VERY_HARD_VARIANTS = ALL_VARIANTS.filter(s => s.length >= 5);
+      let EASY_VARIANTS = [];
+      let MEDIUM_VARIANTS = [];
+      let HARD_VARIANTS = [];
+      let VERY_HARD_VARIANTS = [];
 
-      const COLORS = ['#3B3C40', '#D98C5F', '#F2E3D5', '#7C6A5C', '#A3B5C6', '#D4A373', '#B5838D', '#E6B89C'];
+      ALL_VARIANTS.forEach(shape => {
+        const group = classifyShape(shape);
+        if (group === 'EASY') EASY_VARIANTS.push(shape);
+        else if (group === 'MEDIUM') MEDIUM_VARIANTS.push(shape);
+        else if (group === 'HARD') HARD_VARIANTS.push(shape);
+        else VERY_HARD_VARIANTS.push(shape);
+      });
+
+      if (EASY_VARIANTS.length === 0) EASY_VARIANTS.push([[0,0]]);
+      if (MEDIUM_VARIANTS.length === 0) MEDIUM_VARIANTS = EASY_VARIANTS.slice();
+      if (HARD_VARIANTS.length === 0) HARD_VARIANTS = MEDIUM_VARIANTS.slice();
+      if (VERY_HARD_VARIANTS.length === 0) VERY_HARD_VARIANTS = HARD_VARIANTS.slice();
 
       // ---------- Grid & rendering ----------
       function createGrid() {
@@ -744,59 +751,50 @@
               cell.style.removeProperty('--paw-filter');
               delete cell.dataset.filter;
             }
-            cell.classList.remove('preview', 'help-selected', 'help-confirmed', 'hint-glow');
+            cell.classList.remove('preview', 'help-selected', 'hint-glow');
           }
         if (helpMode === 'select' && selectedCells.length > 0) {
           selectedCells.forEach(idx => {
-            if (cellElements[idx]) cellElements[idx].classList.add(help1ConfirmMode ? 'help-confirmed' : 'help-selected');
+            if (cellElements[idx]) cellElements[idx].classList.add('help-selected');
           });
         }
         if (hintGlowActive) hintCells.forEach(idx => { if (cellElements[idx]) cellElements[idx].classList.add('hint-glow'); });
       }
 
-      // ---------- Pieces generation (ĐIỀU CHỈNH TỈ LỆ KHÓ MỚI) ----------
+      // ---------- Pieces generation ----------
       function randomPiece(forcePlaceable = true) {
         let attempts = 0;
         const maxAttempts = 80;
         while (attempts < maxAttempts) {
           let pool;
-          // Cơ chế hỗ trợ nhẹ khi gặp khó (streakWithoutClear), nhưng đã giảm tác động rất nhiều so với trước
           let mercyBias = 0;
-          if (streakWithoutClear > 6) mercyBias = 5; // chỉ tăng nhẹ EASY khi quá bí
+          if (streakWithoutClear > 6) mercyBias = 5;
           else if (streakWithoutClear > 3) mercyBias = 2;
 
           const rand = Math.random() * 100;
           
-          // Phân phối tỉ lệ dựa trên điểm số (càng cao càng khó)
           if (totalPaws < 100) {
-            // Giai đoạn 1: Làm quen - Dễ chịu
-            if (rand < 70 + mercyBias) pool = EASY_VARIANTS;        // 70%
-            else if (rand < 90) pool = MEDIUM_VARIANTS;             // 20%
-            else if (rand < 100) pool = HARD_VARIANTS;               // 10%
-            else pool = VERY_HARD_VARIANTS;                         // 0%
+            if (rand < 70 + mercyBias) pool = EASY_VARIANTS;
+            else if (rand < 90) pool = MEDIUM_VARIANTS;
+            else if (rand < 100) pool = HARD_VARIANTS;
           } else if (totalPaws < 400) {
-            // Giai đoạn 2: Tăng độ khó
-            if (rand < 50 + mercyBias) pool = EASY_VARIANTS;        // 50%
-            else if (rand < 80) pool = MEDIUM_VARIANTS;             // 30%
-            else if (rand < 95) pool = HARD_VARIANTS;               // 15%
-            else pool = VERY_HARD_VARIANTS;                         // 5%
+            if (rand < 55 + mercyBias) pool = EASY_VARIANTS;
+            else if (rand < 85) pool = MEDIUM_VARIANTS;
+            else if (rand < 98) pool = HARD_VARIANTS;
+            else pool = VERY_HARD_VARIANTS;
           } else if (totalPaws < 1000) {
-            // Giai đoạn 3: Thử thách thực sự
-            if (rand < 30 + mercyBias) pool = EASY_VARIANTS;         // 30%
-            else if (rand < 60) pool = MEDIUM_VARIANTS;             // 30%
-            else if (rand < 90) pool = HARD_VARIANTS;               // 30%
-            else pool = VERY_HARD_VARIANTS;                         // 10%
+            if (rand < 35 + mercyBias) pool = EASY_VARIANTS;
+            else if (rand < 65) pool = MEDIUM_VARIANTS;
+            else if (rand < 90) pool = HARD_VARIANTS;
+            else pool = VERY_HARD_VARIANTS;
           } else {
-            // Giai đoạn 4: Sinh tồn - Cực kỳ khó
-            if (rand < 15 + mercyBias) pool = EASY_VARIANTS;         // 15%
-            else if (rand < 40) pool = MEDIUM_VARIANTS;             // 25%
-            else if (rand < 80) pool = HARD_VARIANTS;               // 40%
-            else pool = VERY_HARD_VARIANTS;                         // 20%
+            if (rand < 20 + mercyBias) pool = EASY_VARIANTS;
+            else if (rand < 45) pool = MEDIUM_VARIANTS;
+            else if (rand < 80) pool = HARD_VARIANTS;
+            else pool = VERY_HARD_VARIANTS;
           }
           
-          // Đảm bảo pool không rỗng
           if (!pool || pool.length === 0) {
-            // fallback an toàn
             pool = MEDIUM_VARIANTS.length > 0 ? MEDIUM_VARIANTS : EASY_VARIANTS;
           }
           
@@ -806,14 +804,58 @@
           }
           attempts++;
         }
-        // Fallback cuối cùng nếu không tìm được hình đặt được
         const fallbackShape = ALL_VARIANTS.find(s => s.length === 1 && canPlaceAnywhere(s)) || [[0,0]];
         return { shape: fallbackShape, color: COLORS[Math.floor(Math.random() * COLORS.length)] };
       }
 
+      function generateProtectionPieceSet(count) {
+        const candidates = [...EASY_VARIANTS, ...MEDIUM_VARIANTS];
+        const placeableWithLines = [];
+        const placeableWithoutLines = [];
+        for (const shape of candidates) {
+          if (!canPlaceAnywhere(shape)) continue;
+          let hasLine = false;
+          for (let r = 0; r < ROWS; r++) {
+            for (let c = 0; c < COLS; c++) {
+              if (!canPlace(shape, r, c)) continue;
+              const gridCopy = grid.map(row => [...row]);
+              for (const [dr, dc] of shape) gridCopy[r + dr][c + dc] = 'temp';
+              let lineFormed = false;
+              for (let row = 0; row < ROWS; row++) if (gridCopy[row].every(cell => cell !== null)) { lineFormed = true; break; }
+              if (!lineFormed) for (let col = 0; col < COLS; col++) if (gridCopy.every(row => row[col] !== null)) { lineFormed = true; break; }
+              if (lineFormed) { hasLine = true; r = ROWS; break; }
+            }
+          }
+          if (hasLine) placeableWithLines.push(shape);
+          else placeableWithoutLines.push(shape);
+        }
+        const preferredPool = placeableWithLines.length > 0 ? placeableWithLines : placeableWithoutLines;
+        const result = [];
+        for (let i = 0; i < count; i++) {
+          if (preferredPool.length > 0) {
+            const shape = preferredPool[Math.floor(Math.random() * preferredPool.length)];
+            result.push({ shape, color: COLORS[Math.floor(Math.random() * COLORS.length)] });
+          }
+        }
+        while (result.length < count) {
+          result.push(randomPiece());
+        }
+        return result;
+      }
+
       function generatePieces() {
-        currentPieces = [randomPiece(), randomPiece(), randomPiece()];
+        if (protectionActive && protectionTurnsLeft > 0) {
+          currentPieces = generateProtectionPieceSet(3);
+          protectionTurnsLeft--;
+          if (protectionTurnsLeft <= 0) {
+            protectionActive = false;
+            protectionCooldownUntil = Date.now() + PROTECTION_COOLDOWN_MS;
+          }
+        } else {
+          currentPieces = [randomPiece(), randomPiece(), randomPiece()];
+        }
         renderPieces();
+        saveGame();
       }
 
       function renderPieces() {
@@ -864,7 +906,7 @@
         });
       }
 
-      // ---------- Drag & Drop (giữ nguyên) ----------
+      // ---------- Drag & Drop ----------
       function onMouseDown(e) {
         if (e.button !== 0 || isDragging || touchActive || helpMode === 'select' || replacePieceMode || help2ModalVisible) return;
         const pieceEl = e.currentTarget;
@@ -920,7 +962,7 @@
         resetIdleTimer();
       }
 
-      // ---------- Touch handling (giữ nguyên) ----------
+      // ---------- Touch handling ----------
       function onTouchStart(e) {
         if (isDragging || helpMode === 'select' || replacePieceMode || help2ModalVisible) return;
         e.preventDefault();
@@ -1123,9 +1165,33 @@
         renderGrid();
         renderPieces();
         updateScore();
+        checkAndActivateProtection();
         saveGame();
         checkGameOverOrHelp();
         resetIdleTimer();
+      }
+
+      // ---------- Auto protection (ẩn, dựa vào số ô trống) ----------
+      function countEmptyCells() {
+        let empty = 0;
+        for (let r = 0; r < ROWS; r++)
+          for (let c = 0; c < COLS; c++)
+            if (grid[r][c] === null) empty++;
+        return empty;
+      }
+
+      function isProtectionCooldown() {
+        return protectionCooldownUntil > Date.now();
+      }
+
+      function checkAndActivateProtection() {
+        if (protectionActive) return;
+        if (isProtectionCooldown()) return;
+        const empty = countEmptyCells();
+        if (empty <= EMPTY_THRESHOLD) {
+          protectionActive = true;
+          protectionTurnsLeft = PROTECTION_TURNS;
+        }
       }
 
       // ---------- Game over & revive ----------
@@ -1200,17 +1266,28 @@
         clearToast();
         if (rollsLeft <= 0) { showToast('Đã hết lượt roll!'); return; }
         if (helpMode === 'select' || help2ModalVisible || replacePieceMode) { showToast('Đang dùng trợ giúp khác.'); return; }
-        const { usefulShapes, normalShapes } = analyzeAllShapes();
-        const allPlaceable = [...usefulShapes, ...normalShapes];
-        if (allPlaceable.length === 0) { showToast('Không có hình nào khả dụng! Giữ nguyên lượt roll.'); return; }
-        let selected = [];
-        if (usefulShapes.length > 0) {
-          selected.push(usefulShapes[Math.floor(Math.random() * usefulShapes.length)]);
-          for (let i = 0; i < 2; i++) selected.push(allPlaceable[Math.floor(Math.random() * allPlaceable.length)]);
+        
+        if (protectionActive && protectionTurnsLeft > 0) {
+          currentPieces = generateProtectionPieceSet(3);
+          protectionTurnsLeft--;
+          if (protectionTurnsLeft <= 0) {
+            protectionActive = false;
+            protectionCooldownUntil = Date.now() + PROTECTION_COOLDOWN_MS;
+          }
         } else {
-          for (let i = 0; i < 3; i++) selected.push(allPlaceable[Math.floor(Math.random() * allPlaceable.length)]);
+          const { usefulShapes, normalShapes } = analyzeAllShapes();
+          const allPlaceable = [...usefulShapes, ...normalShapes];
+          if (allPlaceable.length === 0) { showToast('Không có hình nào khả dụng! Giữ nguyên lượt roll.'); return; }
+          let selected = [];
+          if (usefulShapes.length > 0) {
+            selected.push(usefulShapes[Math.floor(Math.random() * usefulShapes.length)]);
+            for (let i = 0; i < 2; i++) selected.push(allPlaceable[Math.floor(Math.random() * allPlaceable.length)]);
+          } else {
+            for (let i = 0; i < 3; i++) selected.push(allPlaceable[Math.floor(Math.random() * allPlaceable.length)]);
+          }
+          currentPieces = selected.map(shape => ({ shape, color: COLORS[Math.floor(Math.random() * COLORS.length)] }));
         }
-        currentPieces = selected.map(shape => ({ shape, color: COLORS[Math.floor(Math.random() * COLORS.length)] }));
+        
         renderPieces(); rollsLeft--; updateRollUI();
         streakWithoutClear = 0;
         clearHintGlow(); saveGame(); checkGameOverOrHelp(); resetIdleTimer();
@@ -1239,26 +1316,52 @@
 
       function updateRollUI() { rollBadge.textContent = rollsLeft; rollButton.disabled = rollsLeft <= 0; }
 
-      // ---------- Help 1 (giữ nguyên) ----------
+      // ---------- Help 1 (xóa vùng) ----------
       function toggleHelp1() {
         clearToast();
         if (help1Remaining <= 0) { showToast('Đã hết lượt xóa vùng!'); return; }
         if (help2ModalVisible || replacePieceMode) { showToast('Đang dùng trợ giúp khác.'); return; }
         if (helpMode === 'select') {
-          if (selectedCells.length === 0) { exitHelp1Mode(); showToast('Đã thoát chế độ chọn vùng.'); return; }
-          if (!help1ConfirmMode) { help1ConfirmMode = true; updateHelp1ButtonState(); renderGrid(); showCancelHelp1Button(true); showToast('Vùng đã được cố định. Nhấn nút lần nữa để xóa, hoặc nhấn Hủy để thoát.'); return; }
-          if (help1ConfirmMode) { performHelp1Delete(); return; }
+          exitHelp1Mode();
+          showToast('Đã thoát chế độ chọn vùng.');
+          return;
         }
         if (isDragging || touchActive) { showToast('Đang thao tác, không thể vào chế độ chọn.'); return; }
-        enterHelp1Mode(); resetIdleTimer(); clearHintGlow();
+        enterHelp1Mode();
+        resetIdleTimer(); clearHintGlow();
       }
 
-      function enterHelp1Mode() { helpMode = 'select'; help1ConfirmMode = false; clearHelp1Selection(); updateHelp1ButtonState(); showCancelHelp1Button(false); updateCursor(); showToast('Kéo trên lưới để chọn vùng (tối đa 4x4). Nhấn nút lần nữa để cố định.'); }
-      function exitHelp1Mode() { helpMode = null; help1ConfirmMode = false; clearHelp1Selection(); updateHelp1ButtonState(); showCancelHelp1Button(false); updateCursor(); }
-      function clearHelp1Selection() { selectedCells.forEach(idx => { if (cellElements[idx]) cellElements[idx].classList.remove('help-selected', 'help-confirmed'); }); selectedCells = []; isSelecting = false; selectStartRow = selectEndRow = -1; selectStartCol = selectEndCol = -1; }
+      function enterHelp1Mode() {
+        helpMode = 'select';
+        clearHelp1Selection();
+        showCancelHelp1Button(true);
+        updateCursor();
+        showToast('Kéo trên lưới để chọn vùng (tối đa 4x4). Nhấn X để xóa, nhấn lại nút để hủy.');
+      }
+
+      function exitHelp1Mode() {
+        helpMode = null;
+        clearHelp1Selection();
+        showCancelHelp1Button(false);
+        updateCursor();
+      }
+
+      function clearHelp1Selection() {
+        selectedCells.forEach(idx => { if (cellElements[idx]) cellElements[idx].classList.remove('help-selected'); });
+        selectedCells = [];
+        isSelecting = false;
+        selectStartRow = selectEndRow = -1;
+        selectStartCol = selectEndCol = -1;
+      }
+
       function performHelp1Delete() {
-        for (const idx of selectedCells) { const r = Math.floor(idx / COLS), c = idx % COLS; grid[r][c] = null; }
-        help1Remaining--; updateHelp1UI();
+        if (selectedCells.length === 0) return;
+        for (const idx of selectedCells) {
+          const r = Math.floor(idx / COLS), c = idx % COLS;
+          grid[r][c] = null;
+        }
+        help1Remaining--;
+        updateHelp1UI();
         exitHelp1Mode();
         checkClearLines();
         renderGrid();
@@ -1266,20 +1369,26 @@
         showToast('Đã xóa vùng được chọn!');
         saveGame();
       }
-      function updateHelp1ButtonState() { help1Button.classList.toggle('confirm-mode', help1ConfirmMode); }
-      function showCancelHelp1Button(visible) { cancelHelp1Btn.classList.toggle('visible', visible); }
+
+      function showCancelHelp1Button(visible) {
+        cancelHelp1Btn.classList.toggle('visible', visible);
+      }
 
       cancelHelp1Btn.addEventListener('click', () => {
         if (helpMode === 'select') {
-          exitHelp1Mode();
-          showToast('Đã hủy chọn vùng.');
+          if (selectedCells.length > 0) {
+            performHelp1Delete();
+          } else {
+            exitHelp1Mode();
+            showToast('Chưa chọn vùng nào. Đã hủy chế độ xóa.');
+          }
         }
       });
 
       function onGridMouseDown(e) {
-        if (helpMode !== 'select' || !help1Remaining) { clearHintGlow(); resetIdleTimer(); return; }
+        if (helpMode !== 'select' || help1Remaining <= 0) { clearHintGlow(); resetIdleTimer(); return; }
         e.preventDefault(); resetIdleTimer(); clearHintGlow();
-        help1ConfirmMode = false; updateHelp1ButtonState(); showCancelHelp1Button(false); clearHelp1Selection(); isSelecting = true;
+        clearHelp1Selection(); isSelecting = true;
         const rect = gridEl.getBoundingClientRect();
         const cellSize = CELL_SIZE + CELL_GAP;
         selectStartCol = Math.floor((e.clientX - rect.left) / cellSize);
@@ -1289,39 +1398,61 @@
         document.addEventListener('mousemove', onHelpMouseMove);
         document.addEventListener('mouseup', onHelpMouseUp);
       }
-      function onHelpMouseMove(e) { if (!isSelecting || helpMode !== 'select') return; handleHelpSelectMove(e.clientX, e.clientY); }
-      function onHelpMouseUp() { document.removeEventListener('mousemove', onHelpMouseMove); document.removeEventListener('mouseup', onHelpMouseUp); isSelecting = false; }
+
+      function onHelpMouseMove(e) {
+        if (!isSelecting || helpMode !== 'select') return;
+        handleHelpSelectMove(e.clientX, e.clientY);
+      }
+
+      function onHelpMouseUp() {
+        document.removeEventListener('mousemove', onHelpMouseMove);
+        document.removeEventListener('mouseup', onHelpMouseUp);
+        isSelecting = false;
+      }
+
       function onGridTouchStart(e) {
-        if (helpMode !== 'select' || !help1Remaining) { clearHintGlow(); resetIdleTimer(); return; }
+        if (helpMode !== 'select' || help1Remaining <= 0) { clearHintGlow(); resetIdleTimer(); return; }
         e.preventDefault(); resetIdleTimer(); clearHintGlow();
-        help1ConfirmMode = false; updateHelp1ButtonState(); showCancelHelp1Button(false); clearHelp1Selection(); isSelecting = true;
+        clearHelp1Selection(); isSelecting = true;
         const touch = e.touches[0], rect = gridEl.getBoundingClientRect(), cellSize = CELL_SIZE + CELL_GAP;
         selectStartCol = Math.floor((touch.clientX - rect.left) / cellSize);
         selectStartRow = Math.floor((touch.clientY - rect.top) / cellSize);
         selectEndCol = selectStartCol; selectEndRow = selectStartRow;
         updateHelp1Selection();
       }
-      function onGridTouchMove(e) { if (!isSelecting || helpMode !== 'select') return; e.preventDefault(); handleHelpSelectMove(e.touches[0].clientX, e.touches[0].clientY); }
+
+      function onGridTouchMove(e) {
+        if (!isSelecting || helpMode !== 'select') return;
+        e.preventDefault();
+        handleHelpSelectMove(e.touches[0].clientX, e.touches[0].clientY);
+      }
+
       function onGridTouchEnd() { isSelecting = false; }
+
       function handleHelpSelectMove(clientX, clientY) {
         const rect = gridEl.getBoundingClientRect(), cellSize = CELL_SIZE + CELL_GAP;
         selectEndCol = Math.floor((clientX - rect.left) / cellSize);
         selectEndRow = Math.floor((clientY - rect.top) / cellSize);
         updateHelp1Selection();
       }
+
       function updateHelp1Selection() {
-        selectedCells.forEach(idx => { if (cellElements[idx]) cellElements[idx].classList.remove('help-selected', 'help-confirmed'); });
+        selectedCells.forEach(idx => { if (cellElements[idx]) cellElements[idx].classList.remove('help-selected'); });
         selectedCells = [];
         if (selectStartRow === -1) return;
         const minRow = Math.min(selectStartRow, selectEndRow), maxRow = Math.max(selectStartRow, selectEndRow);
         const minCol = Math.min(selectStartCol, selectEndCol), maxCol = Math.max(selectStartCol, selectEndCol);
         if (maxRow - minRow + 1 > 4 || maxCol - minCol + 1 > 4) return;
-        for (let r = minRow; r <= maxRow; r++) for (let c = minCol; c <= maxCol; c++) if (r >= 0 && r < ROWS && c >= 0 && c < COLS) selectedCells.push(r * COLS + c);
-        selectedCells.forEach(idx => { if (cellElements[idx]) cellElements[idx].classList.add(help1ConfirmMode ? 'help-confirmed' : 'help-selected'); });
+        for (let r = minRow; r <= maxRow; r++)
+          for (let c = minCol; c <= maxCol; c++)
+            if (r >= 0 && r < ROWS && c >= 0 && c < COLS)
+              selectedCells.push(r * COLS + c);
+        selectedCells.forEach(idx => { if (cellElements[idx]) cellElements[idx].classList.add('help-selected'); });
       }
+
       function updateHelp1UI() { help1Badge.textContent = help1Remaining; help1Button.disabled = help1Remaining <= 0; }
 
-      // ---------- Help 2 (giữ nguyên) ----------
+      // ---------- Help 2 ----------
       function toggleHelp2() {
         clearToast();
         if (help2Remaining <= 0 && !help2ModalVisible && !replacePieceMode) { showToast('Đã hết lượt chọn hình!'); return; }
@@ -1424,7 +1555,7 @@
 
       function updateHelp2UI() { help2Badge.textContent = help2Remaining; help2Button.disabled = help2Remaining <= 0; }
 
-      // ---------- Hint glow (giữ nguyên) ----------
+      // ---------- Hint glow ----------
       function countAdjacentEmpty(shape, baseRow, baseCol) {
         let count = 0;
         const checked = new Set();
@@ -1513,6 +1644,7 @@
           showHintGlow();
         }, IDLE_DELAY);
       }
+
       function clearIdleTimer() { if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; } }
 
       // ---------- Toast ----------
@@ -1521,6 +1653,7 @@
         toast.textContent = message; toast.classList.add('show');
         toastTimer = setTimeout(() => { toast.classList.remove('show'); toastTimer = null; }, duration);
       }
+
       function clearToast() { if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; } toast.classList.remove('show'); }
 
       // ---------- Save / Load ----------
@@ -1536,7 +1669,10 @@
           reviveUsed,
           comboStreak,
           streakWithoutClear,
-          recordToastShown
+          recordToastShown,
+          protectionActive,
+          protectionTurnsLeft,
+          protectionCooldownUntil
         };
         try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (e) {}
       }
@@ -1556,6 +1692,9 @@
           comboStreak = state.comboStreak || 0;
           streakWithoutClear = state.streakWithoutClear || 0;
           recordToastShown = state.recordToastShown || false;
+          protectionActive = state.protectionActive || false;
+          protectionTurnsLeft = state.protectionTurnsLeft || 0;
+          protectionCooldownUntil = state.protectionCooldownUntil || 0;
           updateRollUI(); updateHelp1UI(); updateHelp2UI(); updateScore();
           renderGrid(); renderPieces();
           gameoverEl.style.display = 'none';
@@ -1575,6 +1714,7 @@
         help1Remaining = maxHelp1; updateHelp1UI();
         help2Remaining = maxHelp2; updateHelp2UI();
         reviveUsed = false; comboStreak = 0; streakWithoutClear = 0; recordToastShown = false;
+        protectionActive = false; protectionTurnsLeft = 0; protectionCooldownUntil = 0;
         exitHelp1Mode();
         if (help2ModalVisible || replacePieceMode) {
           const overlay = document.getElementById('help2Overlay'); if (overlay) overlay.remove();
@@ -1601,10 +1741,12 @@
           longPressTimer = null;
         }, LONG_PRESS_DURATION);
       }
+
       function cancelLongPress() {
         if (longPressTimer) { clearTimeout(longPressTimer); longPressTimer = null; }
         hideTooltip();
       }
+
       function showTooltip(event, text) {
         const x = event.clientX || (event.touches && event.touches[0].clientX) || 0;
         const y = event.clientY || (event.touches && event.touches[0].clientY) || 0;
@@ -1613,6 +1755,7 @@
         tooltipEl.style.top = (y - 80) + 'px';
         tooltipEl.classList.add('visible');
       }
+
       function hideTooltip() { tooltipEl.classList.remove('visible'); }
 
       function bindLongPress(btn, btnId, clickHandler) {
@@ -1635,6 +1778,7 @@
         if (customCursor.style.display === 'none') return;
         customCursor.style.backgroundImage = `url('${img}')`;
       }
+
       function updateCursor() {
         if (customCursor.style.display === 'none') return;
         if (helpMode === 'select' || replacePieceMode) { setCursor('Chi.png'); return; }
@@ -1657,6 +1801,7 @@
         if (saved !== null) highScore = parseInt(saved, 10) || 0;
         document.getElementById('highScoreDisplay').textContent = highScore;
       }
+
       function updateHighScoreIfNeeded() {
         if (totalPaws > highScore) {
           highScore = totalPaws;
