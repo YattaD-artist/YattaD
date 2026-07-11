@@ -1488,7 +1488,7 @@
         
         renderPieces(); rollsLeft--; updateRollUI();
         streakWithoutClear = 0;
-        playSound('TieuThu/Help1.mp3', 0.5);
+        playSound('TieuThu/Help1.mp3', 0.2);
         clearHintGlow(); saveGame(); checkGameOverOrHelp(); resetIdleTimer();
       }
 
@@ -1562,7 +1562,7 @@
         help1Remaining--;
         updateHelp1UI();
         exitHelp1Mode();
-        playSound('TieuThu/Help2.mp3', 0.5);
+        playSound('TieuThu/Help2.mp3', 0.2);
         checkClearLines();
         renderGrid();
         renderPieces();
@@ -1743,7 +1743,7 @@
         currentPieces[index] = { shape: pendingHelp2Shape, color: COLORS[Math.floor(Math.random() * COLORS.length)] };
         help2Remaining--; updateHelp2UI();
         replacePieceMode = false; pendingHelp2Shape = null; help2Active = false;
-        playSound('TieuThu/Help3.mp3', 0.5);
+        playSound('TieuThu/Help3.mp3', 0.2);
         renderPieces(); updateCursor(); showToast('Đã thay thế mảnh!'); saveGame(); checkGameOverOrHelp();
       }
 
