@@ -568,13 +568,13 @@
       const LONG_PRESS_DURATION = 800;
       let toastTimer = null;
 
-      // Auto‑protection (ẩn – không hiển thị nút, không thông báo)
+      // Auto‑protection
       let protectionActive = false;
       let protectionTurnsLeft = 0;
       let protectionCooldownUntil = 0;
       const PROTECTION_TURNS = 3;
-      const PROTECTION_COOLDOWN_MS = 300000; // 5 phút
-      const EMPTY_THRESHOLD = 12; // kích hoạt khi còn ≤ 12 ô trống
+      const PROTECTION_COOLDOWN_MS = 300000;
+      const EMPTY_THRESHOLD = 12;
 
       const HELP_TEXTS = {
         rollButton: "Roll hình ưu tiên: Đổi 3 mảnh mới, ưu tiên những hình có thể tạo hàng/cột đầy. Giữ nguyên lượt nếu không tìm thấy.",
@@ -611,6 +611,112 @@
       let touchOffsetX = 0, touchOffsetY = 0;
       let touchGhost = null;
 
+      // ========== AUDIO SYSTEM ==========
+      let audioCtx = null;
+      const audioBuffers = {};
+      const soundVolume = 0.5;
+      const meowVolumes = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]; // người dùng tự chỉnh sửa sau
+      let backgroundSource = null;
+      let audioInitialized = false;
+
+      function initAudio() {
+        if (audioCtx) return;
+        try {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          if (audioCtx.state === 'suspended') {
+            const resumeAudio = () => {
+              audioCtx.resume();
+              document.removeEventListener('mousedown', resumeAudio);
+              document.removeEventListener('touchstart', resumeAudio);
+            };
+            document.addEventListener('mousedown', resumeAudio);
+            document.addEventListener('touchstart', resumeAudio);
+          }
+        } catch (e) {
+          console.warn('Web Audio API không được hỗ trợ.');
+        }
+      }
+
+      function loadSound(url) {
+        return fetch(url)
+          .then(response => response.arrayBuffer())
+          .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
+          .then(buffer => {
+            audioBuffers[url] = buffer;
+            return buffer;
+          })
+          .catch(err => {
+            console.warn(`Không thể tải âm thanh: ${url}`, err);
+          });
+      }
+
+      async function preloadSounds() {
+        const basePath = 'TieuThu/';
+        const files = [
+          'Background.mp3',
+          'Thub.mp3',
+          'Help1.mp3',
+          'Help2.mp3',
+          'Help3.mp3',
+          ...Array.from({ length: 8 }, (_, i) => `Meow${i + 1}.mp3`)
+        ];
+        const promises = files.map(file => loadSound(basePath + file));
+        await Promise.all(promises);
+        // Bắt đầu nhạc nền sau khi tải xong
+        startBackgroundMusic();
+      }
+
+      function playSound(name, volume = soundVolume) {
+        if (!audioCtx || !audioBuffers[name]) return;
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const source = audioCtx.createBufferSource();
+        source.buffer = audioBuffers[name];
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.value = volume;
+        source.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        source.start(0);
+        // Tự hủy sau khi phát xong
+        source.onended = () => {
+          source.disconnect();
+          gainNode.disconnect();
+        };
+      }
+
+      function playMeowRandom() {
+        const index = Math.floor(Math.random() * 8);
+        const name = `TieuThu/Meow${index + 1}.mp3`;
+        const vol = meowVolumes[index] !== undefined ? meowVolumes[index] : soundVolume;
+        playSound(name, vol);
+      }
+
+      function startBackgroundMusic() {
+        if (!audioCtx || !audioBuffers['TieuThu/Background.mp3']) return;
+        stopBackgroundMusic();
+        backgroundSource = audioCtx.createBufferSource();
+        backgroundSource.buffer = audioBuffers['TieuThu/Background.mp3'];
+        backgroundSource.loop = true;
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.value = soundVolume;
+        backgroundSource.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        backgroundSource.start(0);
+      }
+
+      function stopBackgroundMusic() {
+        if (backgroundSource) {
+          try { backgroundSource.stop(); } catch (e) {}
+          backgroundSource.disconnect();
+          backgroundSource = null;
+        }
+      }
+
+      // Gọi initAudio và preload ngay khi script chạy
+      initAudio();
+      preloadSounds();
+
       // ---------- Shapes & colors ----------
       const SHAPES_RAW = [
         [[0,0]], [[0,0],[0,1]], [[0,0],[1,0]], [[0,0],[0,1],[0,2]], [[0,0],[1,0],[2,0]],
@@ -628,11 +734,28 @@
         [[0,0],[0,1],[1,0],[1,1],[2,2]], [[0,2],[0,1],[1,1],[1,2],[2,0]]
       ];
 
+      const FORCED_VERY_HARD_RAW = [
+        [[0,0],[1,0],[2,0],[2,1]],
+        [[0,2],[1,0],[1,1],[1,2]],
+        [[0,0],[0,1],[1,1],[1,2]],
+        [[0,0],[0,2],[1,1]],
+        [[0,0],[1,1],[2,1],[2,2]],
+        [[0,1],[1,0],[1,1],[2,0]],
+        [[0,0],[0,1],[1,1],[2,1],[2,0]],
+        [[0,2],[0,1],[1,1],[1,2],[2,0]]
+      ];
+
       function normalizeShape(shape) {
         const minRow = Math.min(...shape.map(p => p[0]));
         const minCol = Math.min(...shape.map(p => p[1]));
         return shape.map(([r, c]) => [r - minRow, c - minCol]).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
       }
+
+      function shapeToString(shape) {
+        return JSON.stringify(normalizeShape(shape));
+      }
+
+      const FORCED_VERY_HARD_SET = new Set(FORCED_VERY_HARD_RAW.map(s => shapeToString(s)));
 
       function rotateShape(shape, times) {
         let s = shape.map(p => [...p]);
@@ -670,7 +793,13 @@
 
       const COLORS = ['#3B3C40', '#D98C5F', '#F2E3D5', '#7C6A5C', '#A3B5C6', '#D4A373', '#B5838D', '#E6B89C'];
 
-      function classifyShape(shape) {
+      let VERY_EASY_VARIANTS = [];
+      let EASY_VARIANTS = [];
+      let MEDIUM_VARIANTS = [];
+      let HARD_VARIANTS = [];
+      let VERY_HARD_VARIANTS = [];
+
+      function classifyShapeRegular(shape) {
         const size = shape.length;
         const rows = shape.map(p => p[0]);
         const cols = shape.map(p => p[1]);
@@ -679,7 +808,7 @@
         const height = maxR - minR + 1;
         const width = maxC - minC + 1;
         const isStraight = (height === 1 || width === 1);
-        if (size === 1) return 'EASY';
+        if (size === 1) return 'VERY_EASY';
         if (size === 2) return 'EASY';
         if (size === 3) {
           if (isStraight) return 'EASY';
@@ -690,23 +819,28 @@
           if (height === 2 && width === 2) return 'MEDIUM';
           return 'HARD';
         }
-        return 'VERY_HARD';
+        return 'HARD';
       }
 
-      let EASY_VARIANTS = [];
-      let MEDIUM_VARIANTS = [];
-      let HARD_VARIANTS = [];
-      let VERY_HARD_VARIANTS = [];
-
       ALL_VARIANTS.forEach(shape => {
-        const group = classifyShape(shape);
+        const str = JSON.stringify(shape);
+        if (shape.length === 1) {
+          VERY_EASY_VARIANTS.push(shape);
+          return;
+        }
+        if (FORCED_VERY_HARD_SET.has(str)) {
+          VERY_HARD_VARIANTS.push(shape);
+          return;
+        }
+        const group = classifyShapeRegular(shape);
         if (group === 'EASY') EASY_VARIANTS.push(shape);
         else if (group === 'MEDIUM') MEDIUM_VARIANTS.push(shape);
         else if (group === 'HARD') HARD_VARIANTS.push(shape);
         else VERY_HARD_VARIANTS.push(shape);
       });
 
-      if (EASY_VARIANTS.length === 0) EASY_VARIANTS.push([[0,0]]);
+      if (VERY_EASY_VARIANTS.length === 0) VERY_EASY_VARIANTS.push([[0,0]]);
+      if (EASY_VARIANTS.length === 0) EASY_VARIANTS = VERY_EASY_VARIANTS.slice();
       if (MEDIUM_VARIANTS.length === 0) MEDIUM_VARIANTS = EASY_VARIANTS.slice();
       if (HARD_VARIANTS.length === 0) HARD_VARIANTS = MEDIUM_VARIANTS.slice();
       if (VERY_HARD_VARIANTS.length === 0) VERY_HARD_VARIANTS = HARD_VARIANTS.slice();
@@ -767,31 +901,28 @@
         const maxAttempts = 80;
         while (attempts < maxAttempts) {
           let pool;
-          let mercyBias = 0;
-          if (streakWithoutClear > 6) mercyBias = 5;
-          else if (streakWithoutClear > 3) mercyBias = 2;
-
           const rand = Math.random() * 100;
-          
-          if (totalPaws < 100) {
-            if (rand < 70 + mercyBias) pool = EASY_VARIANTS;
-            else if (rand < 90) pool = MEDIUM_VARIANTS;
-            else if (rand < 100) pool = HARD_VARIANTS;
+
+          if (rand < 2) {
+            pool = VERY_EASY_VARIANTS;
+          } else if (totalPaws < 100) {
+            if (rand < 75) pool = EASY_VARIANTS;
+            else pool = MEDIUM_VARIANTS;
           } else if (totalPaws < 400) {
-            if (rand < 55 + mercyBias) pool = EASY_VARIANTS;
-            else if (rand < 85) pool = MEDIUM_VARIANTS;
-            else if (rand < 98) pool = HARD_VARIANTS;
-            else pool = VERY_HARD_VARIANTS;
+            if (rand < 2) { pool = VERY_HARD_VARIANTS; }
+            else if (rand < 62) pool = EASY_VARIANTS;
+            else if (rand < 90) pool = MEDIUM_VARIANTS;
+            else pool = HARD_VARIANTS;
           } else if (totalPaws < 1000) {
-            if (rand < 35 + mercyBias) pool = EASY_VARIANTS;
-            else if (rand < 65) pool = MEDIUM_VARIANTS;
-            else if (rand < 90) pool = HARD_VARIANTS;
-            else pool = VERY_HARD_VARIANTS;
+            if (rand < 3) { pool = VERY_HARD_VARIANTS; }
+            else if (rand < 53) pool = EASY_VARIANTS;
+            else if (rand < 85) pool = MEDIUM_VARIANTS;
+            else pool = HARD_VARIANTS;
           } else {
-            if (rand < 20 + mercyBias) pool = EASY_VARIANTS;
-            else if (rand < 45) pool = MEDIUM_VARIANTS;
-            else if (rand < 80) pool = HARD_VARIANTS;
-            else pool = VERY_HARD_VARIANTS;
+            if (rand < 5) { pool = VERY_HARD_VARIANTS; }
+            else if (rand < 40) pool = EASY_VARIANTS;
+            else if (rand < 80) pool = MEDIUM_VARIANTS;
+            else pool = HARD_VARIANTS;
           }
           
           if (!pool || pool.length === 0) {
@@ -804,12 +935,15 @@
           }
           attempts++;
         }
-        const fallbackShape = ALL_VARIANTS.find(s => s.length === 1 && canPlaceAnywhere(s)) || [[0,0]];
-        return { shape: fallbackShape, color: COLORS[Math.floor(Math.random() * COLORS.length)] };
+        for (const pool of [VERY_EASY_VARIANTS, EASY_VARIANTS, MEDIUM_VARIANTS, HARD_VARIANTS, VERY_HARD_VARIANTS]) {
+          const found = pool.find(s => canPlaceAnywhere(s));
+          if (found) return { shape: found, color: COLORS[Math.floor(Math.random() * COLORS.length)] };
+        }
+        return { shape: [[0,0]], color: COLORS[0] };
       }
 
       function generateProtectionPieceSet(count) {
-        const candidates = [...EASY_VARIANTS, ...MEDIUM_VARIANTS];
+        const candidates = [...EASY_VARIANTS, ...MEDIUM_VARIANTS, ...VERY_EASY_VARIANTS];
         const placeableWithLines = [];
         const placeableWithoutLines = [];
         for (const shape of candidates) {
@@ -1085,6 +1219,7 @@
 
       function placePiece(shape, color, baseRow, baseCol) {
         shape.forEach(([dr, dc]) => { grid[baseRow + dr][baseCol + dc] = color; });
+        playSound('TieuThu/Thub.mp3', soundVolume);
       }
 
       // ---------- Line clearing & effects ----------
@@ -1157,6 +1292,7 @@
           }, 400);
           clearingTimeouts.push(timeoutId);
         });
+        playMeowRandom(); // phát âm thanh meow ngẫu nhiên khi ăn dòng
         refreshAfterPlacement();
       }
 
@@ -1171,7 +1307,7 @@
         resetIdleTimer();
       }
 
-      // ---------- Auto protection (ẩn, dựa vào số ô trống) ----------
+      // ---------- Auto protection ----------
       function countEmptyCells() {
         let empty = 0;
         for (let r = 0; r < ROWS; r++)
@@ -1241,6 +1377,7 @@
         reviveButton.disabled = !reviveAvailable();
         clearIdleTimer();
         clearHintGlow();
+        // Không dừng nhạc nền
         saveGame();
       }
 
@@ -1290,6 +1427,7 @@
         
         renderPieces(); rollsLeft--; updateRollUI();
         streakWithoutClear = 0;
+        playSound('TieuThu/Help1.mp3', soundVolume); // âm thanh help1 (roll)
         clearHintGlow(); saveGame(); checkGameOverOrHelp(); resetIdleTimer();
       }
 
@@ -1363,6 +1501,7 @@
         help1Remaining--;
         updateHelp1UI();
         exitHelp1Mode();
+        playSound('TieuThu/Help2.mp3', soundVolume); // âm thanh xóa vùng
         checkClearLines();
         renderGrid();
         renderPieces();
@@ -1543,6 +1682,7 @@
         currentPieces[index] = { shape: pendingHelp2Shape, color: COLORS[Math.floor(Math.random() * COLORS.length)] };
         help2Remaining--; updateHelp2UI();
         replacePieceMode = false; pendingHelp2Shape = null; help2Active = false;
+        playSound('TieuThu/Help3.mp3', soundVolume); // âm thanh thay thế
         renderPieces(); updateCursor(); showToast('Đã thay thế mảnh!'); saveGame(); checkGameOverOrHelp();
       }
 
@@ -1657,7 +1797,7 @@
       function clearToast() { if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; } toast.classList.remove('show'); }
 
       // ---------- Save / Load ----------
-      const SAVE_KEY = 'mangCutSaveState';
+      const SAVE_KEY = 'mangCutSaveState_v2';
       function saveGame() {
         const state = {
           grid: grid.map(row => [...row]),
