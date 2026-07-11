@@ -635,8 +635,8 @@
       const isMobileDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
       // Meow volumes: desktop 0.5, mobile 0.25 (nhỏ hơn 50%)
       const meowVolumes = isMobileDevice
-        ? [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25]
-        : [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5];
+        ? [0.25, 0.25, 0.25, 0.25, 0.12, 0.12, 0.25, 0.25]
+        : [0.5, 0.5, 0.5, 0.5, 0.25, 0.25, 0.5, 0.5];
       let backgroundSource = null;
 
       function initAudio() {
