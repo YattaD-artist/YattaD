@@ -631,7 +631,12 @@
       let audioCtx = null;
       const audioBuffers = {};
       const soundVolume = 0.5;
-      const meowVolumes = [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5];
+      // Kiểm tra thiết bị di động (touch, không có hover chính xác)
+      const isMobileDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+      // Meow volumes: desktop 0.5, mobile 0.25 (nhỏ hơn 50%)
+      const meowVolumes = isMobileDevice
+        ? [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25]
+        : [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5];
       let backgroundSource = null;
 
       function initAudio() {
