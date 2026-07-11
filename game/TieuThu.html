@@ -587,7 +587,7 @@
       const PROTECTION_COOLDOWN_MS = 300000;
       const EMPTY_THRESHOLD = 12;
 
-      // Nhân đôi điểm tạm thời
+      // Double score
       let doubleScoreActive = false;
       let doubleScoreTimeout = null;
       let doubleScoreInterval = null;
@@ -688,7 +688,10 @@
         source.connect(gainNode);
         gainNode.connect(audioCtx.destination);
         source.start(0);
-        source.onended = () => { source.disconnect(); gainNode.disconnect(); };
+        source.onended = () => {
+          source.disconnect();
+          gainNode.disconnect();
+        };
       }
 
       function playMeowRandom() {
@@ -1055,7 +1058,7 @@
         });
       }
 
-      // ---------- Drag & Drop (unchanged) ----------
+      // ---------- Drag & Drop ----------
       function onMouseDown(e) {
         if (e.button !== 0 || isDragging || touchActive || helpMode === 'select' || replacePieceMode || help2ModalVisible) return;
         const pieceEl = e.currentTarget;
@@ -1111,7 +1114,7 @@
         resetIdleTimer();
       }
 
-      // ---------- Touch handling (unchanged) ----------
+      // ---------- Touch handling ----------
       function onTouchStart(e) {
         if (isDragging || helpMode === 'select' || replacePieceMode || help2ModalVisible) return;
         e.preventDefault();
@@ -1284,13 +1287,11 @@
           const [r, c] = key.split(',').map(Number);
           grid[r][c] = null;
         });
-
         const clearedCount = cellsToClear.size;
-        let points = clearedCount; // 1 điểm mỗi ô
-        if (totalLines >= 2) points += (totalLines - 1) * 5; // bonus nhiều dòng
+        let points = clearedCount;
+        if (totalLines >= 2) points += (totalLines - 1) * 5;
         if (comboStreak >= 2) points += Math.floor(clearedCount * 0.5 * (comboStreak - 1));
         if (doubleScoreActive) points *= 2;
-
         totalPaws += points;
         showFloatingScore(points, Array.from(cellsToClear));
         cellsToClear.forEach(key => {
@@ -1311,6 +1312,12 @@
           clearingTimeouts.push(timeoutId);
         });
         playMeowRandom();
+
+        // Kích hoạt double score nếu combo 3 hoặc xóa >=3 dòng một lần
+        if (comboStreak >= 3 || totalLines >= 3) {
+          activateDoubleScore();
+        }
+
         refreshAfterPlacement();
       }
 
@@ -1330,7 +1337,7 @@
         if (doubleScoreInterval) clearInterval(doubleScoreInterval);
         doubleScoreInterval = setInterval(() => {
           if (gameoverEl.style.display === 'block') return;
-          if (Math.random() < 0.05) {
+          if (Math.random() < 0.2) { // 20% mỗi phút
             activateDoubleScore();
           }
         }, 60000);
@@ -1350,11 +1357,14 @@
       }
 
       function activateDoubleScore() {
-        if (doubleScoreActive) return;
-        doubleScoreActive = true;
-        gridEl.classList.add('double-score-active');
-        showToast('✨ Nhân đôi điểm trong 7 giây!', 2000);
-        if (doubleScoreTimeout) clearTimeout(doubleScoreTimeout);
+        if (doubleScoreActive) {
+          // đang active, làm mới thời gian
+          clearTimeout(doubleScoreTimeout);
+        } else {
+          doubleScoreActive = true;
+          gridEl.classList.add('double-score-active');
+          showToast('✨ Nhân đôi điểm trong 7 giây!', 2000);
+        }
         doubleScoreTimeout = setTimeout(() => {
           doubleScoreActive = false;
           gridEl.classList.remove('double-score-active');
@@ -1430,7 +1440,7 @@
         gameoverEl.style.display = 'block';
         reviveButton.style.display = reviveAvailable() ? 'inline-block' : 'none';
         reviveButton.disabled = !reviveAvailable();
-        stopDoubleScoreChance(); // dừng cơ hội nhân đôi
+        stopDoubleScoreChance();
         clearIdleTimer();
         clearHintGlow();
         saveGame();
@@ -1443,7 +1453,7 @@
         reviveUsed = true; comboStreak = 0; streakWithoutClear = 0;
         gameoverEl.style.display = 'none';
         renderGrid(); generatePieces();
-        startDoubleScoreChance(); // khởi động lại cơ hội
+        startDoubleScoreChance();
         showToast('Đã xóa bảng bằng 50 điểm! Tiếp tục chơi.');
         saveGame();
         resetIdleTimer();
@@ -1751,7 +1761,7 @@
 
       function updateHelp2UI() { help2Badge.textContent = help2Remaining; help2Button.disabled = help2Remaining <= 0; }
 
-      // ---------- Hint glow (unchanged) ----------
+      // ---------- Hint glow ----------
       function countAdjacentEmpty(shape, baseRow, baseCol) {
         let count = 0;
         const checked = new Set();
@@ -1853,7 +1863,7 @@
       function clearToast() { if (toastTimer) { clearTimeout(toastTimer); toastTimer = null; } toast.classList.remove('show'); }
 
       // ---------- Save / Load ----------
-      const SAVE_KEY = 'mangCutSaveState_v3';
+      const SAVE_KEY = 'mangCutSaveState_v4';
       function saveGame() {
         const state = {
           grid: grid.map(row => [...row]),
@@ -1894,8 +1904,8 @@
           updateRollUI(); updateHelp1UI(); updateHelp2UI(); updateScore();
           renderGrid(); renderPieces();
           gameoverEl.style.display = 'none';
-          stopDoubleScoreChance(); // dừng nếu đang chạy
-          startDoubleScoreChance(); // chạy mới
+          stopDoubleScoreChance();
+          startDoubleScoreChance();
           checkGameOverOrHelp();
           showToast('Đã tải lại trạng thái trước đó.', 2000);
           return true;
