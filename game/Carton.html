@@ -193,14 +193,25 @@
             display: block; touch-action: none; border: 2px solid #8b7355;
         }
         .info-panel {
-            display: flex; align-items: center; gap: clamp(8px, 2vw, 14px);
-            flex-wrap: wrap; justify-content: center; width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            width: 100%;
+        }
+        .score-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(12px, 2.5vw, 18px);
+            width: 100%;
         }
         .score-box {
             background: #003952; border-radius: clamp(12px, 2.5vw, 16px);
-            padding: clamp(8px, 1.5vw, 10px) clamp(12px, 2.5vw, 18px);
+            padding: clamp(6px, 1.5vw, 10px) clamp(12px, 2.5vw, 18px);
             text-align: center; min-width: 75px; border: 2px solid #1a4a5e;
             box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+            flex: 0 1 auto;
         }
         .score-box.active { border-color: #ffa563; box-shadow: 0 0 14px rgba(240,128,60,0.4); }
         .score-label {
@@ -210,7 +221,9 @@
         .score-value { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 900; color: #fff; }
         .turn-indicator {
             font-size: clamp(0.8rem, 1.6vw, 0.9rem); color: #c4b99a;
-            text-align: center; font-weight: 600; min-height: 24px; padding: 0 4px;
+            text-align: center; font-weight: 600; min-height: 2.2em;
+            display: flex; align-items: center; justify-content: center;
+            width: 100%; padding: 0 4px;
         }
         .controls {
             display: flex; gap: clamp(8px, 1.5vw, 12px); align-items: center;
@@ -277,9 +290,11 @@
         <h1 class="game-title">Những chiếc hộp Carton</h1>
         <p class="game-subtitle" id="gameSubtitle"></p>
         <div class="info-panel">
-            <div class="score-box" id="scoreBox1"><div class="score-label" id="label1">Bạn</div><div class="score-value" id="val1">0</div></div>
+            <div class="score-row">
+                <div class="score-box" id="scoreBox1"><div class="score-label" id="label1">Bạn</div><div class="score-value" id="val1">0</div></div>
+                <div class="score-box" id="scoreBox2"><div class="score-label" id="label2">Máy</div><div class="score-value" id="val2">0</div></div>
+            </div>
             <div class="turn-indicator" id="turnText"></div>
-            <div class="score-box" id="scoreBox2"><div class="score-label" id="label2">Máy</div><div class="score-value" id="val2">0</div></div>
         </div>
         <div class="canvas-wrapper"><canvas id="gameCanvas" width="460" height="460" aria-label="Bàn chơi 6x6"></canvas></div>
         <div class="controls">
@@ -316,7 +331,7 @@
             const canvasWrapper = document.querySelector('.canvas-wrapper');
 
             let W = 460, H = 460;
-            const MARGIN_BASE = 44; // giảm không gian thừa
+            const MARGIN_BASE = 44;
             let MARGIN = MARGIN_BASE, CELL_SIZE, DOT_RADIUS, LINE_WIDTH, CLICK_THRESHOLD;
 
             function updateSizes() {
@@ -409,18 +424,11 @@
                     if (value && !selectedP1) return;
                     confirmedP1 = value;
                     player1Select.classList.toggle('confirmed', value);
-                    if (value) {
-                        renderCatGrid(p1Grid, selectedP1, true); // giữ grid nhưng disable, sẽ bị ẩn bởi CSS
-                    }
-                    if (!value) {
-                        renderCatGrid(p1Grid, selectedP1, false);
-                    }
-                    if (gameMode === 'pvai' && value) {
-                        // tự động confirm máy
-                        if (selectedP2) {
-                            confirmedP2 = true;
-                            player2Select.classList.add('confirmed');
-                        }
+                    if (value) renderCatGrid(p1Grid, selectedP1, true);
+                    else renderCatGrid(p1Grid, selectedP1, false);
+                    if (gameMode === 'pvai' && value && selectedP2) {
+                        confirmedP2 = true;
+                        player2Select.classList.add('confirmed');
                     }
                 } else if (playerNum === 2 && gameMode === 'pvp') {
                     if (value && !selectedP2) return;
