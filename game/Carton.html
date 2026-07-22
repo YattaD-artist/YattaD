@@ -35,7 +35,7 @@
             background: #001e30; border-radius: clamp(16px, 3vw, 24px);
             padding: clamp(16px, 3vw, 28px) clamp(12px, 2.5vw, 22px);
             max-width: 900px; width: 95%; box-shadow: 0 6px 16px rgba(0,0,0,0.4);
-            text-align: center; max-height: 90vh; max-height: 90dvh; overflow-y: auto; margin: auto; border: 1px solid #1a4a5e;
+            text-align: center; max-height: 90vh; max-height: 90dvh; overflow-y: auto; margin: auto;
         }
         .selection-panel h2 {
             font-weight: 900; font-size: clamp(1.2rem, 3.5vw, 1.5rem);
@@ -60,11 +60,10 @@
         .selected-cat {
             display: flex; align-items: center; justify-content: center; gap: 10px; background: #003952; border-radius: 12px;
             padding: clamp(8px, 1.5vw, 10px) clamp(10px, 2vw, 14px); margin-bottom: 10px; min-height: 48px;
-            border: 1px solid #1a4a5e; transition: all 0.3s ease;
+            transition: all 0.3s ease;
         }
         .player-select.confirmed .selected-cat { flex-direction: column; align-items: center; gap: 6px; padding: 16px; }
         .player-select.confirmed .selected-cat img { width: 100px; height: 100px; border-radius: 16px; }
-        .player-select.confirmed .selected-cat .cat-name { display: none; }
         .selected-cat img {
             width: clamp(36px, 7vw, 44px); height: clamp(36px, 7vw, 44px); object-fit: contain;
             border-radius: 10px; background: rgba(255,255,255,0.1); flex-shrink: 0; transition: all 0.3s ease;
@@ -91,14 +90,14 @@
         .player-select.p2-hidden .btn-confirm,
         .player-select.p2-hidden .btn-change { display: none !important; }
         .cat-option {
-            background: #003952; border: 2px solid transparent; border-radius: clamp(10px, 2vw, 14px);
+            background: #003952; border-radius: clamp(10px, 2vw, 14px);
             padding: clamp(8px, 1.5vw, 12px) clamp(4px, 1vw, 8px); cursor: pointer; text-align: center;
             transition: all 0.2s; font-size: clamp(0.75rem, 1.4vw, 0.9rem); color: #ddd; font-weight: 500;
             min-height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         .cat-option:active { transform: scale(0.96); }
-        .cat-option.chosen { border-color: #f0803c; box-shadow: 0 0 10px rgba(240,128,60,0.4); background: #004d6b; }
+        .cat-option.chosen { box-shadow: 0 0 10px rgba(240,128,60,0.4); background: #004d6b; }
         .cat-option img {
             width: clamp(42px, 8vw, 56px); height: clamp(42px, 8vw, 56px); object-fit: contain;
             display: block; margin: 0 auto; border-radius: 10px; background: rgba(255,255,255,0.08);
@@ -115,7 +114,7 @@
             background: #001e30; border-radius: clamp(18px, 3.5vw, 28px);
             padding: clamp(14px, 2.5vw, 24px) clamp(10px, 2vw, 20px) clamp(12px, 2vw, 18px);
             box-shadow: 0 6px 18px rgba(0,0,0,0.4); display: none; flex-direction: column; align-items: center;
-            gap: clamp(10px, 2vw, 14px); max-width: 560px; width: 95%; margin: auto; border: 1px solid #1a4a5e;
+            gap: clamp(10px, 2vw, 14px); max-width: 560px; width: 95%; margin: auto;
         }
         .game-container.active { display: flex; }
         .game-title {
@@ -313,7 +312,6 @@
                     const img = document.createElement('img'); img.src = cat.file; img.alt = cat.name; img.loading = 'lazy';
                     img.onerror = () => { img.style.display = 'none'; };
                     div.appendChild(img);
-                    /* Tên mèo đã bị loại bỏ hoàn toàn khỏi lưới chọn */
                     div.addEventListener('click', () => {
                         if (isDisabled) return;
                         if (gridElement === p1Grid) {
@@ -340,8 +338,7 @@
                 const nameSpan = container.querySelector('.cat-name');
                 if (cat && cat.file) {
                     imgEl.src = cat.file; imgEl.style.display = 'inline-block';
-                    /* Ẩn tên trong khu vực đã chọn, chỉ hiển thị ảnh */
-                    if (nameSpan) nameSpan.textContent = '';
+                    if (nameSpan) nameSpan.textContent = cat.name;
                 } else {
                     imgEl.style.display = 'none';
                     if (nameSpan) nameSpan.textContent = 'Chưa chọn';
