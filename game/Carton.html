@@ -16,14 +16,32 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background: #00283e;
-            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             display: flex; justify-content: center; align-items: center;
             min-height: 100vh; min-height: 100dvh;
             user-select: none; -webkit-tap-highlight-color: transparent;
             background-image: radial-gradient(ellipse at 50% 20%, rgba(0,60,90,0.25) 0%, transparent 60%),
                 radial-gradient(ellipse at 80% 80%, rgba(0,40,60,0.15) 0%, transparent 50%);
             padding: 10px; overflow-x: hidden; overflow-y: auto;
+            cursor: none;
         }
+        #customCursor {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9999;
+            width: 32px;
+            height: 32px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            transform: translate(-50%, -50%);
+            display: none;
+        }
+        @media (hover: hover) and (pointer: fine) {
+            #customCursor {
+                display: block;
+            }
+        }
+
         .overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
             background: rgba(0,20,30,0.85); display: flex; justify-content: center; align-items: center;
@@ -36,43 +54,46 @@
             padding: clamp(16px, 3vw, 28px) clamp(12px, 2.5vw, 22px);
             max-width: 900px; width: 95%; box-shadow: 0 6px 16px rgba(0,0,0,0.4);
             text-align: center; max-height: 90vh; max-height: 90dvh; overflow-y: auto; margin: auto;
+            font-family: inherit;
         }
         .selection-panel h2 {
             font-weight: 900; font-size: clamp(1.2rem, 3.5vw, 1.5rem);
             letter-spacing: 2px; color: #d9c9a8; margin-bottom: 6px; text-transform: uppercase;
+            font-family: inherit;
         }
-        .sub { color: #8aa0b0; font-size: clamp(0.7rem, 1.8vw, 0.8rem); letter-spacing: 2px; margin-bottom: 16px; }
+        .sub { color: #8aa0b0; font-size: clamp(0.7rem, 1.8vw, 0.8rem); letter-spacing: 2px; margin-bottom: 16px; font-family: inherit; }
         .mode-toggle { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
         .mode-btn {
             padding: clamp(10px, 1.5vw, 12px) clamp(18px, 3vw, 24px); border-radius: 30px; border: 2px solid #1a4a5e;
-            background: #003952; color: #ccc; cursor: pointer; font-weight: 700; letter-spacing: 1px;
+            background: #003952; color: #ccc; font-weight: 700; letter-spacing: 1px;
             transition: all 0.2s; font-size: clamp(0.8rem, 1.6vw, 0.9rem); white-space: nowrap;
             min-height: var(--touch-target); min-width: 100px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            font-family: inherit; cursor: inherit;
         }
         .mode-btn.active { background: #c4a882; color: #00283e; border-color: #c4a882; box-shadow: 0 0 8px rgba(196,168,130,0.4); }
         .players-row { display: flex; gap: clamp(12px, 2vw, 20px); flex-wrap: wrap; justify-content: center; margin-bottom: 16px; }
         .player-select {
             flex: 1 1 260px; min-width: 250px; max-width: 500px; background: #00283e;
             border-radius: clamp(14px, 2.5vw, 18px); padding: clamp(14px, 2vw, 18px); border: 1px solid #1a4a5e;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease; font-family: inherit;
         }
-        .player-select h4 { color: #d4b896; margin-bottom: 10px; font-size: clamp(0.9rem, 2vw, 1rem); letter-spacing: 1px; }
+        .player-select h4 { color: #d4b896; margin-bottom: 10px; font-size: clamp(0.9rem, 2vw, 1rem); letter-spacing: 1px; font-family: inherit; }
         .selected-cat {
-            display: flex; align-items: center; justify-content: center; gap: 10px; background: #003952; border-radius: 12px;
-            padding: clamp(8px, 1.5vw, 10px) clamp(10px, 2vw, 14px); margin-bottom: 10px; min-height: 48px;
-            transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 16px; background: #003952; border-radius: 12px;
+            padding: clamp(12px, 2vw, 16px); margin-bottom: 10px; min-height: 80px;
+            transition: all 0.3s ease; font-family: inherit;
         }
-        .player-select.confirmed .selected-cat { flex-direction: column; align-items: center; gap: 6px; padding: 16px; }
-        .player-select.confirmed .selected-cat img { width: 100px; height: 100px; border-radius: 16px; }
+        .player-select.confirmed .selected-cat { flex-direction: column; align-items: center; gap: 10px; padding: 20px; }
+        .player-select.confirmed .selected-cat img { width: 140px; height: 140px; border-radius: 20px; }
         .selected-cat img {
-            width: clamp(36px, 7vw, 44px); height: clamp(36px, 7vw, 44px); object-fit: contain;
-            border-radius: 10px; background: rgba(255,255,255,0.1); flex-shrink: 0; transition: all 0.3s ease;
+            width: clamp(70px, 12vw, 90px); height: clamp(70px, 12vw, 90px); object-fit: contain;
+            border-radius: 12px; background: rgba(255,255,255,0.1); flex-shrink: 0; transition: all 0.3s ease;
         }
-        .cat-name { color: #f0e6d3; font-weight: 700; font-size: clamp(0.85rem, 1.8vw, 1rem); }
+        .cat-name { color: #f0e6d3; font-weight: 700; font-size: clamp(0.9rem, 2vw, 1.1rem); font-family: inherit; }
         .btn-confirm, .btn-change {
-            padding: 8px 18px; border-radius: 10px; border: none; cursor: pointer; font-weight: 700;
-            font-size: 0.85rem; letter-spacing: 0.5px; transition: all 0.2s; min-height: 36px;
-            margin-bottom: 10px; width: 100%; display: block;
+            padding: 10px 18px; border-radius: 12px; border: none; font-weight: 700;
+            font-size: 0.9rem; letter-spacing: 0.5px; transition: all 0.2s; min-height: 40px;
+            margin-bottom: 10px; width: 100%; display: block; font-family: inherit; cursor: inherit;
         }
         .btn-confirm { background: #c4a882; color: #00283e; box-shadow: 0 2px 6px rgba(196,168,130,0.3); }
         .btn-change { background: transparent; border: 2px solid #c4a882; color: #c4a882; box-shadow: none; display: none; }
@@ -91,10 +112,10 @@
         .player-select.p2-hidden .btn-change { display: none !important; }
         .cat-option {
             background: #003952; border-radius: clamp(10px, 2vw, 14px);
-            padding: clamp(8px, 1.5vw, 12px) clamp(4px, 1vw, 8px); cursor: pointer; text-align: center;
+            padding: clamp(8px, 1.5vw, 12px) clamp(4px, 1vw, 8px); text-align: center;
             transition: all 0.2s; font-size: clamp(0.75rem, 1.4vw, 0.9rem); color: #ddd; font-weight: 500;
             min-height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2); font-family: inherit; cursor: inherit;
         }
         .cat-option:active { transform: scale(0.96); }
         .cat-option.chosen { box-shadow: 0 0 10px rgba(240,128,60,0.4); background: #004d6b; }
@@ -105,51 +126,58 @@
         .btn-start {
             padding: clamp(12px, 2vw, 14px) clamp(28px, 6vw, 36px); border-radius: 14px; border: none;
             background: #c4a882; color: #00283e; font-weight: 900; font-size: clamp(0.95rem, 1.8vw, 1.1rem);
-            cursor: pointer; letter-spacing: 1px; margin-top: 20px; text-transform: uppercase;
+            letter-spacing: 1px; margin-top: 20px; text-transform: uppercase;
             box-shadow: 0 4px 10px rgba(196,168,130,0.3); transition: all 0.2s; min-width: 180px; min-height: var(--touch-target);
+            font-family: inherit; cursor: inherit;
         }
         .btn-start:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-        .ai-info { color: #8aa0b0; font-size: clamp(0.7rem, 1.3vw, 0.8rem); letter-spacing: 1px; margin-top: 8px; }
+        .ai-info { color: #8aa0b0; font-size: clamp(0.7rem, 1.3vw, 0.8rem); letter-spacing: 1px; margin-top: 8px; font-family: inherit; }
         .game-container {
             background: #001e30; border-radius: clamp(18px, 3.5vw, 28px);
             padding: clamp(14px, 2.5vw, 24px) clamp(10px, 2vw, 20px) clamp(12px, 2vw, 18px);
             box-shadow: 0 6px 18px rgba(0,0,0,0.4); display: none; flex-direction: column; align-items: center;
             gap: clamp(10px, 2vw, 14px); max-width: 560px; width: 95%; margin: auto;
+            font-family: inherit;
         }
         .game-container.active { display: flex; }
         .game-title {
             font-weight: 900; font-size: clamp(1.2rem, 3vw, 1.6rem); letter-spacing: 2px; text-transform: uppercase;
             color: #d9c9a8; text-shadow: 0 1px 3px rgba(0,0,0,0.4); margin: 0; text-align: center;
+            font-family: inherit;
         }
-        .game-subtitle { font-size: clamp(0.65rem, 1.5vw, 0.8rem); color: #8aa0b0; letter-spacing: 2px; text-transform: uppercase; font-weight: 500; margin-top: -6px; text-align: center; }
+        .game-subtitle { font-size: clamp(0.65rem, 1.5vw, 0.8rem); color: #8aa0b0; letter-spacing: 2px; text-transform: uppercase; font-weight: 500; margin-top: -6px; text-align: center; font-family: inherit; }
         .canvas-wrapper { width: 100%; max-width: 460px; aspect-ratio: 1 / 1; position: relative; margin: 0 auto; }
         canvas {
-            border-radius: clamp(12px, 2.5vw, 16px); cursor: url('Chi.png') 16 16, auto;
+            border-radius: clamp(12px, 2.5vw, 16px);
             background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.4); width: 100%; height: 100%;
             display: block; touch-action: none; border: 2px solid #8b7355;
+            cursor: inherit;
         }
-        .info-panel { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
+        .info-panel { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; font-family: inherit; }
         .score-row { display: flex; align-items: center; justify-content: center; gap: clamp(12px, 2.5vw, 18px); width: 100%; }
         .score-box {
             background: #003952; border-radius: clamp(12px, 2.5vw, 16px); padding: clamp(6px, 1.5vw, 10px) clamp(12px, 2.5vw, 18px);
             text-align: center; min-width: 75px; border: 2px solid #1a4a5e; box-shadow: 0 2px 6px rgba(0,0,0,0.2); flex: 0 1 auto;
+            font-family: inherit;
         }
         .score-box.active { border-color: #ffa563; box-shadow: 0 0 14px rgba(240,128,60,0.4); }
-        .score-label { font-size: clamp(0.55rem, 1.1vw, 0.7rem); text-transform: uppercase; letter-spacing: 1.2px; color: #8aa0b0; margin-bottom: 4px; white-space: nowrap; }
-        .score-value { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 900; color: #fff; }
+        .score-label { font-size: clamp(0.55rem, 1.1vw, 0.7rem); text-transform: uppercase; letter-spacing: 1.2px; color: #8aa0b0; margin-bottom: 4px; white-space: nowrap; font-family: inherit; }
+        .score-value { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 900; color: #fff; font-family: inherit; }
         .turn-indicator {
             font-size: clamp(0.8rem, 1.6vw, 0.9rem); color: #c4b99a; text-align: center; font-weight: 600;
             min-height: 2.2em; display: flex; align-items: center; justify-content: center; width: 100%; padding: 0 4px;
+            font-family: inherit; line-height: 1.4; word-break: break-word;
         }
         .controls { display: flex; gap: clamp(8px, 1.5vw, 12px); align-items: center; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
         button {
             padding: clamp(10px, 1.5vw, 12px) clamp(16px, 3vw, 22px); border-radius: 12px; border: none;
             background: #c4a882; color: #00283e; font-weight: 800; font-size: clamp(0.8rem, 1.5vw, 0.9rem);
-            cursor: pointer; letter-spacing: 0.5px; text-transform: uppercase; transition: all 0.2s;
+            letter-spacing: 0.5px; text-transform: uppercase; transition: all 0.2s;
             box-shadow: 0 2px 6px rgba(196,168,130,0.25); white-space: nowrap; min-height: var(--touch-target); min-width: 80px;
+            font-family: inherit; cursor: inherit;
         }
         button:active { transform: scale(0.94); }
-        .btn-back { background: transparent; border: 2px solid #c4a882; color: #c4a882; box-shadow: none; font-size: clamp(0.75rem, 1.4vw, 0.85rem); }
+        .btn-back { background: transparent; border: 2px solid #c4a882; color: #c4a882; box-shadow: none; font-size: clamp(0.75rem, 1.4vw, 0.85rem); font-family: inherit; }
         .victory-display {
             position: absolute; top: 0; left: 0; right: 0; bottom: 0;
             display: none; z-index: 10; pointer-events: none;
@@ -157,6 +185,24 @@
         .victory-display.active { display: flex; align-items: center; justify-content: center; }
         .victory-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; }
         .victory-cat { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 2; }
+
+        .cat-preview-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
+            background: rgba(0,0,0,0.9); z-index: 300; display: none; justify-content: center; align-items: center;
+            padding: 20px; cursor: inherit;
+        }
+        .cat-preview-modal.active { display: flex; }
+        .cat-preview-modal img {
+            max-width: 90%; max-height: 85%; object-fit: contain; border-radius: 16px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.5);
+        }
+        .close-preview {
+            position: absolute; top: 20px; right: 20px; width: 44px; height: 44px;
+            background: rgba(0,0,0,0.7); color: white; border: 2px solid white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold;
+            cursor: inherit; z-index: 10; transition: all 0.2s;
+        }
+        .close-preview:hover { background: rgba(255,255,255,0.2); }
 
         @media (min-width: 768px) {
             .selection-panel { max-width: 950px; }
@@ -170,12 +216,20 @@
             .player-select { width: 100%; max-width: 100%; }
             .cat-option { padding: 8px 4px; min-height: 65px; }
             .cat-option img { width: 40px; height: 40px; }
-            .player-select.confirmed .selected-cat img { width: 80px; height: 80px; }
+            .player-select.confirmed .selected-cat img { width: 110px; height: 110px; }
+            .selected-cat img { width: clamp(60px, 16vw, 80px); height: clamp(60px, 16vw, 80px); }
             .btn-start { min-width: 160px; }
         }
     </style>
 </head>
 <body>
+    <div id="customCursor"></div>
+
+    <div class="cat-preview-modal" id="catPreviewModal">
+        <button class="close-preview" id="closePreview">&times;</button>
+        <img id="catPreviewImg" src="" alt="preview" />
+    </div>
+
     <div class="overlay" id="selectionOverlay">
         <div class="selection-panel">
             <h2>Chọn mèo của bạn</h2>
@@ -230,6 +284,68 @@
 
     <script>
         (function() {
+            // ===== CUSTOM CURSOR =====
+            const customCursor = document.getElementById('customCursor');
+            let isMouseDown = false;
+            let currentCursorType = 'Chi';
+
+            function setCursorImage(type) {
+                if (customCursor.style.display === 'none') return;
+                const cursorMap = {
+                    'Chi': 'Chi.png',
+                    'Gio': 'Gio.png',
+                    'Nam': 'Nam.png'
+                };
+                customCursor.style.backgroundImage = `url('${cursorMap[type]}')`;
+                currentCursorType = type;
+            }
+
+            function updateCursorType() {
+                if (customCursor.style.display === 'none') return;
+                const x = parseInt(customCursor.style.left) || 0;
+                const y = parseInt(customCursor.style.top) || 0;
+                const el = document.elementFromPoint(x + 16, y + 16);
+                let type = 'Chi';
+
+                if (isMouseDown) {
+                    if (el && (el.closest('canvas') || el.closest('.canvas-wrapper'))) {
+                        type = 'Nam';
+                    }
+                } else {
+                    if (el && (el.closest('button') || el.closest('.cat-option') || el.closest('.selected-cat.clickable') || el.closest('.close-preview'))) {
+                        type = 'Gio';
+                    }
+                    if (el && el.closest('canvas')) {
+                        type = 'Chi';
+                    }
+                }
+                if (type !== currentCursorType) setCursorImage(type);
+            }
+
+            document.addEventListener('mousemove', (e) => {
+                if (customCursor.style.display === 'none') return;
+                customCursor.style.left = e.clientX + 'px';
+                customCursor.style.top = e.clientY + 'px';
+                updateCursorType();
+            });
+
+            document.addEventListener('mousedown', () => {
+                isMouseDown = true;
+                updateCursorType();
+            });
+            document.addEventListener('mouseup', () => {
+                isMouseDown = false;
+                updateCursorType();
+            });
+
+            if (window.matchMedia('(hover: none) and (pointer: coarse)').matches) {
+                customCursor.style.display = 'none';
+                document.body.style.cursor = 'auto';
+            } else {
+                customCursor.style.display = 'block';
+                setCursorImage('Chi');
+            }
+
             const CATS = [
                 { id: 'Cam', name: 'Mèo Cam', file: 'Carton/Cam.png' },
                 { id: 'Xam', name: 'Mèo Xám', file: 'Carton/Xam.png' },
@@ -293,6 +409,10 @@
             const victoryDisplay = document.getElementById('victoryDisplay');
             const victoryCatImg = document.getElementById('victoryCatImg');
 
+            const catPreviewModal = document.getElementById('catPreviewModal');
+            const catPreviewImg = document.getElementById('catPreviewImg');
+            const closePreview = document.getElementById('closePreview');
+
             let gameMode = 'pvai';
             let selectedP1 = null, selectedP2 = null;
             let confirmedP1 = false, confirmedP2 = false;
@@ -345,22 +465,63 @@
                 }
             }
 
+            function openCatPreview(cat) {
+                if (!cat || !cat.file) return;
+                catPreviewImg.src = cat.file;
+                catPreviewModal.classList.add('active');
+            }
+
+            function closeCatPreview() {
+                catPreviewModal.classList.remove('active');
+                catPreviewImg.src = '';
+            }
+
+            function setupSelectedCatClick(container, catGetter) {
+                container.addEventListener('click', (e) => {
+                    if (container.classList.contains('confirmed') || 
+                        (container === p1Selected && confirmedP1) || 
+                        (container === p2Selected && confirmedP2)) {
+                        const cat = catGetter();
+                        if (cat) openCatPreview(cat);
+                    }
+                });
+            }
+
+            setupSelectedCatClick(p1Selected, () => selectedP1);
+            setupSelectedCatClick(p2Selected, () => selectedP2);
+
+            closePreview.addEventListener('click', closeCatPreview);
+            catPreviewModal.addEventListener('click', (e) => {
+                if (e.target === catPreviewModal) closeCatPreview();
+            });
+
             function setConfirmed(playerNum, value) {
                 if (playerNum === 1) {
                     if (value && !selectedP1) return;
                     confirmedP1 = value;
                     player1Select.classList.toggle('confirmed', value);
-                    if (value) renderCatGrid(p1Grid, selectedP1, true);
-                    else renderCatGrid(p1Grid, selectedP1, false);
+                    if (value) {
+                        p1Selected.classList.add('clickable');
+                        renderCatGrid(p1Grid, selectedP1, true);
+                    } else {
+                        p1Selected.classList.remove('clickable');
+                        renderCatGrid(p1Grid, selectedP1, false);
+                    }
                     if (gameMode === 'pvai' && value && selectedP2) {
                         confirmedP2 = true; player2Select.classList.add('confirmed');
+                        p2Selected.classList.add('clickable');
                     }
                 } else if (playerNum === 2 && gameMode === 'pvp') {
                     if (value && !selectedP2) return;
                     confirmedP2 = value;
                     player2Select.classList.toggle('confirmed', value);
-                    if (!value) renderCatGrid(p2Grid, selectedP2, false);
-                    else renderCatGrid(p2Grid, selectedP2, true);
+                    if (value) {
+                        p2Selected.classList.add('clickable');
+                        renderCatGrid(p2Grid, selectedP2, true);
+                    } else {
+                        p2Selected.classList.remove('clickable');
+                        renderCatGrid(p2Grid, selectedP2, false);
+                    }
                 }
                 checkStartReady();
             }
@@ -377,6 +538,7 @@
             function resetConfirmState() {
                 confirmedP1 = false; confirmedP2 = false;
                 player1Select.classList.remove('confirmed'); player2Select.classList.remove('confirmed');
+                p1Selected.classList.remove('clickable'); p2Selected.classList.remove('clickable');
                 if (gameMode === 'pvai') {
                     player2Select.classList.add('p2-hidden');
                     btnConfirm2.style.display = 'none'; btnChange2.style.display = 'none';
@@ -492,7 +654,8 @@
                         ctx.drawImage(img, bx+(bw-img.width*s)/2, by+(bh-img.height*s)/2, img.width*s, img.height*s);
                     }else{
                         ctx.fillStyle='#5c4a3a'; const fs=Math.min(bw,bh)*0.45;
-                        ctx.font=`bold ${fs}px "Segoe UI"`; ctx.textAlign='center'; ctx.textBaseline='middle';
+                        ctx.font = `bold ${fs}px "Segoe UI", system-ui, -apple-system, sans-serif`;
+                        ctx.textAlign='center'; ctx.textBaseline='middle';
                         ctx.fillText(cat?cat.name.charAt(0):'?',bx+bw/2,by+bh/2);
                     }
                 }
@@ -530,17 +693,17 @@
                 if(game.gameOver){
                     const s1=game.scores[0],s2=game.scores[1];
                     if(s1>s2) {
-                        turnEl.innerHTML=`<span style="color:#ffa563;font-weight:800;">${catP1?.name||'Bạn'}</span> thắng! (${s1}-${s2})`;
+                        turnEl.innerHTML=`<span style="color:#ffa563;font-weight:800;">${catP1?.name||'Bạn'}</span>&nbsp;thắng! (${s1}-${s2})`;
                         showVictory(catP1);
                     } else if(s2>s1) {
-                        turnEl.innerHTML=`<span style="color:#c0c0c0;font-weight:800;">${catP2?.name||'Máy'}</span> thắng! (${s2}-${s1})`;
+                        turnEl.innerHTML=`<span style="color:#c0c0c0;font-weight:800;">${catP2?.name||'Máy'}</span>&nbsp;thắng! (${s2}-${s1})`;
                         showVictory(catP2);
                     } else {
                         turnEl.textContent=`Hòa! ${s1}-${s2}`;
                         hideVictory();
                     }
                 } else if(isThinking) turnEl.textContent='Máy đang suy nghĩ...';
-                else turnEl.innerHTML=game.currentPlayer===0?`Lượt của <span style="color:#ffa563;font-weight:800;">${catP1?.name||'Bạn'}</span>`:`Lượt của <span style="color:#c0c0c0;font-weight:800;">${catP2?.name||'Máy'}</span>`;
+                else turnEl.innerHTML=game.currentPlayer===0?`Lượt của&nbsp;<span style="color:#ffa563;font-weight:800;">${catP1?.name||'Bạn'}</span>`:`Lượt của&nbsp;<span style="color:#c0c0c0;font-weight:800;">${catP2?.name||'Máy'}</span>`;
             }
 
             function showVictory(winnerCat) {
@@ -598,17 +761,20 @@
             canvas.addEventListener('touchend',e=>{e.preventDefault();if(!hoveredLine)return;handleCanvasEnd(e.changedTouches[0].clientX,e.changedTouches[0].clientY);});
             canvas.addEventListener('touchcancel',()=>{hoveredLine=null;drawCanvas();});
 
+            // 👉 KHÔNG CÒN DELAY
             function scheduleAIMove(){
                 if(game.gameOver||game.currentPlayer!==1||gameMode!=='pvai')return;
                 isThinking=true; updateUI(); drawCanvas();
-                aiTimeout=setTimeout(()=>{aiTimeout=null;performAIMove();}, 650);
+                performAIMove(); // gọi thẳng luôn
             }
             function performAIMove(){
                 if(game.gameOver||game.currentPlayer!==1||gameMode!=='pvai'){isThinking=false;updateUI();drawCanvas();return;}
                 const move=aiMedium(); if(move)game.applyMove(move,1); else{const moves=game.getValidMoves();if(moves.length)game.applyMove(moves[0],1);}
                 drawCanvas(); updateUI();
                 if(!game.gameOver&&game.currentPlayer===1){
-                    isThinking=true; aiTimeout=setTimeout(()=>{aiTimeout=null;performAIMove();}, 450); return;
+                    isThinking=true;
+                    performAIMove(); // nếu còn được đi tiếp thì đi ngay, không chờ
+                    return;
                 }
                 isThinking=false; updateUI(); drawCanvas(); if(game.gameOver) updateUI();
             }
