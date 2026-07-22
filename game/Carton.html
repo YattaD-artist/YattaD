@@ -13,121 +13,77 @@
             --border: #1a4a5e;
             --touch-target: 44px;
         }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             background: #00283e;
-            font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            min-height: 100dvh;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            -webkit-user-select: none;
-            background-image: radial-gradient(ellipse at 50% 20%, rgba(0, 60, 90, 0.25) 0%, transparent 60%),
-                radial-gradient(ellipse at 80% 80%, rgba(0, 40, 60, 0.15) 0%, transparent 50%);
-            padding: 10px;
-            overflow-x: hidden;
-            overflow-y: auto;
+            font-family: 'Segoe UI', 'Inter', system-ui, sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; min-height: 100dvh;
+            user-select: none; -webkit-tap-highlight-color: transparent;
+            background-image: radial-gradient(ellipse at 50% 20%, rgba(0,60,90,0.25) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 80%, rgba(0,40,60,0.15) 0%, transparent 50%);
+            padding: 10px; overflow-x: hidden; overflow-y: auto;
         }
         .overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
-            background: rgba(0, 20, 30, 0.85);
-            display: flex; justify-content: center; align-items: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
+            background: rgba(0,20,30,0.85); display: flex; justify-content: center; align-items: center;
             z-index: 200; animation: fadeIn 0.3s; padding: 10px;
             overflow-y: auto; -webkit-overflow-scrolling: touch;
         }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .selection-panel {
-            background: #001e30;
-            border-radius: clamp(16px, 3vw, 24px);
+            background: #001e30; border-radius: clamp(16px, 3vw, 24px);
             padding: clamp(16px, 3vw, 28px) clamp(12px, 2.5vw, 22px);
-            max-width: 700px; width: 95%;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
-            text-align: center; max-height: 90vh; max-height: 90dvh;
-            overflow-y: auto; margin: auto; border: 1px solid #1a4a5e;
+            max-width: 900px; width: 95%; box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+            text-align: center; max-height: 90vh; max-height: 90dvh; overflow-y: auto; margin: auto; border: 1px solid #1a4a5e;
         }
         .selection-panel h2 {
             font-weight: 900; font-size: clamp(1.2rem, 3.5vw, 1.5rem);
             letter-spacing: 2px; color: #d9c9a8; margin-bottom: 6px; text-transform: uppercase;
         }
-        .sub {
-            color: #8aa0b0; font-size: clamp(0.7rem, 1.8vw, 0.8rem);
-            letter-spacing: 2px; margin-bottom: 16px;
-        }
-        .mode-toggle {
-            display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap;
-        }
+        .sub { color: #8aa0b0; font-size: clamp(0.7rem, 1.8vw, 0.8rem); letter-spacing: 2px; margin-bottom: 16px; }
+        .mode-toggle { display: flex; gap: 10px; justify-content: center; margin-bottom: 20px; flex-wrap: wrap; }
         .mode-btn {
-            padding: clamp(10px, 1.5vw, 12px) clamp(18px, 3vw, 24px);
-            border-radius: 30px; border: 2px solid #1a4a5e; background: #003952;
-            color: #ccc; cursor: pointer; font-weight: 700; letter-spacing: 1px;
-            transition: all 0.2s; font-size: clamp(0.8rem, 1.6vw, 0.9rem);
-            white-space: nowrap; min-height: var(--touch-target); min-width: 100px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            padding: clamp(10px, 1.5vw, 12px) clamp(18px, 3vw, 24px); border-radius: 30px; border: 2px solid #1a4a5e;
+            background: #003952; color: #ccc; cursor: pointer; font-weight: 700; letter-spacing: 1px;
+            transition: all 0.2s; font-size: clamp(0.8rem, 1.6vw, 0.9rem); white-space: nowrap;
+            min-height: var(--touch-target); min-width: 100px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        .mode-btn.active {
-            background: #c4a882; color: #00283e; border-color: #c4a882;
-            box-shadow: 0 0 8px rgba(196, 168, 130, 0.4);
-        }
-        .players-row {
-            display: flex; gap: clamp(12px, 2vw, 20px); flex-wrap: wrap;
-            justify-content: center; margin-bottom: 16px;
-        }
+        .mode-btn.active { background: #c4a882; color: #00283e; border-color: #c4a882; box-shadow: 0 0 8px rgba(196,168,130,0.4); }
+        .players-row { display: flex; gap: clamp(12px, 2vw, 20px); flex-wrap: wrap; justify-content: center; margin-bottom: 16px; }
         .player-select {
-            flex: 1 1 260px; min-width: 250px; max-width: 340px;
-            background: #00283e; border-radius: clamp(14px, 2.5vw, 18px);
-            padding: clamp(14px, 2vw, 18px); border: 1px solid #1a4a5e;
+            flex: 1 1 260px; min-width: 250px; max-width: 500px; background: #00283e;
+            border-radius: clamp(14px, 2.5vw, 18px); padding: clamp(14px, 2vw, 18px); border: 1px solid #1a4a5e;
             transition: all 0.3s ease;
         }
-        .player-select h4 {
-            color: #d4b896; margin-bottom: 10px; font-size: clamp(0.9rem, 2vw, 1rem); letter-spacing: 1px;
-        }
+        .player-select h4 { color: #d4b896; margin-bottom: 10px; font-size: clamp(0.9rem, 2vw, 1rem); letter-spacing: 1px; }
         .selected-cat {
-            display: flex; align-items: center; gap: 10px; background: #003952;
-            border-radius: 12px; padding: clamp(8px, 1.5vw, 10px) clamp(10px, 2vw, 14px);
-            margin-bottom: 10px; min-height: 48px; border: 1px solid #1a4a5e;
-            transition: all 0.3s ease;
+            display: flex; align-items: center; justify-content: center; gap: 10px; background: #003952; border-radius: 12px;
+            padding: clamp(8px, 1.5vw, 10px) clamp(10px, 2vw, 14px); margin-bottom: 10px; min-height: 48px;
+            border: 1px solid #1a4a5e; transition: all 0.3s ease;
         }
-        .player-select.confirmed .selected-cat {
-            flex-direction: column; align-items: center; gap: 6px; padding: 16px;
-        }
-        .player-select.confirmed .selected-cat img {
-            width: 100px; height: 100px; border-radius: 16px;
-        }
-        .player-select.confirmed .selected-cat .cat-name {
-            font-size: 1.2rem; font-weight: 800;
-        }
+        .player-select.confirmed .selected-cat { flex-direction: column; align-items: center; gap: 6px; padding: 16px; }
+        .player-select.confirmed .selected-cat img { width: 100px; height: 100px; border-radius: 16px; }
+        .player-select.confirmed .selected-cat .cat-name { display: none; }
         .selected-cat img {
-            width: clamp(36px, 7vw, 44px); height: clamp(36px, 7vw, 44px);
-            object-fit: contain; border-radius: 10px; background: rgba(255,255,255,0.1);
-            flex-shrink: 0; transition: all 0.3s ease;
+            width: clamp(36px, 7vw, 44px); height: clamp(36px, 7vw, 44px); object-fit: contain;
+            border-radius: 10px; background: rgba(255,255,255,0.1); flex-shrink: 0; transition: all 0.3s ease;
         }
         .cat-name { color: #f0e6d3; font-weight: 700; font-size: clamp(0.85rem, 1.8vw, 1rem); }
         .btn-confirm, .btn-change {
-            padding: 8px 18px; border-radius: 10px; border: none; cursor: pointer;
-            font-weight: 700; font-size: 0.85rem; letter-spacing: 0.5px;
-            transition: all 0.2s; min-height: 36px; margin-bottom: 10px;
-            width: 100%; display: block;
+            padding: 8px 18px; border-radius: 10px; border: none; cursor: pointer; font-weight: 700;
+            font-size: 0.85rem; letter-spacing: 0.5px; transition: all 0.2s; min-height: 36px;
+            margin-bottom: 10px; width: 100%; display: block;
         }
-        .btn-confirm {
-            background: #c4a882; color: #00283e; box-shadow: 0 2px 6px rgba(196,168,130,0.3);
-        }
-        .btn-change {
-            background: transparent; border: 2px solid #c4a882; color: #c4a882;
-            box-shadow: none; display: none;
-        }
+        .btn-confirm { background: #c4a882; color: #00283e; box-shadow: 0 2px 6px rgba(196,168,130,0.3); }
+        .btn-change { background: transparent; border: 2px solid #c4a882; color: #c4a882; box-shadow: none; display: none; }
         .player-select.confirmed .btn-confirm { display: none; }
         .player-select.confirmed .btn-change { display: block; }
         .cat-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: clamp(6px, 1.2vw, 10px); margin-top: 4px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: clamp(6px, 1.2vw, 10px);
+            margin-top: 4px;
             transition: opacity 0.3s;
         }
         .player-select.confirmed .cat-grid { display: none; }
@@ -135,148 +91,81 @@
         .player-select.p2-hidden .btn-confirm,
         .player-select.p2-hidden .btn-change { display: none !important; }
         .cat-option {
-            background: #003952; border: 2px solid transparent;
-            border-radius: clamp(10px, 2vw, 14px); padding: clamp(8px, 1.5vw, 12px) clamp(4px, 1vw, 8px);
-            cursor: pointer; text-align: center; transition: all 0.2s;
-            font-size: clamp(0.75rem, 1.4vw, 0.9rem); color: #ddd; font-weight: 500;
-            min-height: 70px; display: flex; flex-direction: column; align-items: center;
-            justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            background: #003952; border: 2px solid transparent; border-radius: clamp(10px, 2vw, 14px);
+            padding: clamp(8px, 1.5vw, 12px) clamp(4px, 1vw, 8px); cursor: pointer; text-align: center;
+            transition: all 0.2s; font-size: clamp(0.75rem, 1.4vw, 0.9rem); color: #ddd; font-weight: 500;
+            min-height: 70px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         .cat-option:active { transform: scale(0.96); }
-        .cat-option.chosen {
-            border-color: #f0803c; box-shadow: 0 0 10px rgba(240,128,60,0.4); background: #004d6b;
-        }
+        .cat-option.chosen { border-color: #f0803c; box-shadow: 0 0 10px rgba(240,128,60,0.4); background: #004d6b; }
         .cat-option img {
-            width: clamp(42px, 8vw, 56px); height: clamp(42px, 8vw, 56px);
-            object-fit: contain; display: block; margin: 0 auto 4px;
-            border-radius: 10px; background: rgba(255,255,255,0.08);
+            width: clamp(42px, 8vw, 56px); height: clamp(42px, 8vw, 56px); object-fit: contain;
+            display: block; margin: 0 auto; border-radius: 10px; background: rgba(255,255,255,0.08);
         }
         .btn-start {
-            padding: clamp(12px, 2vw, 14px) clamp(28px, 6vw, 36px);
-            border-radius: 14px; border: none; background: #c4a882; color: #00283e;
-            font-weight: 900; font-size: clamp(0.95rem, 1.8vw, 1.1rem);
-            cursor: pointer; letter-spacing: 1px; margin-top: 20px;
-            text-transform: uppercase; box-shadow: 0 4px 10px rgba(196,168,130,0.3);
-            transition: all 0.2s; min-width: 180px; min-height: var(--touch-target);
+            padding: clamp(12px, 2vw, 14px) clamp(28px, 6vw, 36px); border-radius: 14px; border: none;
+            background: #c4a882; color: #00283e; font-weight: 900; font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+            cursor: pointer; letter-spacing: 1px; margin-top: 20px; text-transform: uppercase;
+            box-shadow: 0 4px 10px rgba(196,168,130,0.3); transition: all 0.2s; min-width: 180px; min-height: var(--touch-target);
         }
         .btn-start:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-        .ai-info {
-            color: #8aa0b0; font-size: clamp(0.7rem, 1.3vw, 0.8rem);
-            letter-spacing: 1px; margin-top: 8px;
-        }
+        .ai-info { color: #8aa0b0; font-size: clamp(0.7rem, 1.3vw, 0.8rem); letter-spacing: 1px; margin-top: 8px; }
         .game-container {
             background: #001e30; border-radius: clamp(18px, 3.5vw, 28px);
             padding: clamp(14px, 2.5vw, 24px) clamp(10px, 2vw, 20px) clamp(12px, 2vw, 18px);
-            box-shadow: 0 6px 18px rgba(0,0,0,0.4); display: none;
-            flex-direction: column; align-items: center; gap: clamp(10px, 2vw, 14px);
-            max-width: 560px; width: 95%; margin: auto; border: 1px solid #1a4a5e;
-            position: relative;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.4); display: none; flex-direction: column; align-items: center;
+            gap: clamp(10px, 2vw, 14px); max-width: 560px; width: 95%; margin: auto; border: 1px solid #1a4a5e;
         }
         .game-container.active { display: flex; }
         .game-title {
-            font-weight: 900; font-size: clamp(1.2rem, 3vw, 1.6rem);
-            letter-spacing: 2px; text-transform: uppercase; color: #d9c9a8;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.4); margin: 0; text-align: center;
+            font-weight: 900; font-size: clamp(1.2rem, 3vw, 1.6rem); letter-spacing: 2px; text-transform: uppercase;
+            color: #d9c9a8; text-shadow: 0 1px 3px rgba(0,0,0,0.4); margin: 0; text-align: center;
         }
-        .game-subtitle {
-            font-size: clamp(0.65rem, 1.5vw, 0.8rem); color: #8aa0b0;
-            letter-spacing: 2px; text-transform: uppercase; font-weight: 500;
-            margin-top: -6px; text-align: center;
-        }
-        .canvas-wrapper {
-            width: 100%; max-width: 460px; aspect-ratio: 1 / 1;
-            position: relative; margin: 0 auto;
-        }
+        .game-subtitle { font-size: clamp(0.65rem, 1.5vw, 0.8rem); color: #8aa0b0; letter-spacing: 2px; text-transform: uppercase; font-weight: 500; margin-top: -6px; text-align: center; }
+        .canvas-wrapper { width: 100%; max-width: 460px; aspect-ratio: 1 / 1; position: relative; margin: 0 auto; }
         canvas {
-            border-radius: clamp(12px, 2.5vw, 16px);
-            cursor: url('Chi.png') 16 16, auto; background: #ffffff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4); width: 100%; height: 100%;
+            border-radius: clamp(12px, 2.5vw, 16px); cursor: url('Chi.png') 16 16, auto;
+            background: #ffffff; box-shadow: 0 4px 12px rgba(0,0,0,0.4); width: 100%; height: 100%;
             display: block; touch-action: none; border: 2px solid #8b7355;
         }
-        .info-panel {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 6px;
-            width: 100%;
-        }
-        .score-row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: clamp(12px, 2.5vw, 18px);
-            width: 100%;
-        }
+        .info-panel { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
+        .score-row { display: flex; align-items: center; justify-content: center; gap: clamp(12px, 2.5vw, 18px); width: 100%; }
         .score-box {
-            background: #003952; border-radius: clamp(12px, 2.5vw, 16px);
-            padding: clamp(6px, 1.5vw, 10px) clamp(12px, 2.5vw, 18px);
-            text-align: center; min-width: 75px; border: 2px solid #1a4a5e;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            flex: 0 1 auto;
+            background: #003952; border-radius: clamp(12px, 2.5vw, 16px); padding: clamp(6px, 1.5vw, 10px) clamp(12px, 2.5vw, 18px);
+            text-align: center; min-width: 75px; border: 2px solid #1a4a5e; box-shadow: 0 2px 6px rgba(0,0,0,0.2); flex: 0 1 auto;
         }
         .score-box.active { border-color: #ffa563; box-shadow: 0 0 14px rgba(240,128,60,0.4); }
-        .score-label {
-            font-size: clamp(0.55rem, 1.1vw, 0.7rem); text-transform: uppercase;
-            letter-spacing: 1.2px; color: #8aa0b0; margin-bottom: 4px; white-space: nowrap;
-        }
+        .score-label { font-size: clamp(0.55rem, 1.1vw, 0.7rem); text-transform: uppercase; letter-spacing: 1.2px; color: #8aa0b0; margin-bottom: 4px; white-space: nowrap; }
         .score-value { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 900; color: #fff; }
         .turn-indicator {
-            font-size: clamp(0.8rem, 1.6vw, 0.9rem); color: #c4b99a;
-            text-align: center; font-weight: 600; min-height: 2.2em;
-            display: flex; align-items: center; justify-content: center;
-            width: 100%; padding: 0 4px;
+            font-size: clamp(0.8rem, 1.6vw, 0.9rem); color: #c4b99a; text-align: center; font-weight: 600;
+            min-height: 2.2em; display: flex; align-items: center; justify-content: center; width: 100%; padding: 0 4px;
         }
-        .controls {
-            display: flex; gap: clamp(8px, 1.5vw, 12px); align-items: center;
-            flex-wrap: wrap; justify-content: center; margin-top: 4px;
-            z-index: 5;
-        }
+        .controls { display: flex; gap: clamp(8px, 1.5vw, 12px); align-items: center; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
         button {
-            padding: clamp(10px, 1.5vw, 12px) clamp(16px, 3vw, 22px);
-            border-radius: 12px; border: none; background: #c4a882; color: #00283e;
-            font-weight: 800; font-size: clamp(0.8rem, 1.5vw, 0.9rem);
-            cursor: pointer; letter-spacing: 0.5px; text-transform: uppercase;
-            transition: all 0.2s; box-shadow: 0 2px 6px rgba(196,168,130,0.25);
-            white-space: nowrap; min-height: var(--touch-target); min-width: 80px;
+            padding: clamp(10px, 1.5vw, 12px) clamp(16px, 3vw, 22px); border-radius: 12px; border: none;
+            background: #c4a882; color: #00283e; font-weight: 800; font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+            cursor: pointer; letter-spacing: 0.5px; text-transform: uppercase; transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(196,168,130,0.25); white-space: nowrap; min-height: var(--touch-target); min-width: 80px;
         }
         button:active { transform: scale(0.94); }
-        .btn-back {
-            background: transparent; border: 2px solid #c4a882; color: #c4a882;
-            box-shadow: none; font-size: clamp(0.75rem, 1.4vw, 0.85rem);
-        }
-
+        .btn-back { background: transparent; border: 2px solid #c4a882; color: #c4a882; box-shadow: none; font-size: clamp(0.75rem, 1.4vw, 0.85rem); }
         .victory-display {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: none;
-            z-index: 20;
-            pointer-events: none;
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            display: none; z-index: 10; pointer-events: none;
         }
-        .victory-display.active {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .victory-bg {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-        .victory-cat {
-            position: relative;
-            max-width: 40%;
-            max-height: 40%;
-            object-fit: contain;
-            z-index: 2;
-            filter: drop-shadow(0 0 12px rgba(0,0,0,0.6));
-        }
+        .victory-display.active { display: flex; align-items: center; justify-content: center; }
+        .victory-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; }
+        .victory-cat { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; z-index: 2; }
 
+        @media (min-width: 768px) {
+            .selection-panel { max-width: 950px; }
+            .player-select { max-width: 600px; }
+            .cat-grid { grid-template-columns: repeat(5, 1fr); }
+            .cat-option { min-height: 75px; padding: 8px 6px; }
+            .cat-option img { width: 50px; height: 50px; }
+        }
         @media (max-width: 600px) {
             .players-row { flex-direction: column; align-items: center; }
             .player-select { width: 100%; max-width: 100%; }
@@ -299,18 +188,14 @@
             <div class="players-row">
                 <div class="player-select" id="player1Select">
                     <h4>Bạn</h4>
-                    <div class="selected-cat" id="p1Selected">
-                        <img src="" alt="" style="display:none;" id="p1Img"><span class="cat-name">Chưa chọn</span>
-                    </div>
+                    <div class="selected-cat" id="p1Selected"><img src="" alt="" style="display:none;" id="p1Img"><span class="cat-name">Chưa chọn</span></div>
                     <button class="btn-confirm" id="btnConfirm1">Xác nhận</button>
                     <button class="btn-change" id="btnChange1">Đổi mèo</button>
                     <div class="cat-grid" id="p1Grid"></div>
                 </div>
                 <div class="player-select" id="player2Select">
                     <h4 id="p2Title">Máy</h4>
-                    <div class="selected-cat" id="p2Selected">
-                        <img src="" alt="" style="display:none;" id="p2Img"><span class="cat-name">Đang chọn...</span>
-                    </div>
+                    <div class="selected-cat" id="p2Selected"><img src="" alt="" style="display:none;" id="p2Img"><span class="cat-name">Đang chọn...</span></div>
                     <button class="btn-confirm" id="btnConfirm2">Xác nhận</button>
                     <button class="btn-change" id="btnChange2">Đổi mèo</button>
                     <div class="cat-grid" id="p2Grid"></div>
@@ -331,16 +216,16 @@
             </div>
             <div class="turn-indicator" id="turnText"></div>
         </div>
-
-        <div class="canvas-wrapper"><canvas id="gameCanvas" width="460" height="460" aria-label="Bàn chơi 6x6"></canvas></div>
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas" width="460" height="460" aria-label="Bàn chơi 6x6"></canvas>
+            <div class="victory-display" id="victoryDisplay">
+                <img class="victory-bg" id="victoryBg" src="Carton/Hop.png" alt="hop" />
+                <img class="victory-cat" id="victoryCatImg" src="" alt="mèo thắng" />
+            </div>
+        </div>
         <div class="controls">
             <button class="btn-back" id="btnBack">Chọn lại</button>
             <button id="btnNewGame">Chơi mới</button>
-        </div>
-
-        <div class="victory-display" id="victoryDisplay">
-            <img class="victory-bg" id="victoryBg" src="Carton/Hop.png" alt="hop" />
-            <img class="victory-cat" id="victoryCatImg" src="" alt="mèo thắng" />
         </div>
     </div>
 
@@ -379,8 +264,7 @@
                 const wrapperWidth = canvasWrapper.clientWidth;
                 const newSize = Math.min(wrapperWidth, 460);
                 if (Math.abs(W - newSize) > 1 || CELL_SIZE === undefined) {
-                    W = newSize; H = newSize;
-                    canvas.width = W; canvas.height = H;
+                    W = newSize; H = newSize; canvas.width = W; canvas.height = H;
                     const scale = W / 460;
                     MARGIN = MARGIN_BASE * scale;
                     CELL_SIZE = (Math.min(W, H) - 2 * MARGIN) / Math.max(BOX_ROWS, BOX_COLS);
@@ -428,13 +312,13 @@
                     if (isDisabled) { div.style.pointerEvents = 'none'; div.style.opacity = '0.4'; }
                     const img = document.createElement('img'); img.src = cat.file; img.alt = cat.name; img.loading = 'lazy';
                     img.onerror = () => { img.style.display = 'none'; };
-                    div.appendChild(img); div.appendChild(document.createTextNode(cat.name));
-                    div.addEventListener('click', (e) => {
+                    div.appendChild(img);
+                    /* Tên mèo đã bị loại bỏ hoàn toàn khỏi lưới chọn */
+                    div.addEventListener('click', () => {
                         if (isDisabled) return;
                         if (gridElement === p1Grid) {
                             if (confirmedP1) return;
-                            selectedP1 = cat;
-                            updateSelectedDisplay(p1Selected, p1Img, cat);
+                            selectedP1 = cat; updateSelectedDisplay(p1Selected, p1Img, cat);
                             renderCatGrid(p1Grid, selectedP1, false);
                             if (gameMode === 'pvai') {
                                 selectedP2 = getRandomCatExcept(cat);
@@ -443,8 +327,7 @@
                             }
                         } else if (gridElement === p2Grid && gameMode === 'pvp') {
                             if (confirmedP2) return;
-                            selectedP2 = cat;
-                            updateSelectedDisplay(p2Selected, p2Img, cat);
+                            selectedP2 = cat; updateSelectedDisplay(p2Selected, p2Img, cat);
                             renderCatGrid(p2Grid, selectedP2, false);
                         }
                         checkStartReady();
@@ -454,11 +337,14 @@
             }
 
             function updateSelectedDisplay(container, imgEl, cat) {
+                const nameSpan = container.querySelector('.cat-name');
                 if (cat && cat.file) {
                     imgEl.src = cat.file; imgEl.style.display = 'inline-block';
-                    container.querySelector('.cat-name').textContent = cat.name;
+                    /* Ẩn tên trong khu vực đã chọn, chỉ hiển thị ảnh */
+                    if (nameSpan) nameSpan.textContent = '';
                 } else {
-                    imgEl.style.display = 'none'; container.querySelector('.cat-name').textContent = 'Chưa chọn';
+                    imgEl.style.display = 'none';
+                    if (nameSpan) nameSpan.textContent = 'Chưa chọn';
                 }
             }
 
@@ -470,8 +356,7 @@
                     if (value) renderCatGrid(p1Grid, selectedP1, true);
                     else renderCatGrid(p1Grid, selectedP1, false);
                     if (gameMode === 'pvai' && value && selectedP2) {
-                        confirmedP2 = true;
-                        player2Select.classList.add('confirmed');
+                        confirmedP2 = true; player2Select.classList.add('confirmed');
                     }
                 } else if (playerNum === 2 && gameMode === 'pvp') {
                     if (value && !selectedP2) return;
@@ -484,8 +369,7 @@
             }
 
             function checkStartReady() {
-                const canStart = (gameMode === 'pvai') ? confirmedP1 : (confirmedP1 && confirmedP2);
-                btnStartGame.disabled = !canStart;
+                btnStartGame.disabled = (gameMode === 'pvai') ? !confirmedP1 : !(confirmedP1 && confirmedP2);
             }
 
             btnConfirm1.addEventListener('click', () => { if (selectedP1) setConfirmed(1, true); });
@@ -607,7 +491,8 @@
                     ctx.strokeStyle=owner===0?'#e07840':'#6b6b6b'; ctx.lineWidth=2; ctx.setLineDash([]); ctx.strokeRect(bx+1,by+1,bw-2,bh-2);
                     const img=getCatImage(cat);
                     if(img&&img.complete&&img.naturalWidth>0){
-                        const s=Math.min(bw*0.65/img.width,bh*0.65/img.height); ctx.drawImage(img,bx+(bw-img.width*s)/2,by+(bh-img.height*s)/2,img.width*s,img.height*s);
+                        const s = Math.min(bw * 1.625 / img.width, bh * 1.625 / img.height);
+                        ctx.drawImage(img, bx+(bw-img.width*s)/2, by+(bh-img.height*s)/2, img.width*s, img.height*s);
                     }else{
                         ctx.fillStyle='#5c4a3a'; const fs=Math.min(bw,bh)*0.45;
                         ctx.font=`bold ${fs}px "Segoe UI"`; ctx.textAlign='center'; ctx.textBaseline='middle';
@@ -666,10 +551,7 @@
                 victoryCatImg.src = winnerCat.file;
                 victoryDisplay.classList.add('active');
             }
-
-            function hideVictory() {
-                victoryDisplay.classList.remove('active');
-            }
+            function hideVictory() { victoryDisplay.classList.remove('active'); }
 
             function resetGame(){
                 if(aiTimeout)clearTimeout(aiTimeout);
@@ -729,9 +611,7 @@
                 const move=aiMedium(); if(move)game.applyMove(move,1); else{const moves=game.getValidMoves();if(moves.length)game.applyMove(moves[0],1);}
                 drawCanvas(); updateUI();
                 if(!game.gameOver&&game.currentPlayer===1){
-                    isThinking=true;
-                    aiTimeout=setTimeout(()=>{aiTimeout=null;performAIMove();}, 450);
-                    return;
+                    isThinking=true; aiTimeout=setTimeout(()=>{aiTimeout=null;performAIMove();}, 450); return;
                 }
                 isThinking=false; updateUI(); drawCanvas(); if(game.gameOver) updateUI();
             }
