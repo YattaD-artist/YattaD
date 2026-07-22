@@ -170,6 +170,7 @@
             box-shadow: 0 6px 18px rgba(0,0,0,0.4); display: none;
             flex-direction: column; align-items: center; gap: clamp(10px, 2vw, 14px);
             max-width: 560px; width: 95%; margin: auto; border: 1px solid #1a4a5e;
+            position: relative;
         }
         .game-container.active { display: flex; }
         .game-title {
@@ -228,6 +229,7 @@
         .controls {
             display: flex; gap: clamp(8px, 1.5vw, 12px); align-items: center;
             flex-wrap: wrap; justify-content: center; margin-top: 4px;
+            z-index: 5;
         }
         button {
             padding: clamp(10px, 1.5vw, 12px) clamp(16px, 3vw, 22px);
@@ -242,6 +244,39 @@
             background: transparent; border: 2px solid #c4a882; color: #c4a882;
             box-shadow: none; font-size: clamp(0.75rem, 1.4vw, 0.85rem);
         }
+
+        .victory-display {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            z-index: 20;
+            pointer-events: none;
+        }
+        .victory-display.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .victory-bg {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        .victory-cat {
+            position: relative;
+            max-width: 40%;
+            max-height: 40%;
+            object-fit: contain;
+            z-index: 2;
+            filter: drop-shadow(0 0 12px rgba(0,0,0,0.6));
+        }
+
         @media (max-width: 600px) {
             .players-row { flex-direction: column; align-items: center; }
             .player-select { width: 100%; max-width: 100%; }
@@ -296,10 +331,16 @@
             </div>
             <div class="turn-indicator" id="turnText"></div>
         </div>
+
         <div class="canvas-wrapper"><canvas id="gameCanvas" width="460" height="460" aria-label="Bàn chơi 6x6"></canvas></div>
         <div class="controls">
             <button class="btn-back" id="btnBack">Chọn lại</button>
             <button id="btnNewGame">Chơi mới</button>
+        </div>
+
+        <div class="victory-display" id="victoryDisplay">
+            <img class="victory-bg" id="victoryBg" src="Carton/Hop.png" alt="hop" />
+            <img class="victory-cat" id="victoryCatImg" src="" alt="mèo thắng" />
         </div>
     </div>
 
@@ -366,6 +407,8 @@
             const btnConfirm2 = document.getElementById('btnConfirm2'), btnChange2 = document.getElementById('btnChange2');
             const player1Select = document.getElementById('player1Select'), player2Select = document.getElementById('player2Select');
             const btnBack = document.getElementById('btnBack'), btnNewGame = document.getElementById('btnNewGame');
+            const victoryDisplay = document.getElementById('victoryDisplay');
+            const victoryCatImg = document.getElementById('victoryCatImg');
 
             let gameMode = 'pvai';
             let selectedP1 = null, selectedP2 = null;
@@ -602,14 +645,36 @@
                 document.getElementById('scoreBox1').classList.toggle('active',!game.gameOver&&game.currentPlayer===0);
                 document.getElementById('scoreBox2').classList.toggle('active',!game.gameOver&&game.currentPlayer===1);
                 const turnEl=document.getElementById('turnText');
-                if(game.gameOver){const s1=game.scores[0],s2=game.scores[1];let msg=s1>s2?`${catP1?.name||'Bạn'} thắng! (${s1}-${s2})`:(s2>s1?`${catP2?.name||'Máy'} thắng! (${s2}-${s1})`:`Hòa! ${s1}-${s2}`);turnEl.textContent=msg;}
-                else if(isThinking) turnEl.textContent='Máy đang suy nghĩ...';
+                if(game.gameOver){
+                    const s1=game.scores[0],s2=game.scores[1];
+                    if(s1>s2) {
+                        turnEl.innerHTML=`<span style="color:#ffa563;font-weight:800;">${catP1?.name||'Bạn'}</span> thắng! (${s1}-${s2})`;
+                        showVictory(catP1);
+                    } else if(s2>s1) {
+                        turnEl.innerHTML=`<span style="color:#c0c0c0;font-weight:800;">${catP2?.name||'Máy'}</span> thắng! (${s2}-${s1})`;
+                        showVictory(catP2);
+                    } else {
+                        turnEl.textContent=`Hòa! ${s1}-${s2}`;
+                        hideVictory();
+                    }
+                } else if(isThinking) turnEl.textContent='Máy đang suy nghĩ...';
                 else turnEl.innerHTML=game.currentPlayer===0?`Lượt của <span style="color:#ffa563;font-weight:800;">${catP1?.name||'Bạn'}</span>`:`Lượt của <span style="color:#c0c0c0;font-weight:800;">${catP2?.name||'Máy'}</span>`;
+            }
+
+            function showVictory(winnerCat) {
+                if (!winnerCat) return;
+                victoryCatImg.src = winnerCat.file;
+                victoryDisplay.classList.add('active');
+            }
+
+            function hideVictory() {
+                victoryDisplay.classList.remove('active');
             }
 
             function resetGame(){
                 if(aiTimeout)clearTimeout(aiTimeout);
-                game=new GameState(); hoveredLine=null; isThinking=false; updateUI(); updateSizes(); drawCanvas();
+                game=new GameState(); hoveredLine=null; isThinking=false; hideVictory();
+                updateUI(); updateSizes(); drawCanvas();
                 if(game.currentPlayer===1&&gameMode==='pvai') scheduleAIMove();
             }
 
@@ -619,13 +684,17 @@
                 loadCatImage(catP1); loadCatImage(catP2);
                 document.getElementById('label1').textContent=catP1.name; document.getElementById('label2').textContent=catP2.name;
                 document.getElementById('gameSubtitle').textContent=`${catP1.name}  VS  ${catP2.name}`;
-                selectionOverlay.style.display='none'; gameContainer.classList.add('active');
+                selectionOverlay.style.display='none'; gameContainer.classList.add('active'); hideVictory();
                 updateSizes(); resetGame();
             }
 
             btnStartGame.addEventListener('click', startGame);
-            btnBack.addEventListener('click',()=>{if(aiTimeout)clearTimeout(aiTimeout);isThinking=false;gameContainer.classList.remove('active');selectionOverlay.style.display='flex';game=new GameState();updateSizes();drawCanvas();});
-            btnNewGame.addEventListener('click',resetGame);
+            btnBack.addEventListener('click',()=>{
+                if(aiTimeout)clearTimeout(aiTimeout); isThinking=false; hideVictory();
+                gameContainer.classList.remove('active'); selectionOverlay.style.display='flex';
+                game=new GameState(); updateSizes(); drawCanvas();
+            });
+            btnNewGame.addEventListener('click', resetGame);
 
             function handleCanvasMove(clientX,clientY){
                 if(game.gameOver||isThinking||(gameMode==='pvai'&&game.currentPlayer!==0)){if(hoveredLine){hoveredLine=null;drawCanvas();}return;}
@@ -653,13 +722,17 @@
             function scheduleAIMove(){
                 if(game.gameOver||game.currentPlayer!==1||gameMode!=='pvai')return;
                 isThinking=true; updateUI(); drawCanvas();
-                aiTimeout=setTimeout(()=>{aiTimeout=null;performAIMove();},180);
+                aiTimeout=setTimeout(()=>{aiTimeout=null;performAIMove();}, 650);
             }
             function performAIMove(){
                 if(game.gameOver||game.currentPlayer!==1||gameMode!=='pvai'){isThinking=false;updateUI();drawCanvas();return;}
                 const move=aiMedium(); if(move)game.applyMove(move,1); else{const moves=game.getValidMoves();if(moves.length)game.applyMove(moves[0],1);}
                 drawCanvas(); updateUI();
-                if(!game.gameOver&&game.currentPlayer===1){isThinking=true;aiTimeout=setTimeout(()=>{aiTimeout=null;performAIMove();},80);return;}
+                if(!game.gameOver&&game.currentPlayer===1){
+                    isThinking=true;
+                    aiTimeout=setTimeout(()=>{aiTimeout=null;performAIMove();}, 450);
+                    return;
+                }
                 isThinking=false; updateUI(); drawCanvas(); if(game.gameOver) updateUI();
             }
             function aiMedium(){
