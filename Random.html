@@ -274,16 +274,6 @@
     width: auto;
     max-width: 42%;
     height: auto;
-    cursor: pointer;
-    transition: transform 0.3s ease, filter 0.3s ease;
-    user-select: none;
-  }
-  #centerImg:hover {
-    transform: translate(-50%, -50%) scale(1.1);
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
-  }
-  #centerImg:active {
-    transform: translate(-50%, -50%) scale(0.95);
   }
   #centerImg.rotating {
     animation: spin 0.6s ease-out;
@@ -604,7 +594,7 @@ if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark');
 const langBtn = document.getElementById('lang-toggle');
 let currentLang = localStorage.getItem('lang')||'vi';
 const translations = {
-  vi:{ title:"Tiêu Chuẩn", introTitle:"Giới Thiệu", introP1:"Đây là trang Tiêu Chuẩn.", introP2:"Hãy đi���n tên vào bảng để Tiêu chọn, hoặc thử những tiên đoán khác của Tiêu.", repeat:"Số lần lặp:", spin:"Thời gian quay:", menu1:"Vietlott Mega", menu2:"Vietlott Power", menu3:"ABCD Random"},
+  vi:{ title:"Tiêu Chuẩn", introTitle:"Giới Thiệu", introP1:"Đây là trang Tiêu Chuẩn.", introP2:"Hãy điền tên vào bảng để Tiêu chọn, hoặc thử những tiên đoán khác của Tiêu.", repeat:"Số lần lặp:", spin:"Thời gian quay:", menu1:"Vietlott Mega", menu2:"Vietlott Power", menu3:"ABCD Random"},
   en:{ title:"Standard", introTitle:"Introduction", introP1:"This is the Tieu Chuan.", introP2:"Please enter a name in the table for Tiêu to choose, or try Tiêu's other predictions.", repeat:"Iterations:", spin:"Spin Duration:", menu1:"Vietlott Mega", menu2:"Vietlott Power", menu3:"ABCD Random"}
 };
 function switchLanguage(){
@@ -668,6 +658,9 @@ function spinWheel(){
   const startAngle = angle;
   const startTime = performance.now();
   
+  // Rotate Tiêu when wheel spins
+  centerImg.classList.add('rotating');
+  
   function animate(now){
     const elapsed = now - startTime;
     const t = Math.min(elapsed/duration,1);
@@ -685,6 +678,11 @@ function showResult(){
   const index=Math.floor(normalized/arc);
   resultText.textContent=names[index]||"Không có tên";
   overlay.style.display="flex";
+  
+  // Remove rotation after animation completes
+  setTimeout(() => {
+    centerImg.classList.remove('rotating');
+  }, 600);
 }
 
 function closePopup(){ overlay.style.display="none"; }
@@ -694,14 +692,6 @@ repeatSelect.addEventListener("change",updateNames);
 durationSelect.addEventListener("change",updateNames);
 spinBtn.addEventListener("click",spinWheel);
 updateNames();
-
-// ===== Center Image Tap/Click Rotation =====
-centerImg.addEventListener('click', ()=>{
-  centerImg.classList.add('rotating');
-  setTimeout(() => {
-    centerImg.classList.remove('rotating');
-  }, 600);
-});
 
 // ===== Vietlott =====
 const lotteryOverlay = document.getElementById('lotteryOverlay');
