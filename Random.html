@@ -189,6 +189,36 @@
     box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
   }
 
+  /* THÊM: Khối nhập số */
+  .number-generator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .number-generator label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--text);
+  }
+  .number-generator input[type="number"] {
+    width: 100px;
+    padding: 8px 12px;
+    background: var(--bg);
+    border: 2px solid var(--border-color);
+    font-family: var(--font);
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text);
+    transition: all var(--transition);
+  }
+  .number-generator input[type="number"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+  }
+
   .options {
     display: flex;
     flex-wrap: wrap;
@@ -479,6 +509,10 @@
       height: 45px;
       font-size: 1rem;
     }
+    .number-generator {
+      flex-direction: column;
+      align-items: flex-start;
+    }
   }
 </style>
 </head>
@@ -512,6 +546,12 @@ Thì
 Chỉ
 Có
 Chuẩn</textarea>
+
+      <!-- THÊM KHỐI NHẬP SỐ -->
+      <div class="number-generator">
+        <label for="numberInput"><span id="numberLabel">Quay số từ 1 đến:</span></label>
+        <input type="number" id="numberInput" min="1" max="1000" placeholder="Ví dụ: 55">
+      </div>
 
       <div class="options">
         <label><span id="repeat">Số lần lặp:</span>
@@ -598,8 +638,34 @@ if(localStorage.getItem('theme')==='dark') document.body.classList.add('dark');
 const langBtn = document.getElementById('lang-toggle');
 let currentLang = localStorage.getItem('lang')||'vi';
 const translations = {
-  vi:{ title:"Tiêu Chuẩn", introTitle:"Giới Thiệu", introP1:"Đây là trang Tiêu Chuẩn.", introP2:"Hãy điền tên vào bảng để Tiêu chọn, hoặc thử những tiên đoán khác của Tiêu.", repeat:"Số lần lặp", spin:"Thời gian quay", spinBtn:"Quay", menu1:"Vietlott Mega", menu2:"Vietlott Power", menu3:"ABCD", resultText:"Kết quả" },
-  en:{ title:"Standard", introTitle:"Introduction", introP1:"This is the Tieu Chuan. ", introP2:"Please enter a name in the table for Tiêu to choose, or try Tiêu's other predictions.", repeat:"Iterations", spin:"Spin time", spinBtn:"Spin", menu1:"Vietlott Mega", menu2:"Vietlott Power", menu3:"ABCD", resultText:"Result" }
+  vi:{ 
+    title:"Tiêu Chuẩn", 
+    introTitle:"Giới Thiệu", 
+    introP1:"Đây là trang Tiêu Chuẩn.", 
+    introP2:"Hãy điền tên vào bảng để Tiêu chọn, hoặc thử những tiên đoán khác của Tiêu.", 
+    repeat:"Số lần lặp", 
+    spin:"Thời gian quay", 
+    spinBtn:"Quay", 
+    menu1:"Vietlott Mega", 
+    menu2:"Vietlott Power", 
+    menu3:"ABCD", 
+    resultText:"Kết quả",
+    numberLabel:"Quay số từ 1 đến:"
+  },
+  en:{ 
+    title:"Standard", 
+    introTitle:"Introduction", 
+    introP1:"This is the Tieu Chuan.", 
+    introP2:"Please enter a name in the table for Tiêu to choose, or try Tiêu's other predictions.", 
+    repeat:"Iterations", 
+    spin:"Spin time", 
+    spinBtn:"Spin", 
+    menu1:"Vietlott Mega", 
+    menu2:"Vietlott Power", 
+    menu3:"ABCD", 
+    resultText:"Result",
+    numberLabel:"Number from 1 to:"
+  }
 };
 function switchLanguage(){
   currentLang = currentLang==='vi'?'en':'vi';
@@ -626,6 +692,9 @@ const spinBtn = document.getElementById("spinBtn");
 const overlay = document.getElementById("resultOverlay");
 const resultText = document.getElementById("resultText");
 
+// THÊM: input số
+const numberInput = document.getElementById("numberInput");
+
 let names=[], angle=0, spinning=false;
 const colors = ["#ffc7cf","#da526e","#cb4c43","#fce5d7","#ff7361","#ce7869","#e55033","#f8898e","#eb4747","#fd613a","#dd7e57"];
 
@@ -638,6 +707,22 @@ function updateNames(){
   }
   drawWheel();
 }
+
+// THÊM HÀM TẠO DANH SÁCH SỐ
+function generateNumberList(){
+  const n = parseInt(numberInput.value);
+  if(n > 0 && n <= 1000){
+    const numbers = [];
+    for(let i=1; i<=n; i++){
+      numbers.push(i);
+    }
+    nameInput.value = numbers.join('\n');
+    updateNames();
+  }
+}
+
+// THÊM SỰ KIỆN CHANGE CHO INPUT SỐ
+numberInput.addEventListener('change', generateNumberList);
 
 function drawWheel(){
   const radius = canvas.width/2;
