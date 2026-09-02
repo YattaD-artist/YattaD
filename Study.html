@@ -1,846 +1,882 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>YattaD · Manga Study Workspace</title>
-    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon32.png">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-    /* ========== RESET & BIẾN ========== */
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>YattaD · Portfolio</title>
+
+  <!-- Favicon & PWA -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/icon32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/icons/icon192.png">
+  <link rel="apple-touch-icon" href="assets/icons/icon192.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f5f5f5">
+
+  <!-- Font & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
     * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
     :root {
-        --bg: #121212;
-        --surface: #1e1e1e;
-        --text: #e8e8e8;
-        --text-secondary: #b0b0b0;
-        --accent: #ef4444;
-        --accent-light: #f87171;
-        --border-color: #555;
-        --border-light: #333;
-        --shadow-hard: 4px 4px 0 rgba(0,0,0,0.4);
-        --transition: 0.2s ease;
-        --transition-tag: #2196f3;
-        --camera-tag: #ff9800;
-        --layout-tag: #9c27b0;
+      --bg: #f5f5f5;
+      --surface: #ffffff;
+      --text: #1a1a1a;
+      --text-secondary: #444444;
+      --accent: #c62828;
+      --accent-light: #e53935;
+      --border-color: #222;
+      --border-light: #ccc;
+      --shadow-hard: 4px 4px 0 rgba(0,0,0,0.1);
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --transition: 0.2s ease;
     }
 
-    html, body {
-        width: 100%;
-        height: 100%;
-        margin: 0;
-        overflow: hidden;
-        background: var(--bg);
-        color: var(--text);
-        font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+    body.dark {
+      --bg: #121212;
+      --surface: #1e1e1e;
+      --text: #e8e8e8;
+      --text-secondary: #b0b0b0;
+      --accent: #ef4444;
+      --accent-light: #f87171;
+      --border-color: #555;
+      --border-light: #333;
+      --shadow-hard: 4px 4px 0 rgba(0,0,0,0.4);
     }
 
-    button, input, select, textarea { font-family: inherit; }
-
-    /* ========== GRID LAYOUT ========== */
-    .app {
-        width: 100%;
-        height: 100%;
-        display: grid;
-        grid-template-columns: 250px 1fr 300px;
-        grid-template-rows: 54px 1fr;
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background var(--transition), color var(--transition);
+      line-height: 1.4;
     }
 
-    /* ========== TOPBAR ========== */
-    .topbar {
-        grid-column: 1 / 4;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 0 16px;
-        background: var(--surface);
-        border-bottom: 2px solid var(--border-color);
-        box-shadow: 0 2px 0 var(--border-color);
+    /* ----- HEADER (Desktop) ----- */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 40px;
+      background: var(--surface);
+      border-bottom: 3px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 0 var(--border-color);
+      transition: background var(--transition), border-color var(--transition);
+      width: 100%;
     }
 
+    .header-left,
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .center-title {
+      font-size: 1.9rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--accent);
+      text-transform: uppercase;
+      text-shadow: 1px 1px 0 var(--border-color);
+    }
+
+    .icon-btn {
+      background: none;
+      border: 2px solid transparent;
+      font-size: 1rem;
+      color: var(--text);
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all var(--transition);
+      text-decoration: none;
+    }
+    .icon-btn:hover {
+      color: var(--accent);
+      border-color: var(--border-color);
+      background: rgba(0,0,0,0.03);
+    }
+    body.dark .icon-btn:hover {
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* ----- MAIN ----- */
+    main {
+      flex: 1;
+      display: flex;
+      gap: 28px;
+      padding: 24px 40px 40px;
+      width: 100%;
+    }
+
+    /* ----- INFO SECTION ----- */
     .info {
-        flex: 1;
-        font-size: 13px;
-        color: var(--text-secondary);
-        font-weight: 500;
+      flex: 3;
+      background: var(--surface);
+      border: 3px solid var(--border-color);
+      padding: 28px 32px;
+      box-shadow: var(--shadow-hard);
+      transition: background var(--transition), border-color var(--transition);
+      display: flex;
+      flex-direction: column;
     }
-    .info strong { color: var(--text); font-weight: 700; }
 
-    /* Nút chung */
-    .btn {
-        border: 2px solid var(--border-color);
+    .info h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 2px dashed var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    @media (min-width: 769px) {
+      .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 0.65fr;
+        gap: 32px 48px;
+        align-items: start;
+      }
+      .info-left {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+      }
+      .info-right {
+        display: flex;
+        flex-direction: column;
+      }
+    }
+
+    .info-group {
+      margin-bottom: 0;
+      break-inside: avoid;
+    }
+
+    .group-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 14px;
+      padding: 4px 8px;
+      border-left: 4px solid var(--accent);
+      background: rgba(0,0,0,0.02);
+    }
+    body.dark .group-title {
+      background: rgba(255,255,255,0.03);
+    }
+
+    .info-table {
+      display: grid;
+      grid-template-columns: 135px 1fr;
+      gap: 12px 18px;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    .info-value {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      word-break: break-word;
+    }
+    .info-value strong,
+    .info-value .highlight {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ----- MASCOT ----- */
+    .mascot-box {
+      text-align: center;
+      border: none;
+      padding: 0;
+      background: transparent;
+      margin: 0;
+    }
+    
+    .mascot-box img {
+      max-width: 100%;
+      height: auto;
+      max-height: 500px;
+      display: block;
+      margin: 0 auto;
+      border: none;
+      box-shadow: none;
+      transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      cursor: pointer;
+    }
+    
+    .mascot-box img:hover {
+      transform: scale(1.05) rotate(1deg);
+    }
+    
+    .mascot-label {
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent);
+    }
+
+    /* ========== MENU (Desktop) ========== */
+    .menu {
+      flex: 0.8;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: sticky;
+      top: 90px;
+      align-self: flex-start;
+    }
+
+    .menu > a {
+      display: block;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 14px 16px;
+      background: var(--surface);
+      color: var(--text);
+      border: 2px solid var(--border-color);
+      text-decoration: none;
+      transition: all var(--transition);
+      letter-spacing: 0.5px;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+      text-transform: uppercase;
+    }
+    .menu > a:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+      transform: translate(1px, 1px);
+    }
+
+    /* Dropdown desktop (mở xuống dưới) */
+    .dropdown {
+      position: relative;
+    }
+    .dropdown-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 14px 16px;
+      background: var(--surface);
+      color: var(--text);
+      border: 2px solid var(--border-color);
+      text-decoration: none;
+      transition: all var(--transition);
+      letter-spacing: 0.5px;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+      text-transform: uppercase;
+      cursor: pointer;
+      font-family: var(--font);
+    }
+    .dropdown-btn:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+      transform: translate(1px, 1px);
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border: 2px solid var(--border-color);
+      box-shadow: var(--shadow-hard);
+      z-index: 200;
+      flex-direction: column;
+      margin-top: 4px;
+    }
+    .dropdown.show .dropdown-content {
+      display: flex;
+    }
+    
+    .dropdown-content a {
+      display: block;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 14px 16px;
+      background: var(--surface);
+      color: var(--text);
+      border-bottom: 2px solid var(--border-color);
+      text-decoration: none;
+      transition: all var(--transition);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .dropdown-content a:last-child {
+      border-bottom: none;
+    }
+    .dropdown-content a:hover {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+      transform: translate(1px, 1px);
+      box-shadow: 1px 1px 0 rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 1;
+    }
+
+    /* MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(3px);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .modal-content {
+      background: var(--surface);
+      border: 3px solid var(--border-color);
+      padding: 24px 20px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.2);
+      color: var(--text);
+    }
+    .modal-content h2 {
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      color: var(--accent);
+    }
+    .qr-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px;
+      margin: 16px 0 12px;
+    }
+    .qr-item p {
+      font-weight: 600;
+      margin-bottom: 4px;
+      font-size: 0.85rem;
+    }
+    .qr-item img {
+      width: 95px;
+      border: 2px solid var(--border-color);
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+    .close-btn {
+      margin-top: 14px;
+      background: var(--accent);
+      border: 2px solid var(--border-color);
+      color: white;
+      font-weight: 700;
+      padding: 8px 22px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background var(--transition);
+      text-transform: uppercase;
+    }
+    .close-btn:hover {
+      background: var(--accent-light);
+    }
+    .image-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+    }
+    .image-modal img {
+      max-width: 90%;
+      max-height: 90%;
+      border: 4px solid white;
+    }
+
+    /* ==================== MOBILE (tối đa 768px) ==================== */
+    @media (max-width: 768px) {
+      /* ----- HEADER: YattaD dòng trên, icon dòng dưới ----- */
+      header {
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 12px 16px 8px;
+        gap: 8px 0;
+      }
+
+      .center-title {
+        width: 100%;
+        text-align: center;
+        order: -1;
+        font-size: 1.8rem;
+        margin-bottom: 4px;
+      }
+
+      .header-left,
+      .header-right {
+        flex: 1 1 auto;
+        display: flex;
+        justify-content: space-evenly;
+        align-items: center;
+        order: 0;
+      }
+
+      .icon-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+      }
+
+      /* ----- MAIN ----- */
+      main {
+        flex-direction: column;
+        padding: 16px 16px 85px; /* chừa chỗ cho menu dưới */
+        gap: 20px;
+      }
+
+      .info {
+        padding: 18px 16px;
+      }
+      .info-table {
+        grid-template-columns: 110px 1fr;
+        gap: 8px 12px;
+      }
+      .info-grid {
+        display: block;
+      }
+      .info-left .info-group,
+      .info-right .info-group {
+        margin-bottom: 24px;
+      }
+      .mascot-box img {
+        max-height: 250px;
+      }
+
+      /* ----- MENU chính dưới cùng, không cuộn ngang, chữ được xuống dòng ----- */
+      .menu {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        flex-direction: row;
         background: var(--surface);
-        color: var(--text);
-        padding: 8px 14px;
-        border-radius: 0;
-        cursor: pointer;
-        font-size: 13px;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        transition: all var(--transition);
-        box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
-    }
-    .btn:hover {
-        background: var(--accent);
-        color: white;
-        border-color: var(--accent);
-        box-shadow: 1px 1px 0 rgba(0,0,0,0.2);
-        transform: translate(1px, 1px);
-    }
-    .btn.primary {
-        background: var(--accent);
-        color: white;
-        border-color: var(--accent);
-    }
-    .btn.primary:hover {
-        background: var(--accent-light);
-    }
-    .btn-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 18px;
+        border-top: 3px solid var(--border-color);
+        box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+        z-index: 150;
+        gap: 4px;
+        padding: 6px 8px;
+        justify-content: space-between;
+        top: auto;
+        align-self: auto;
+      }
+
+      .menu > a,
+      .dropdown {
+        flex: 1 1 0;
+        font-size: 0.7rem;
+        white-space: normal;
+        word-break: break-word;
+        text-align: center;
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 0;
-    }
-
-    /* ========== SIDEBARS ========== */
-    .sidebar {
-        background: var(--surface);
-        overflow: auto;
-        padding: 14px;
-    }
-    .left { border-right: 2px solid var(--border-color); }
-    .right { border-left: 2px solid var(--border-color); }
-
-    .section-title {
-        font-size: 0.8rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: var(--text-secondary);
-        margin-bottom: 12px;
-        padding: 4px 8px;
-        border-left: 4px solid var(--accent);
-        background: rgba(255,255,255,0.03);
-    }
-
-    /* Mode buttons */
-    .mode-btn {
-        width: 100%;
-        border: 2px solid var(--border-color);
-        padding: 12px;
-        margin-bottom: 8px;
-        border-radius: 0;
+        line-height: 1.25;
+        box-shadow: none;
+        border: 1.5px solid var(--border-color);
         background: var(--surface);
         color: var(--text);
-        text-align: left;
-        cursor: pointer;
-        font-weight: 600;
-        text-transform: uppercase;
-        font-size: 13px;
+        text-decoration: none;
+        padding: 8px 3px;
+        margin: 0;
         transition: all var(--transition);
-        box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
-    }
-    .mode-btn:hover {
-        background: var(--accent);
-        color: white;
-        border-color: var(--accent);
-    }
-    .mode-btn.active {
-        background: var(--accent);
-        color: white;
-        font-weight: 700;
-    }
+        text-transform: uppercase;
+      }
 
-    /* Control panel */
-    .control {
-        background: var(--surface);
-        border: 2px solid var(--border-color);
-        padding: 12px;
-        margin-bottom: 16px;
-        box-shadow: var(--shadow-hard);
-    }
-    .control label {
+      .dropdown-btn {
+        font-size: inherit;
+        white-space: normal;
+        word-break: break-word;
+        width: 100%;
+        padding: 8px 3px;
         display: block;
-        margin-bottom: 6px;
-        font-size: 12px;
-        color: var(--text-secondary);
-        font-weight: 600;
+        border: none;
+        background: transparent;
+        color: inherit;
+        font-weight: 700;
+        text-align: center;
+        line-height: 1.25;
+        cursor: pointer;
+        font-family: var(--font);
         text-transform: uppercase;
         letter-spacing: 0.5px;
-    }
-    .control input, .control select {
-        width: 100%;
-        margin-bottom: 12px;
-        background: #2a2a2a;
-        border: 1px solid var(--border-color);
-        color: var(--text);
-        padding: 6px;
-        border-radius: 0;
-        font-size: 13px;
-    }
-    .small {
-        font-size: 12px;
-        color: var(--text-secondary);
-        line-height: 1.5;
-    }
-    .tag-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-    }
-    .tag-btn {
-        border: 2px solid var(--border-color);
-        background: var(--surface);
-        color: var(--text);
-        padding: 6px 8px;
-        border-radius: 0;
-        cursor: pointer;
-        font-size: 12px;
-        font-weight: 600;
-        text-transform: uppercase;
-        transition: all var(--transition);
-        box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
-    }
-    .tag-btn:hover {
-        background: var(--accent);
-        color: white;
-        border-color: var(--accent);
-    }
-    .format-group {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        margin-bottom: 12px;
-    }
-    .format-group button {
-        width: 36px;
-        height: 36px;
-        font-size: 16px;
-        background: var(--surface);
-        border: 2px solid var(--border-color);
-        color: var(--text);
-        border-radius: 0;
-        cursor: pointer;
-        font-weight: 700;
-        transition: all var(--transition);
-    }
-    .format-group button.active {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: white;
-    }
-    input[type="range"] {
-        -webkit-appearance: none;
-        background: #333;
-        height: 4px;
-        border-radius: 0;
-    }
+      }
 
-    /* Workspace */
-    .workspace {
-        position: relative;
-        overflow: hidden;
-        background: #050505;
-    }
-    #viewport {
+      /* ----- Submenu mở ngược lên trên, không bị giới hạn ----- */
+      .dropdown-content {
         position: absolute;
-        top: 0;
-        left: 0;
-        transform-origin: 0 0;
-        width: 100%;
-        height: 100%;
-        will-change: transform;
-    }
-    #canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-    }
-
-    /* Tags */
-    .tag {
-        position: absolute;
-        padding: 6px 10px;
-        border-radius: 0;
-        color: white;
-        font-size: 12px;
-        font-weight: 700;
-        user-select: none;
-        cursor: move;
-        white-space: nowrap;
-        box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
-        z-index: 10;
-        border: 1px solid rgba(255,255,255,0.2);
-        text-transform: uppercase;
-    }
-
-    /* Textbox */
-    .textbox-container {
-        position: absolute;
-        z-index: 10;
-        user-select: none;
-    }
-    .textbox-content {
-        min-width: 50px;
-        min-height: 30px;
-        padding: 6px 8px;
-        outline: none;
-        background: transparent;
-        color: #000;
-        text-align: center;
-        font-size: 14px;
-        font-weight: normal;
-        font-style: normal;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        white-space: pre-wrap;
-        border: 1px solid transparent;
-        cursor: move;
-        transition: border-color 0.2s;
-        width: 100%;
-        height: 100%;
-        font-family: inherit;
-    }
-    .textbox-container.editing .textbox-content {
-        cursor: text;
-        user-select: text;
-        border: 1px dashed var(--accent);
-        background: rgba(255,255,255,0.05);
-    }
-    .textbox-container.selected .textbox-content {
-        border: 1px dashed var(--text-secondary);
-    }
-    .textbox-container.hide-border .textbox-content {
-        border-color: transparent !important;
-    }
-    .resize-handle {
-        position: absolute;
-        bottom: 0;
+        bottom: 100%;
+        left: auto;
         right: 0;
-        width: 14px;
-        height: 14px;
-        background: var(--accent);
-        clip-path: polygon(100% 0, 100% 100%, 0 100%);
-        cursor: nwse-resize;
+        margin-bottom: 4px;
+        top: auto;
+        width: max-content;
+        min-width: 180px;
+        max-height: 50vh;
+        overflow-y: auto;
+        background: var(--surface);
+        border: 2px solid var(--border-color);
+        box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
+        z-index: 999;
+        flex-direction: column;
         display: none;
+        border-radius: 4px;
+      }
+
+      .dropdown.show .dropdown-content {
+        display: flex;
+      }
+
+      .dropdown-content a {
+        padding: 12px 16px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        text-align: center;
+        border-bottom: 1px solid var(--border-light);
+        color: var(--text);
+        background: var(--surface);
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+
+      .dropdown-content a:last-child {
+        border-bottom: none;
+      }
     }
-    .textbox-container.selected .resize-handle,
-    .textbox-container.editing .resize-handle {
-        display: block;
+
+    /* ==================== Màn hình rất nhỏ (tối đa 480px) ==================== */
+    @media (max-width: 480px) {
+      .center-title {
+        font-size: 1.5rem;
+      }
+
+      .menu > a,
+      .dropdown {
+        font-size: 0.65rem;
+        padding: 6px 2px;
+      }
+
+      .dropdown-btn {
+        font-size: 0.65rem;
+        padding: 6px 2px;
+      }
+
+      .dropdown-content a {
+        font-size: 0.7rem;
+        padding: 10px 12px;
+      }
+
+      .mascot-box img {
+        max-height: 200px;
+      }
     }
-    .drag-preview {
-        position: absolute;
-        border: 2px dashed var(--accent);
-        pointer-events: none;
-        z-index: 20;
-    }
-    </style>
+  </style>
 </head>
 <body>
-<div class="app">
-    <div class="topbar">
-        <!-- Nút Home (Trang chủ) - thêm mới -->
-        <button class="btn btn-icon" id="home-btn" title="Về trang chủ"><i class="fas fa-home"></i></button>
-        <div class="info">Manga: <strong id="manga-title">Đang tải...</strong> — Tác giả: <strong id="manga-author">Chưa rõ</strong></div>
-        <input type="file" id="file-input" multiple accept=".png,.jpg,.jpeg,.webp" hidden />
-        <button class="btn btn-icon" id="undo-btn" title="Hoàn tác (Ctrl+Z)">↩</button>
-        <button class="btn btn-icon" id="redo-btn" title="Làm lại (Ctrl+Y)">↪</button>
-        <button class="btn" id="load-btn" title="Tải ảnh từ máy">📁 Tải thủ công</button>
-        <button class="btn primary" id="random-btn" title="Chọn ngẫu nhiên một ảnh">🎲 Ngẫu Nhiên</button>
-        <button class="btn" id="export-btn" title="Xuất workspace thành PNG">📤 Xuất PNG</button>
+  <header>
+    <div class="header-left">
+      <button class="icon-btn" id="theme-toggle" title="Giao diện tối/sáng"><i class="fas fa-adjust"></i></button>
+      <button class="icon-btn" id="lang-toggle" title="Ngôn ngữ"><i class="fa-solid fa-language"></i></button>
     </div>
-    <aside class="sidebar left">
-        <div class="section-title">Chế độ luyện tập</div>
-        <button class="mode-btn active" data-mode="FLOW">1. Dòng chảy (Flow)</button>
-        <button class="mode-btn" data-mode="TEXT">2. Hội thoại (Dialogue)</button>
-        <button class="mode-btn" data-mode="TRANSITION">3. Chuyển cảnh (Transition)</button>
-        <button class="mode-btn" data-mode="CAMERA">4. Góc máy & Cỡ cảnh</button>
-        <button class="mode-btn" data-mode="LAYOUT">5. Bố cục khung</button>
-    </aside>
-    <div class="workspace" id="workspace">
-        <div id="viewport">
-            <canvas id="canvas"></canvas>
+    <div class="center-title" data-lang="title">YattaD</div>
+    <div class="header-right">
+      <a href="https://www.facebook.com/Fb.YattaD/" target="_blank" class="icon-btn" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="https://www.instagram.com/yattad.art/" target="_blank" class="icon-btn" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+      <button class="icon-btn" onclick="copyToClipboard('YattaD')" title="Copy Discord"><i class="fab fa-discord"></i></button>
+      <button class="icon-btn" onclick="copyToClipboard('Yattadwork@gmail.com')" title="Copy Gmail"><i class="fas fa-envelope"></i></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="info">
+      <h2><i class="fas fa-address-card"></i> <span data-lang="infoTitle">Thông tin cá nhân</span></h2>
+      <div class="info-grid">
+        <div class="info-left">
+          <div class="info-group">
+            <div class="group-title" data-lang="group1">Thông tin cơ bản</div>
+            <div class="info-table">
+              <span class="info-label" data-lang="nameLabel">Họ và Tên</span>
+              <span class="info-value" data-lang="nameValue">Ngô Xuân Đạt</span>
+              <span class="info-label" data-lang="birthLabel">Ngày sinh</span>
+              <span class="info-value" data-lang="birthValue">07 / 05 / 1998</span>
+              <span class="info-label" data-lang="genderLabel">Giới tính</span>
+              <span class="info-value" data-lang="genderValue">Nam</span>
+              <span class="info-label" data-lang="nationLabel">Quốc tịch</span>
+              <span class="info-value" data-lang="nationValue">Việt Nam</span>
+              <span class="info-label" data-lang="addressLabel">Địa chỉ</span>
+              <span class="info-value" data-lang="addressValue">Thanh Oai, Hà Nội</span>
+              <span class="info-label" data-lang="hobbyLabel">Sở thích</span>
+              <span class="info-value" data-lang="hobbyValue">Vẽ, Kể Chuyện, Học hỏi điều mới, Ngủ, Màu <span class='highlight'>Đỏ</span></span>
+            </div>
+          </div>
+          <div class="info-group">
+            <div class="group-title" data-lang="group2">Học vấn & Khả năng</div>
+            <div class="info-table">
+              <span class="info-label" data-lang="eduLabel">Học vấn</span>
+              <span class="info-value" data-lang="eduValue">Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong></span>
+              <span class="info-label" data-lang="skillLabel">Khả năng</span>
+              <span class="info-value" data-lang="skillValue">Vẽ Minh họa, Thiết kế nhân vật, <span class='highlight'>Vẽ truyện tranh</span>, Sáng tạo nội dung</span>
+            </div>
+          </div>
+          <div class="info-group">
+            <div class="group-title" data-lang="group3">Công việc & Kinh nghiệm</div>
+            <div class="info-table">
+              <span class="info-label" data-lang="jobLabel">Công việc</span>
+              <span class="info-value" data-lang="jobValue">Freelancer <strong>Artist</strong> · <span class='highlight'>Trợ giảng</span> khóa truyện tranh cơ bản tại <span class='highlight'>Comia</span></span>
+              <span class="info-label" data-lang="expLabel">Kinh nghiệm</span>
+              <span class="info-value" data-lang="expValue">Làm nghề từ <strong>năm 2020</strong></span>
+            </div>
+          </div>
         </div>
+        <div class="info-right">
+          <div class="info-group">
+            <div class="group-title" data-lang="group4">Mascot</div>
+            <div class="mascot-box">
+              <div class="mascot-label" data-lang="mascotName">Tiêu</div>
+              <img src="assets/01.png" alt="Mascot Tiêu - YattaD">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <nav class="menu">
+      <a href="Art.html" data-lang="menu1">Xưởng Tranh Vẽ</a>
+      <a href="Comic.html" data-lang="menu2">Đọc Truyện Tranh</a>
+      <a href="#" id="payment-btn" data-lang="menu4">Cổng Thanh Toán</a>
+      
+      <!-- Dropdown "Tiện ích khác" -->
+      <div class="dropdown" id="utilDropdown">
+        <div class="dropdown-btn" data-lang="menu6">Tiện ích khác <i class="fas fa-chevron-down" style="margin-left: 6px; font-size: 0.8rem;"></i></div>
+        <div class="dropdown-content">
+          <a href="Random.html" target="_blank" data-lang="util3">Những Điều Ngẫu Nhiên</a>
+          <a href="Game.html" target="_blank" data-lang="util4">Rảnh Thì Chơi Games</a>
+          <a href="#" id="external-link" data-lang="util5">Thăm Khám Chữa Bệnh</a>
+        </div>
+      </div>
+    </nav>
+  </main>
+
+  <div id="payment-modal" class="modal">
+    <div class="modal-content">
+      <h2 data-lang="payTitle">Quét mã dưới đây để thanh toán</h2>
+      <p data-lang="payNote">Nhấn vào hình để phóng to mã</p>
+      <div class="qr-list">
+        <div class="qr-item"><p><strong>BIDV</strong></p><img src="QR/BIDV.webp" alt="QR BIDV"></div>
+        <div class="qr-item"><p><strong>MoMo</strong></p><img src="QR/MOMO.webp" alt="QR MoMo"></div>
+        <div class="qr-item"><p><strong>PayPal</strong></p><img src="QR/PayPal.webp" alt="QR PayPal"></div>
+      </div>
+      <button class="close-btn" id="close-payment-modal" data-lang="closeBtn">Đóng</button>
     </div>
-    <aside class="sidebar right">
-        <div class="section-title">Cài đặt công cụ</div>
-        <div id="settings"></div>
-    </aside>
-</div>
+  </div>
+  <div id="image-modal" class="image-modal">
+    <img id="large-image" src="" alt="QR lớn">
+  </div>
 
-<!-- FontAwesome cho icon home -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-
-<script>
-(function() {
-    // ========== Nút về trang chủ ==========
-    const homeBtn = document.getElementById('home-btn');
-    if (homeBtn) {
-        homeBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            window.location.href = 'index.html?t=' + Date.now();
-        });
-    }
-
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const workspace = document.getElementById('workspace');
-    const viewport = document.getElementById('viewport');
-
-    let currentMode = 'FLOW';
-    let images = [];
-    let currentIndex = 0;
-    let currentImage = null;
-    let scale = 1, offsetX = 0, offsetY = 0;
-    let usingManualFiles = false;
-
-    // View transform
-    let appZoom = 1;
-    let appPanX = 0;
-    let appPanY = 0;
-
-    let isDrawing = false, currentTool = 'brush';
-    let brushColor = '#ff0000', brushSize = 5, brushOpacity = 1;
-    let drawings = [];
-
-    let activeTextbox = null;
-    let isDraggingNewText = false;
-    let dragStartX = 0, dragStartY = 0;
-    let dragPreview = null;
-    let showBorders = true;
-
-    let spacePanEnabled = false, isPanning = false;
-    let panStartClientX = 0, panStartClientY = 0;
-    let panStartPanX = 0, panStartPanY = 0;
-
-    const MAX_HISTORY = 50;
-    let historyStack = [], historyIndex = -1, elementIdCounter = 0;
-
-    const tags = {
-        TRANSITION: ['Khoảnh khắc sang Khoảnh khắc','Hành động sang Hành động','Chủ thể sang Chủ thể','Cảnh sang Cảnh','Chi tiết sang Chi tiết','Phi logic (Non-Sequitur)'],
-        CAMERA: ['Ngang tầm mắt','Góc cao','Góc thấp','Nhìn từ trên cao','Nhìn từ dưới lên','Góc nghiêng','Qua vai','Toàn cảnh rất xa','Toàn cảnh','Toàn thân','Trung cảnh rộng','Trung cảnh','Cận trung cảnh','Cận cảnh','Cận đặc tả','Cảnh nhóm'],
-        LAYOUT: ['Khung dọc','Khung ngang','Trang đơn','Trang đôi','Nhiều khung nhỏ','Khung chéo','Khung chồng','Khung trung tâm']
-    };
-
-    function init() {
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-        setupToolbar();
-        setupModes();
-        setupWorkspaceEvents();
-        setupPanZoom();
-        setupUndoRedo();
-        updateSettings();
-        loadImagesFromGitHub();
-        saveHistory();
-    }
-
-    // Undo/Redo
-    function setupUndoRedo() {
-        document.getElementById('undo-btn').onclick = undo;
-        document.getElementById('redo-btn').onclick = redo;
-        window.addEventListener('keydown', e => {
-            if ((e.ctrlKey || e.metaKey) && e.key === 'z') { e.preventDefault(); e.shiftKey ? redo() : undo(); }
-            else if ((e.ctrlKey || e.metaKey) && e.key === 'y') { e.preventDefault(); redo(); }
-        });
-    }
-    function getSnapshot() {
-        const tb = []; viewport.querySelectorAll('.textbox-container').forEach(el => {
-            const c = el.querySelector('.textbox-content');
-            tb.push({ type:'textbox', id:el.dataset.id, left:el.style.left, top:el.style.top, width:el.style.width, height:el.style.height, text:c.textContent, fontSize:c.style.fontSize, fontWeight:c.style.fontWeight, fontStyle:c.style.fontStyle, borderHidden:el.classList.contains('hide-border'), mode:el.dataset.mode, editing:el.classList.contains('editing') });
-        });
-        const tg = []; viewport.querySelectorAll('.tag').forEach(el => {
-            tg.push({ type:'tag', id:el.dataset.id, left:el.style.left, top:el.style.top, background:el.style.background, text:el.innerText, mode:el.dataset.mode });
-        });
-        return { drawings: JSON.parse(JSON.stringify(drawings)), textboxes:tb, tags:tg, activeTextboxId: activeTextbox?.dataset.id };
-    }
-    function restoreSnapshot(s) {
-        viewport.querySelectorAll('.textbox-container,.tag').forEach(e=>e.remove());
-        activeTextbox=null; drawings=s.drawings;
-        s.textboxes.forEach(t=>{
-            const d=document.createElement('div'); d.className='textbox-container'; d.style.left=t.left; d.style.top=t.top; d.style.width=t.width; d.style.height=t.height; d.dataset.mode=t.mode; d.dataset.id=t.id;
-            if(t.borderHidden) d.classList.add('hide-border');
-            const c=document.createElement('div'); c.className='textbox-content'; c.textContent=t.text; c.style.fontSize=t.fontSize; c.style.fontWeight=t.fontWeight; c.style.fontStyle=t.fontStyle; c.contentEditable='false'; d.appendChild(c);
-            const h=document.createElement('div'); h.className='resize-handle'; d.appendChild(h);
-            viewport.appendChild(d); setupTextboxEvents(d);
-            if(t.editing) enterEditing(d); else if(s.activeTextboxId===t.id){ d.classList.add('selected'); activeTextbox=d; }
-        });
-        s.tags.forEach(t=>{
-            const d=document.createElement('div'); d.className='tag'; d.innerText=t.text; d.dataset.mode=t.mode; d.dataset.id=t.id; d.style.left=t.left; d.style.top=t.top; d.style.background=t.background;
-            viewport.appendChild(d); makeTagDraggable(d); d.ondblclick=()=>{d.remove();saveHistory();};
-        });
-        draw(); updateTextSettingsUI();
-    }
-    function saveHistory() {
-        const snap=getSnapshot(); if(historyIndex<historyStack.length-1) historyStack=historyStack.slice(0,historyIndex+1);
-        historyStack.push(snap); if(historyStack.length>MAX_HISTORY) historyStack.shift(); else historyIndex++;
-        updateUndoRedoButtons();
-    }
-    function undo() { if(historyIndex<=0) return; historyIndex--; restoreSnapshot(historyStack[historyIndex]); updateUndoRedoButtons(); }
-    function redo() { if(historyIndex>=historyStack.length-1) return; historyIndex++; restoreSnapshot(historyStack[historyIndex]); updateUndoRedoButtons(); }
-    function updateUndoRedoButtons() {
-        document.getElementById('undo-btn').style.opacity = historyIndex>0?1:0.4;
-        document.getElementById('redo-btn').style.opacity = historyIndex<historyStack.length-1?1:0.4;
-    }
-
-    // Pan & Zoom
-    function setupPanZoom() {
-        workspace.addEventListener('wheel', e => {
-            e.preventDefault();
-            const rect = workspace.getBoundingClientRect();
-            const mouseX = e.clientX - rect.left;
-            const mouseY = e.clientY - rect.top;
-            const worldX = (mouseX - appPanX) / appZoom;
-            const worldY = (mouseY - appPanY) / appZoom;
-            const newZoom = Math.min(5, Math.max(0.1, appZoom * (e.deltaY > 0 ? 0.9 : 1.1)));
-            appPanX = mouseX - worldX * newZoom;
-            appPanY = mouseY - worldY * newZoom;
-            appZoom = newZoom;
-            updateTransform();
-        }, { passive: false });
-
-        document.addEventListener('keydown', e => {
-            if (e.code === 'Space' && !e.repeat) {
-                if (document.activeElement?.contentEditable === 'true' || ['INPUT','TEXTAREA'].includes(document.activeElement?.tagName)) return;
-                e.preventDefault();
-                spacePanEnabled = true;
-                workspace.style.cursor = 'grab';
-            }
-        });
-        document.addEventListener('keyup', e => {
-            if (e.code === 'Space') { spacePanEnabled = false; if (!isPanning) workspace.style.cursor = getCurrentCursor(); isPanning = false; }
-        });
-    }
-    function getCurrentCursor() {
-        if (currentMode === 'FLOW') return 'crosshair';
-        if (currentMode === 'TEXT') return 'text';
-        return 'default';
-    }
-    function updateTransform() { viewport.style.transform = `translate(${appPanX}px, ${appPanY}px) scale(${appZoom})`; }
-    function screenToWorld(clientX, clientY) {
-        const rect = workspace.getBoundingClientRect();
-        return {
-            x: (clientX - rect.left - appPanX) / appZoom,
-            y: (clientY - rect.top - appPanY) / appZoom
-        };
-    }
-
-    // Workspace events
-    function setupWorkspaceEvents() {
-        workspace.addEventListener('mousedown', e => {
-            if (e.button !== 0) return;
-            if (spacePanEnabled) {
-                e.preventDefault();
-                isPanning = true;
-                panStartClientX = e.clientX; panStartClientY = e.clientY;
-                panStartPanX = appPanX; panStartPanY = appPanY;
-                workspace.style.cursor = 'grabbing';
-                return;
-            }
-            if (isPanning) return;
-
-            if (currentMode === 'FLOW') {
-                isDrawing = true;
-                const { x, y } = screenToWorld(e.clientX, e.clientY);
-                drawings.push({ tool: currentTool, color: brushColor, size: brushSize, opacity: brushOpacity, points: [{ x, y }] });
-                e.preventDefault();
-                return;
-            }
-            if (currentMode === 'TEXT') {
-                if (e.target.closest('.textbox-container')) return;
-                const { x, y } = screenToWorld(e.clientX, e.clientY);
-                dragStartX = x; dragStartY = y;
-                isDraggingNewText = true;
-                dragPreview = document.createElement('div');
-                dragPreview.className = 'drag-preview';
-                dragPreview.style.left = x + 'px';
-                dragPreview.style.top = y + 'px';
-                viewport.appendChild(dragPreview);
-                e.preventDefault();
-            }
-        });
-
-        window.addEventListener('mousemove', e => {
-            if (isPanning) {
-                const dx = e.clientX - panStartClientX;
-                const dy = e.clientY - panStartClientY;
-                appPanX = panStartPanX + dx;
-                appPanY = panStartPanY + dy;
-                updateTransform();
-                return;
-            }
-            if (isDrawing) {
-                const { x, y } = screenToWorld(e.clientX, e.clientY);
-                drawings[drawings.length-1].points.push({ x, y });
-                draw();
-                return;
-            }
-            if (isDraggingNewText && dragPreview) {
-                const { x, y } = screenToWorld(e.clientX, e.clientY);
-                const left = Math.min(dragStartX, x);
-                const top = Math.min(dragStartY, y);
-                dragPreview.style.left = left + 'px';
-                dragPreview.style.top = top + 'px';
-                dragPreview.style.width = Math.abs(x - dragStartX) + 'px';
-                dragPreview.style.height = Math.abs(y - dragStartY) + 'px';
-            }
-        });
-
-        window.addEventListener('mouseup', e => {
-            if (isPanning) { isPanning = false; workspace.style.cursor = spacePanEnabled ? 'grab' : getCurrentCursor(); return; }
-            if (isDrawing) { isDrawing = false; saveHistory(); return; }
-            if (isDraggingNewText) {
-                isDraggingNewText = false;
-                if (dragPreview) { dragPreview.remove(); dragPreview = null; }
-                const { x: endX, y: endY } = screenToWorld(e.clientX, e.clientY);
-                const dx = endX - dragStartX, dy = endY - dragStartY;
-                if (Math.hypot(dx, dy) >= 5) {
-                    const left = Math.min(dragStartX, endX);
-                    const top = Math.min(dragStartY, endY);
-                    if (activeTextbox) exitEditing(activeTextbox);
-                    createTextboxWithSize(left, top, Math.max(50, Math.abs(dx)), Math.max(30, Math.abs(dy)));
-                    saveHistory();
-                } else {
-                    if (activeTextbox) exitEditing(activeTextbox);
-                }
-            }
-        });
-    }
-
-    function createTextboxWithSize(x, y, w, h) {
-        const container = document.createElement('div');
-        container.className = 'textbox-container';
-        container.style.left = x + 'px'; container.style.top = y + 'px';
-        container.style.width = w + 'px'; container.style.height = h + 'px';
-        container.dataset.mode = 'TEXT'; container.dataset.id = ++elementIdCounter;
-        if (!showBorders) container.classList.add('hide-border');
-        const content = document.createElement('div'); content.className = 'textbox-content';
-        content.textContent = 'Nhập văn bản...'; content.contentEditable = 'false';
-        container.appendChild(content);
-        const handle = document.createElement('div'); handle.className = 'resize-handle';
-        container.appendChild(handle);
-        viewport.appendChild(container);
-        enterEditing(container);
-        setupTextboxEvents(container);
-    }
-
-    function setupTextboxEvents(container) {
-        const content = container.querySelector('.textbox-content');
-        const handle = container.querySelector('.resize-handle');
-        container.addEventListener('dblclick', () => { if (content.contentEditable === 'false') enterEditing(container); });
-        let dragging = false, startLeft, startTop, startClientX, startClientY;
-        container.addEventListener('mousedown', e => {
-            if (e.button !== 0 || spacePanEnabled || isPanning) return;
-            if (e.target === handle) return;
-            if (content.contentEditable === 'true') return;
-            e.preventDefault(); dragging = true;
-            startClientX = e.clientX; startClientY = e.clientY;
-            startLeft = parseFloat(container.style.left); startTop = parseFloat(container.style.top);
-            window.addEventListener('mousemove', onDrag); window.addEventListener('mouseup', stopDrag);
-        });
-        function onDrag(e) {
-            const dx = (e.clientX - startClientX) / appZoom;
-            const dy = (e.clientY - startClientY) / appZoom;
-            container.style.left = (startLeft + dx) + 'px';
-            container.style.top = (startTop + dy) + 'px';
+  <script>
+    (function() {
+      const translations = {
+        vi: {
+          title: "YattaD", infoTitle: "Thông tin cá nhân", group1: "Thông tin cơ bản", group2: "Học vấn & Khả năng", group3: "Công việc & Kinh nghiệm", group4: "Mascot",
+          mascotName: "Tiêu", nameLabel: "Họ và Tên", nameValue: "Ngô Xuân Đạt", birthLabel: "Ngày sinh", birthValue: "07 / 05 / 1998",
+          genderLabel: "Giới tính", genderValue: "Nam", nationLabel: "Quốc tịch", nationValue: "Việt Nam", addressLabel: "Địa chỉ", addressValue: "Thanh Oai, Hà Nội",
+          hobbyLabel: "Sở thích", hobbyValue: "Vẽ, Kể Chuyện, Học hỏi điều mới, Ngủ, Màu <span class='highlight'>Đỏ</span>",
+          eduLabel: "Học vấn", eduValue: "Tốt nghiệp khoa Quy hoạch tại <strong>Đại học Kiến Trúc Hà Nội</strong>",
+          skillLabel: "Khả năng", skillValue: "Vẽ Minh họa, Thiết kế nhân vật, <span class='highlight'>Vẽ truyện tranh</span>, Sáng tạo nội dung",
+          jobLabel: "Công việc", jobValue: "Freelancer <strong>Artist</strong> · <span class='highlight'>Trợ giảng</span> khóa truyện tranh cơ bản tại <span class='highlight'>Comia</span>",
+          expLabel: "Kinh nghiệm", expValue: "Làm nghề từ <strong>năm 2020</strong>",
+          menu1: "Xưởng Tranh Vẽ", menu2: "Đọc Truyện Tranh", menu4: "Cổng Thanh Toán", menu6: "Tiện ích khác",
+          util3: "Những Điều Ngẫu Nhiên", util4: "Rảnh Thì Chơi Games", util5: "Thăm Khám Chữa Bệnh",
+          payTitle: "Quét mã dưới đây để thanh toán", payNote: "Nhấn vào hình để phóng to mã", closeBtn: "Đóng"
+        },
+        en: {
+          title: "YattaD", infoTitle: "Personal Information", group1: "Basic Info", group2: "Education & Skills", group3: "Work & Experience", group4: "Mascot",
+          mascotName: "Tieu", nameLabel: "Full Name", nameValue: "Ngo Xuan Dat", birthLabel: "Date of Birth", birthValue: "07 / 05 / 1998",
+          genderLabel: "Gender", genderValue: "Male", nationLabel: "Nationality", nationValue: "Vietnam", addressLabel: "Address", addressValue: "Thanh Oai, Hanoi",
+          hobbyLabel: "Hobbies", hobbyValue: "Drawing, Storytelling, Learning new things, Sleeping, Color <span class='highlight'>Red</span>",
+          eduLabel: "Education", eduValue: "Graduated in Planning Department at <strong>Hanoi Architectural University</strong>",
+          skillLabel: "Skills", skillValue: "Illustration, Character Design, <span class='highlight'>Comics</span>, Content Creation",
+          jobLabel: "Occupation", jobValue: "Freelancer <strong>Artist</strong> · <span class='highlight'>Teaching Assistant</span> for basic comics course at <span class='highlight'>Comia</span>",
+          expLabel: "Experience", expValue: "Working since <strong>2020</strong>",
+          menu1: "Art Workshop", menu2: "Read Comics", menu4: "Payment Gateway", menu6: "Utilities",
+          util3: "Random Things", util4: "Play Games", util5: "Medical Visit",
+          payTitle: "Scan the QR codes below to pay", payNote: "Click on an image to enlarge", closeBtn: "Close"
         }
-        function stopDrag() { if(dragging){dragging=false;saveHistory();} window.removeEventListener('mousemove',onDrag); window.removeEventListener('mouseup',stopDrag); }
-        let resizing=false, startW, startH, startX2, startY2;
-        handle.addEventListener('mousedown', e => {
-            if (spacePanEnabled||isPanning) return;
-            e.preventDefault(); e.stopPropagation(); resizing=true;
-            startX2=e.clientX; startY2=e.clientY; startW=container.offsetWidth; startH=container.offsetHeight;
-            window.addEventListener('mousemove',onResize); window.addEventListener('mouseup',stopResize);
+      };
+
+      let currentLang = localStorage.getItem("lang") || "vi";
+      let darkMode = localStorage.getItem("theme") === "dark";
+
+      function applyLanguage() {
+        document.querySelectorAll("[data-lang]").forEach(el => {
+          const key = el.getAttribute("data-lang");
+          if (translations[currentLang] && translations[currentLang][key] !== undefined) {
+            if (el.classList && el.classList.contains('dropdown-btn')) {
+              const span = document.createElement('span');
+              span.innerHTML = translations[currentLang][key];
+              const icon = el.querySelector('i');
+              el.innerHTML = '';
+              el.appendChild(span);
+              if (icon) el.appendChild(icon);
+            } else {
+              el.innerHTML = translations[currentLang][key];
+            }
+          }
         });
-        function onResize(e) {
-            const dx=(e.clientX-startX2)/appZoom, dy=(e.clientY-startY2)/appZoom;
-            container.style.width = Math.max(50, startW+dx)+'px';
-            container.style.height = Math.max(30, startH+dy)+'px';
+        localStorage.setItem("lang", currentLang);
+      }
+
+      function applyTheme() {
+        if (darkMode) document.body.classList.add("dark");
+        else document.body.classList.remove("dark");
+        localStorage.setItem("theme", darkMode ? "dark" : "light");
+      }
+
+      function initFromStorage() {
+        darkMode = localStorage.getItem("theme") === "dark";
+        currentLang = localStorage.getItem("lang") || "vi";
+        applyTheme();
+        applyLanguage();
+      }
+
+      window.addEventListener("pageshow", () => {
+        const savedTheme = localStorage.getItem("theme");
+        const savedLang = localStorage.getItem("lang");
+        let needUpdate = false;
+        if (savedTheme === "dark" && !document.body.classList.contains("dark")) {
+          darkMode = true;
+          needUpdate = true;
+        } else if (savedTheme === "light" && document.body.classList.contains("dark")) {
+          darkMode = false;
+          needUpdate = true;
         }
-        function stopResize() { if(resizing){resizing=false;saveHistory();} window.removeEventListener('mousemove',onResize); window.removeEventListener('mouseup',stopResize); }
-        container.addEventListener('keydown', e => { if (e.key==='Delete' && !container.classList.contains('editing')) { e.preventDefault(); container.remove(); if(activeTextbox===container)activeTextbox=null; saveHistory(); } });
-        container.tabIndex=0;
-    }
-
-    function enterEditing(container) {
-        if(activeTextbox && activeTextbox!==container) exitEditing(activeTextbox);
-        activeTextbox=container; container.classList.add('editing'); container.classList.remove('selected');
-        const content=container.querySelector('.textbox-content'); content.contentEditable='true'; content.focus();
-        document.execCommand('selectAll',false,null); updateTextSettingsUI();
-    }
-    function exitEditing(container) {
-        if(!container) return;
-        container.querySelector('.textbox-content').contentEditable='false';
-        container.classList.remove('editing'); container.classList.add('selected');
-        if(activeTextbox===container) activeTextbox=null;
-        updateTextSettingsUI();
-    }
-
-    window.clearTextboxes = () => { viewport.querySelectorAll('.textbox-container').forEach(c=>c.remove()); activeTextbox=null; saveHistory(); };
-    window.clearCurrentModeTags = () => { viewport.querySelectorAll(`.tag[data-mode="${currentMode}"]`).forEach(t=>t.remove()); saveHistory(); };
-    window.clearDrawings = () => { drawings=[]; draw(); saveHistory(); };
-
-    window.spawnTag = function(text) {
-        const div=document.createElement('div'); div.className='tag'; div.innerText=text; div.dataset.mode=currentMode; div.dataset.id=++elementIdCounter;
-        let bg = '#555';
-        if(currentMode==='TRANSITION') bg = '#2196f3';
-        else if(currentMode==='CAMERA') bg = '#ff9800';
-        else if(currentMode==='LAYOUT') bg = '#9c27b0';
-        div.style.background = bg;
-        div.style.left='220px'; div.style.top='220px'; viewport.appendChild(div);
-        makeTagDraggable(div); div.ondblclick=()=>{div.remove();saveHistory();};
-    };
-    function makeTagDraggable(el) {
-        let dragging=false,startLeft,startTop,startClientX,startClientY;
-        el.addEventListener('mousedown', e => {
-            if(e.button!==0||spacePanEnabled||isPanning) return;
-            e.preventDefault(); dragging=true; startClientX=e.clientX; startClientY=e.clientY;
-            startLeft=parseFloat(el.style.left); startTop=parseFloat(el.style.top);
-            window.addEventListener('mousemove',onDrag); window.addEventListener('mouseup',stopDrag);
-        });
-        function onDrag(e) {
-            const dx=(e.clientX-startClientX)/appZoom, dy=(e.clientY-startClientY)/appZoom;
-            el.style.left=(startLeft+dx)+'px'; el.style.top=(startTop+dy)+'px';
+        if (savedLang && savedLang !== currentLang) {
+          currentLang = savedLang;
+          needUpdate = true;
         }
-        function stopDrag(){ if(dragging){dragging=false;saveHistory();} window.removeEventListener('mousemove',onDrag); window.removeEventListener('mouseup',stopDrag); }
-    }
-
-    window.toggleTextBorders = () => {
-        showBorders=!showBorders; viewport.querySelectorAll('.textbox-container').forEach(c=>c.classList.toggle('hide-border',!showBorders));
-        const btn=document.getElementById('toggle-border-btn'); if(btn) btn.textContent=showBorders?'👁 Ẩn khung':'👁 Hiện khung';
-    };
-    function getActiveContent() { return activeTextbox?.querySelector('.textbox-content'); }
-    function updateTextSettingsUI() {
-        if(currentMode!=='TEXT') return;
-        const fi=document.getElementById('font-size'), bb=document.getElementById('bold-btn'), ib=document.getElementById('italic-btn');
-        const content=getActiveContent();
-        if(!content){ if(fi)fi.value=14; if(bb)bb.classList.remove('active'); if(ib)ib.classList.remove('active'); return; }
-        const style=window.getComputedStyle(content);
-        if(fi) fi.value=parseInt(style.fontSize);
-        if(bb) bb.classList.toggle('active', style.fontWeight==='bold'||parseInt(style.fontWeight)>=700);
-        if(ib) ib.classList.toggle('active', style.fontStyle==='italic');
-    }
-
-    // Load ảnh từ images.json (giữ nguyên logic cũ)
-    async function loadImagesFromGitHub() {
-        try {
-            const response = await fetch('./images/images.json');
-            if (!response.ok) throw new Error('Không tìm thấy file images/images.json');
-            const files = await response.json();
-            if (!files.length) { document.getElementById('manga-title').innerText = 'Không có ảnh trong danh sách'; return; }
-            images = files; usingManualFiles = false;
-            currentIndex = Math.floor(Math.random() * images.length);
-            loadImage();
-        } catch (err) { console.error(err); document.getElementById('manga-title').innerText = 'Lỗi: thiếu file images/images.json'; }
-    }
-    function loadImage() {
-        if (!images.length) return;
-        const file = images[currentIndex];
-        let filename, url;
-        if (usingManualFiles) { filename = file.name; url = URL.createObjectURL(file); }
-        else { filename = file; url = './images/' + file; }
-        const parsed = parseFilename(filename);
-        document.getElementById('manga-title').innerText = parsed.title;
-        document.getElementById('manga-author').innerText = parsed.author;
-        const img = new Image();
-        img.onload = () => { currentImage = img; fitImage(); clearWorkspace(false); };
-        img.onerror = () => alert('Không thể tải ảnh: ' + filename);
-        img.src = url;
-    }
-    function parseFilename(name) {
-        const clean = name.replace(/\.[^/.]+$/, '');
-        const [title, author] = clean.split('__');
-        return { title: title ? title.replaceAll('-',' ') : 'Không rõ', author: author ? author.replaceAll('-',' ') : 'Không rõ' };
-    }
-    function pickRandomImage() {
-        if (!images.length) { alert('Chưa có ảnh.'); return; }
-        let newIdx; do { newIdx = Math.floor(Math.random()*images.length); } while (newIdx===currentIndex && images.length>1);
-        currentIndex = newIdx; loadImage();
-    }
-    function resizeCanvas() { canvas.width = workspace.clientWidth; canvas.height = workspace.clientHeight; draw(); }
-    function fitImage() {
-        if (!currentImage) return;
-        scale = Math.min(canvas.width/currentImage.width, canvas.height/currentImage.height) * 0.9;
-        offsetX = (canvas.width - currentImage.width*scale)/2;
-        offsetY = (canvas.height - currentImage.height*scale)/2;
-        draw();
-    }
-    function draw() {
-        ctx.clearRect(0,0,canvas.width,canvas.height);
-        if (currentImage) ctx.drawImage(currentImage, offsetX, offsetY, currentImage.width*scale, currentImage.height*scale);
-        drawings.forEach(line => {
-            ctx.save(); ctx.globalAlpha = line.opacity;
-            ctx.strokeStyle = line.tool==='eraser' ? '#000000' : line.color;
-            ctx.lineWidth = line.size; ctx.lineCap = 'round';
-            ctx.beginPath(); line.points.forEach((p,i) => i===0 ? ctx.moveTo(p.x,p.y) : ctx.lineTo(p.x,p.y));
-            ctx.stroke(); ctx.restore();
-        });
-    }
-    function clearWorkspace(redraw=true) {
-        drawings = []; viewport.querySelectorAll('.textbox-container,.tag').forEach(e=>e.remove());
-        activeTextbox = null; if (redraw||currentImage) draw(); updateTextSettingsUI(); saveHistory();
-    }
-    function setupModes() {
-        document.querySelectorAll('.mode-btn').forEach(btn => {
-            btn.onclick = () => {
-                document.querySelectorAll('.mode-btn').forEach(b=>b.classList.remove('active'));
-                btn.classList.add('active'); currentMode = btn.dataset.mode;
-                workspace.style.cursor = getCurrentCursor(); updateSettings();
-            };
-        });
-    }
-    function updateSettings() {
-        const panel = document.getElementById('settings'); let html = '';
-        if (currentMode === 'FLOW') {
-            html = `<div class="control"><label>Công cụ</label><select id="tool-select"><option value="brush">Bút vẽ</option><option value="eraser">Tẩy</option></select><label>Màu bút</label><input type="color" id="brush-color" value="#ff0000"><label>Kích thước</label><input type="range" id="brush-size" min="1" max="50" value="5"><label>Độ mờ</label><input type="range" id="brush-opacity" min="0.1" max="1" step="0.1" value="1"><button class="btn" onclick="window.clearDrawings()">🗑 Xóa nét vẽ</button></div>`;
-        } else if (currentMode === 'TEXT') {
-            html = `<div class="control"><div class="small">✨ Kéo để tạo khung, double-click sửa.<br>Space + kéo để di chuyển, cuộn chuột zoom.</div><div class="format-group"><label>Cỡ chữ</label><input type="number" id="font-size" value="14" min="8" max="80" style="width:60px;"><button id="bold-btn"><b>B</b></button><button id="italic-btn"><i>I</i></button></div><button class="btn" id="toggle-border-btn" onclick="window.toggleTextBorders()">👁 Ẩn khung</button><button class="btn" onclick="window.clearTextboxes()" style="margin-top:8px;">🗑 Xóa tất cả hộp thoại</button></div>`;
-        } else if (tags[currentMode]) {
-            html = `<div class="control"><div class="small">Bấm thẻ để tạo nhãn kéo thả.</div><div class="tag-list">${tags[currentMode].map(t=>`<button class="tag-btn" onclick="window.spawnTag('${t.replace(/'/g,"\\'")}')">${t}</button>`).join('')}</div><button class="btn" onclick="window.clearCurrentModeTags()">🗑 Xóa thẻ của chế độ này</button></div>`;
+        if (needUpdate) {
+          applyTheme();
+          applyLanguage();
         }
-        panel.innerHTML = html;
-        if (currentMode==='FLOW') setupFlowSettings();
-        if (currentMode==='TEXT') { setupTextSettings(); updateTextSettingsUI(); const btn=document.getElementById('toggle-border-btn'); if(btn) btn.textContent=showBorders?'👁 Ẩn khung':'👁 Hiện khung'; }
-    }
-    function setupFlowSettings() {
-        document.getElementById('tool-select')?.addEventListener('change', e => currentTool=e.target.value);
-        document.getElementById('brush-color')?.addEventListener('input', e => brushColor=e.target.value);
-        document.getElementById('brush-size')?.addEventListener('input', e => brushSize=+e.target.value);
-        document.getElementById('brush-opacity')?.addEventListener('input', e => brushOpacity=+e.target.value);
-    }
-    function setupTextSettings() {
-        document.getElementById('font-size')?.addEventListener('input', e => { const c=getActiveContent(); if(c) c.style.fontSize=e.target.value+'px'; });
-        document.getElementById('bold-btn')?.addEventListener('click', () => { const c=getActiveContent(); if(!c) return; c.style.fontWeight=c.style.fontWeight==='bold'?'normal':'bold'; document.getElementById('bold-btn').classList.toggle('active', c.style.fontWeight==='bold'); });
-        document.getElementById('italic-btn')?.addEventListener('click', () => { const c=getActiveContent(); if(!c) return; c.style.fontStyle=c.style.fontStyle==='italic'?'normal':'italic'; document.getElementById('italic-btn').classList.toggle('active', c.style.fontStyle==='italic'); });
-    }
-    function setupToolbar() {
-        document.getElementById('random-btn').onclick = pickRandomImage;
-        document.getElementById('load-btn').onclick = () => document.getElementById('file-input').click();
-        document.getElementById('file-input').addEventListener('change', e => { usingManualFiles=true; images=[...e.target.files]; if(images.length){ currentIndex=0; loadImage(); } });
-        document.getElementById('export-btn').onclick = async () => {
-            if (!currentImage && !drawings.length && !viewport.querySelector('.textbox-container,.tag')) { alert('Chưa có nội dung.'); return; }
-            try {
-                const captured = await html2canvas(workspace, { backgroundColor:'#050505', scale:1, useCORS:true });
-                const a = document.createElement('a'); a.download='manga-study.png'; a.href=captured.toDataURL('image/png'); a.click();
-            } catch(err) { alert('Xuất ảnh thất bại.'); }
-        };
-    }
+      });
 
-    init();
-})();
-</script>
+      document.getElementById("lang-toggle").addEventListener("click", () => {
+        currentLang = currentLang === "vi" ? "en" : "vi";
+        applyLanguage();
+      });
+      document.getElementById("theme-toggle").addEventListener("click", () => {
+        darkMode = !darkMode;
+        applyTheme();
+      });
+
+      window.copyToClipboard = function(text) {
+        navigator.clipboard.writeText(text).then(() => alert(`Đã copy: ${text}`))
+          .catch(() => prompt("Sao chép thủ công:", text));
+      };
+
+      // Dropdown logic (click để mở/đóng)
+      const dropdown = document.getElementById("utilDropdown");
+      const dropdownBtn = dropdown.querySelector(".dropdown-btn");
+      
+      function closeDropdown(e) {
+        if (!dropdown.contains(e.target)) {
+          dropdown.classList.remove("show");
+          document.removeEventListener("click", closeDropdown);
+        }
+      }
+      
+      dropdownBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle("show");
+        if (dropdown.classList.contains("show")) {
+          setTimeout(() => {
+            document.addEventListener("click", closeDropdown);
+          }, 0);
+        } else {
+          document.removeEventListener("click", closeDropdown);
+        }
+      });
+      
+      // Đóng dropdown khi click vào link bên trong
+      const subLinks = dropdown.querySelectorAll(".dropdown-content a");
+      subLinks.forEach(link => {
+        link.addEventListener("click", () => {
+          dropdown.classList.remove("show");
+          document.removeEventListener("click", closeDropdown);
+        });
+      });
+      
+      const externalLink = document.getElementById("external-link");
+      if (externalLink) {
+        externalLink.addEventListener("click", (e) => {
+          e.preventDefault();
+          alert("Link sẽ được cập nhật sau!");
+        });
+      }
+
+      // Modal thanh toán
+      const paymentModal = document.getElementById("payment-modal");
+      const paymentBtn = document.getElementById("payment-btn");
+      const closePayment = document.getElementById("close-payment-modal");
+      if (paymentBtn) paymentBtn.addEventListener("click", (e) => { e.preventDefault(); paymentModal.style.display = "flex"; });
+      if (closePayment) closePayment.addEventListener("click", () => paymentModal.style.display = "none");
+      if (paymentModal) paymentModal.addEventListener("click", (e) => { if (e.target === paymentModal) paymentModal.style.display = "none"; });
+
+      const qrImages = document.querySelectorAll(".qr-item img");
+      const imageModal = document.getElementById("image-modal");
+      const largeImage = document.getElementById("large-image");
+      qrImages.forEach(img => {
+        img.addEventListener("click", () => { largeImage.src = img.src; imageModal.style.display = "flex"; });
+      });
+      if (imageModal) imageModal.addEventListener("click", () => { imageModal.style.display = "none"; largeImage.src = ""; });
+
+      initFromStorage();
+      if ("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js").catch(() => {});
+    })();
+  </script>
 </body>
 </html>
