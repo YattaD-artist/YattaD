@@ -490,110 +490,104 @@
 
       /* ----- MENU chính dưới cùng, không cuộn ngang, chữ được xuống dòng ----- */
       .menu {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    flex-direction: row;
-    background: var(--surface);
-    border-top: 3px solid var(--border-color);
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
-    z-index: 150;
-    gap: 4px;
-    padding: 6px 8px;
-    justify-content: space-between;
-    top: auto;
-    align-self: auto;
-    /* KHÔNG đặt overflow: hidden hay auto – để submenu được tự do */
-  }
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        flex-direction: row;
+        background: var(--surface);
+        border-top: 3px solid var(--border-color);
+        box-shadow: 0 -4px 12px rgba(0,0,0,0.1);
+        z-index: 150;
+        gap: 4px;
+        padding: 6px 8px;
+        justify-content: space-between;
+        top: auto;
+        align-self: auto;
+      }
 
-  .menu > a,
-  .dropdown {
-    flex: 1 1 0;
-    font-size: 0.7rem;
-    white-space: normal;       /* chữ xuống dòng */
-    word-break: break-word;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1.25;
-    box-shadow: none;
-    border: 1.5px solid var(--border-color);
-    background: var(--surface);
-    color: var(--text);
-    text-decoration: none;
-    padding: 8px 3px;
-    margin: 0;
-    transition: all var(--transition);
-    text-transform: uppercase;
-  }
+      .menu > a,
+      .dropdown {
+        flex: 1 1 0;
+        font-size: 0.7rem;
+        white-space: normal;
+        word-break: break-word;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1.25;
+        box-shadow: none;
+        border: 1.5px solid var(--border-color);
+        background: var(--surface);
+        color: var(--text);
+        text-decoration: none;
+        padding: 8px 3px;
+        margin: 0;
+        transition: all var(--transition);
+        text-transform: uppercase;
+      }
 
-  .dropdown-btn {
-    font-size: inherit;
-    white-space: normal;
-    word-break: break-word;
-    width: 100%;
-    padding: 8px 3px;
-    display: block;
-    border: none;
-    background: transparent;
-    color: inherit;
-    font-weight: 700;
-    text-align: center;
-    line-height: 1.25;
-    cursor: pointer;
-    font-family: var(--font);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
+      .dropdown-btn {
+        font-size: inherit;
+        white-space: normal;
+        word-break: break-word;
+        width: 100%;
+        padding: 8px 3px;
+        display: block;
+        border: none;
+        background: transparent;
+        color: inherit;
+        font-weight: 700;
+        text-align: center;
+        line-height: 1.25;
+        cursor: pointer;
+        font-family: var(--font);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
 
-  /* ----- Submenu mở ngược lên trên, không bị giới hạn ----- */
-  .dropdown-content {
-  position: absolute;
-  bottom: 100%;
-  left: auto;          /* bỏ left: 0 */
-  right: 0;            /* neo vào mép phải của nút */
-  margin-bottom: 4px;
-  top: auto;
-  width: max-content;
-  min-width: 180px;
-  max-height: 50vh;
-  overflow-y: auto;
-  background: var(--surface);
-  border: 2px solid var(--border-color);
-  box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
-  z-index: 999;
-  flex-direction: column;
-  display: none;
-  border-radius: 4px;
-}
+      /* ----- Submenu mở ngược lên trên, không bị giới hạn ----- */
+      .dropdown-content {
+        position: absolute;
+        bottom: 100%;
+        left: auto;
+        right: 0;
+        margin-bottom: 4px;
+        top: auto;
+        width: max-content;
+        min-width: 180px;
+        max-height: 50vh;
+        overflow-y: auto;
+        background: var(--surface);
+        border: 2px solid var(--border-color);
+        box-shadow: 0 -4px 12px rgba(0,0,0,0.2);
+        z-index: 999;
+        flex-direction: column;
+        display: none;
+        border-radius: 4px;
+      }
 
-  .dropdown.show .dropdown-content {
-    display: flex;
-  }
+      .dropdown.show .dropdown-content {
+        display: flex;
+      }
 
-  .dropdown-content a {
-    padding: 12px 16px;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    text-align: center;
-    border-bottom: 1px solid var(--border-light);
-    color: var(--text);
-    background: var(--surface);
-    font-weight: 700;
-    text-transform: uppercase;
-  }
+      .dropdown-content a {
+        padding: 12px 16px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        text-align: center;
+        border-bottom: 1px solid var(--border-light);
+        color: var(--text);
+        background: var(--surface);
+        font-weight: 700;
+        text-transform: uppercase;
+      }
 
-  .dropdown-content a:last-child {
-    border-bottom: none;
-  }
-      /* Ẩn "Tự Học Truyện Tranh" và "Vẽ Nhăng Vẽ Cuội" trên mobile */
-.dropdown-content a:nth-child(1),
-.dropdown-content a:nth-child(2) {
-  display: none;
-}
-}
+      .dropdown-content a:last-child {
+        border-bottom: none;
+      }
+    }
 
     /* ==================== Màn hình rất nhỏ (tối đa 480px) ==================== */
     @media (max-width: 480px) {
@@ -699,8 +693,6 @@
       <div class="dropdown" id="utilDropdown">
         <div class="dropdown-btn" data-lang="menu6">Tiện ích khác <i class="fas fa-chevron-down" style="margin-left: 6px; font-size: 0.8rem;"></i></div>
         <div class="dropdown-content">
-          <a href="Study.html" target="_blank" data-lang="util1">Tự Học Truyện Tranh</a>
-          <a href="Sketchy.html" target="_blank" data-lang="util2">Vẽ Nhăng Vẽ Cuội</a>
           <a href="Random.html" target="_blank" data-lang="util3">Những Điều Ngẫu Nhiên</a>
           <a href="Game.html" target="_blank" data-lang="util4">Rảnh Thì Chơi Games</a>
           <a href="#" id="external-link" data-lang="util5">Thăm Khám Chữa Bệnh</a>
@@ -738,7 +730,7 @@
           jobLabel: "Công việc", jobValue: "Freelancer <strong>Artist</strong> · <span class='highlight'>Trợ giảng</span> khóa truyện tranh cơ bản tại <span class='highlight'>Comia</span>",
           expLabel: "Kinh nghiệm", expValue: "Làm nghề từ <strong>năm 2020</strong>",
           menu1: "Xưởng Tranh Vẽ", menu2: "Đọc Truyện Tranh", menu4: "Cổng Thanh Toán", menu6: "Tiện ích khác",
-          util1: "Tự Học Truyện Tranh", util2: "Vẽ Nhăng Vẽ Cuội", util3: "Những Điều Ngẫu Nhiên", util4: "Rảnh Thì Chơi Games", util5: "Thăm Khám Chữa Bệnh",
+          util3: "Những Điều Ngẫu Nhiên", util4: "Rảnh Thì Chơi Games", util5: "Thăm Khám Chữa Bệnh",
           payTitle: "Quét mã dưới đây để thanh toán", payNote: "Nhấn vào hình để phóng to mã", closeBtn: "Đóng"
         },
         en: {
@@ -751,7 +743,7 @@
           jobLabel: "Occupation", jobValue: "Freelancer <strong>Artist</strong> · <span class='highlight'>Teaching Assistant</span> for basic comics course at <span class='highlight'>Comia</span>",
           expLabel: "Experience", expValue: "Working since <strong>2020</strong>",
           menu1: "Art Workshop", menu2: "Read Comics", menu4: "Payment Gateway", menu6: "Utilities",
-          util1: "Self-study Comics", util2: "Scribble & Doodle", util3: "Random Things", util4: "Play Games", util5: "Medical Visit",
+          util3: "Random Things", util4: "Play Games", util5: "Medical Visit",
           payTitle: "Scan the QR codes below to pay", payNote: "Click on an image to enlarge", closeBtn: "Close"
         }
       };
@@ -841,7 +833,6 @@
         e.stopPropagation();
         dropdown.classList.toggle("show");
         if (dropdown.classList.contains("show")) {
-          // Đóng khi click ra ngoài
           setTimeout(() => {
             document.addEventListener("click", closeDropdown);
           }, 0);
@@ -884,7 +875,8 @@
       if (imageModal) imageModal.addEventListener("click", () => { imageModal.style.display = "none"; largeImage.src = ""; });
 
       initFromStorage();
-      if ("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js").catch(() => {});
+      // Service worker đã bị vô hiệu hóa hoàn toàn
+      // if ("serviceWorker" in navigator) navigator.serviceWorker.register("service-worker.js").catch(() => {});
     })();
   </script>
 </body>
