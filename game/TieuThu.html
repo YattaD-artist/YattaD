@@ -232,12 +232,6 @@
       background: #4b5563;
       animation: none;
     }
-    /* Mute button icon styling */
-    .round-btn .mute-icon {
-      font-size: 28px;
-      line-height: 1;
-      pointer-events: none;
-    }
     .badge {
       position: absolute;
       top: -6px;
@@ -475,7 +469,6 @@
       .round-btn { width: 64px; height: 64px; }
       .round-btn img { width: 36px; height: 36px; }
       .shape-option .mini-cell { width: 20px; height: 20px; }
-      .round-btn .mute-icon { font-size: 32px; }
     }
     @media (min-width: 401px) and (max-width: 600px) {
       :root {
@@ -522,10 +515,6 @@
     <button class="round-btn" id="help2Button">
       <img src="TieuThu/Help2.png" alt="Chọn hình">
       <span class="badge" id="help2Badge">2</span>
-    </button>
-    <!-- Nút tắt/bật nhạc nền -->
-    <button class="round-btn" id="muteButton" title="Tắt/Bật nhạc nền">
-      <span class="mute-icon" id="muteIcon">🔊</span>
     </button>
   </div>
   <div class="help-tooltip" id="helpTooltip"></div>
@@ -597,9 +586,6 @@
       let doubleScoreTimeout = null;
       let doubleScoreInterval = null;
 
-      // Mute state
-      let isMuted = false;
-
       const HELP_TEXTS = {
         rollButton: "Roll hình ưu tiên: Đổi 3 mảnh mới, ưu tiên những hình có thể tạo hàng/cột đầy. Giữ nguyên lượt nếu không tìm thấy.",
         help1Button: "Xóa một vùng: Kéo trên lưới để chọn hình chữ nhật (tối đa 4x4). Nhấn X để xóa vùng đã chọn. Nhấn lại nút để hủy.",
@@ -622,8 +608,6 @@
       const help2Badge = document.getElementById('help2Badge');
       const cancelHelp1Btn = document.getElementById('cancelHelp1Btn');
       const toast = document.getElementById('toast');
-      const muteButton = document.getElementById('muteButton');
-      const muteIcon = document.getElementById('muteIcon');
 
       let cellElements = [];
       let isDragging = false;
@@ -636,134 +620,6 @@
       let touchPiece = null;
       let touchOffsetX = 0, touchOffsetY = 0;
       let touchGhost = null;
-
-      // ========== AUDIO SYSTEM ==========
-      let audioCtx = null;
-      const audioBuffers = {};
-      const soundVolume = 0.5;
-      const isMobileDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
-      const meowVolumes = isMobileDevice
-        ? [0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25, 0.25]
-        : [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5];
-      let backgroundSource = null;
-
-      function initAudio() {
-        if (audioCtx) return;
-        try {
-          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-          if (audioCtx.state === 'suspended') {
-            const resumeAudio = () => {
-              audioCtx.resume();
-              document.removeEventListener('mousedown', resumeAudio);
-              document.removeEventListener('touchstart', resumeAudio);
-            };
-            document.addEventListener('mousedown', resumeAudio);
-            document.addEventListener('touchstart', resumeAudio);
-          }
-        } catch (e) {
-          console.warn('Web Audio API không được hỗ trợ.');
-        }
-      }
-
-      function loadSound(url) {
-        return fetch(url)
-          .then(response => response.arrayBuffer())
-          .then(arrayBuffer => audioCtx.decodeAudioData(arrayBuffer))
-          .then(buffer => {
-            audioBuffers[url] = buffer;
-            return buffer;
-          })
-          .catch(err => console.warn(`Không thể tải âm thanh: ${url}`, err));
-      }
-
-      async function preloadSounds() {
-        const basePath = 'TieuThu/';
-        const files = [
-          'Background.mp3',
-          'Thub.mp3',
-          'Help1.mp3',
-          'Help2.mp3',
-          'Help3.mp3',
-          ...Array.from({ length: 8 }, (_, i) => `Meow${i + 1}.mp3`)
-        ];
-        const promises = files.map(file => loadSound(basePath + file));
-        await Promise.all(promises);
-        // Chỉ bắt đầu nhạc nền nếu không ở trạng thái mute
-        if (!isMuted) {
-          startBackgroundMusic();
-        }
-      }
-
-      function playSound(name, volume = soundVolume) {
-        if (!audioCtx || !audioBuffers[name]) return;
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const source = audioCtx.createBufferSource();
-        source.buffer = audioBuffers[name];
-        const gainNode = audioCtx.createGain();
-        gainNode.gain.value = volume;
-        source.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        source.start(0);
-        source.onended = () => {
-          source.disconnect();
-          gainNode.disconnect();
-        };
-      }
-
-      function playMeowRandom() {
-        const index = Math.floor(Math.random() * 8);
-        const name = `TieuThu/Meow${index + 1}.mp3`;
-        const vol = meowVolumes[index];
-        playSound(name, vol);
-      }
-
-      function startBackgroundMusic() {
-        if (!audioCtx || !audioBuffers['TieuThu/Background.mp3']) return;
-        if (isMuted) return; // Không phát nếu đang mute
-        stopBackgroundMusic();
-        backgroundSource = audioCtx.createBufferSource();
-        backgroundSource.buffer = audioBuffers['TieuThu/Background.mp3'];
-        backgroundSource.loop = true;
-        const gainNode = audioCtx.createGain();
-        gainNode.gain.value = soundVolume;
-        backgroundSource.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        backgroundSource.start(0);
-      }
-
-      function stopBackgroundMusic() {
-        if (backgroundSource) {
-          try { backgroundSource.stop(); } catch (e) {}
-          backgroundSource.disconnect();
-          backgroundSource = null;
-        }
-      }
-
-      // Hàm toggle mute
-      function toggleMute() {
-        isMuted = !isMuted;
-        if (isMuted) {
-          stopBackgroundMusic();
-          muteIcon.textContent = '🔇';
-          showToast('Đã tắt nhạc nền');
-        } else {
-          startBackgroundMusic();
-          muteIcon.textContent = '🔊';
-          showToast('Đã bật nhạc nền');
-        }
-        saveGame(); // Lưu trạng thái mute
-      }
-
-      // Gán sự kiện cho nút mute
-      muteButton.addEventListener('click', toggleMute);
-      // Cũng hỗ trợ touch
-      muteButton.addEventListener('touchend', (e) => {
-        e.preventDefault();
-        toggleMute();
-      });
-
-      initAudio();
-      preloadSounds();
 
       // ---------- Shapes & colors ----------
       const SHAPES_RAW = [
@@ -1277,7 +1133,6 @@
 
       function placePiece(shape, color, baseRow, baseCol) {
         shape.forEach(([dr, dc]) => { grid[baseRow + dr][baseCol + dc] = color; });
-        playSound('TieuThu/Thub.mp3', soundVolume);
       }
 
       // ---------- Line clearing & enhanced scoring ----------
@@ -1351,7 +1206,6 @@
           }, 400);
           clearingTimeouts.push(timeoutId);
         });
-        playMeowRandom();
 
         if (comboStreak >= 3 || totalLines >= 3) {
           activateDoubleScore();
@@ -1531,7 +1385,6 @@
         
         renderPieces(); rollsLeft--; updateRollUI();
         streakWithoutClear = 0;
-        playSound('TieuThu/Help1.mp3', 0.2);
         clearHintGlow(); saveGame(); checkGameOverOrHelp(); resetIdleTimer();
       }
 
@@ -1605,7 +1458,6 @@
         help1Remaining--;
         updateHelp1UI();
         exitHelp1Mode();
-        playSound('TieuThu/Help2.mp3', 0.2);
         checkClearLines();
         renderGrid();
         renderPieces();
@@ -1786,7 +1638,6 @@
         currentPieces[index] = { shape: pendingHelp2Shape, color: COLORS[Math.floor(Math.random() * COLORS.length)] };
         help2Remaining--; updateHelp2UI();
         replacePieceMode = false; pendingHelp2Shape = null; help2Active = false;
-        playSound('TieuThu/Help3.mp3', 0.2);
         renderPieces(); updateCursor(); showToast('Đã thay thế mảnh!'); saveGame(); checkGameOverOrHelp();
       }
 
@@ -1916,8 +1767,7 @@
           recordToastShown,
           protectionActive,
           protectionTurnsLeft,
-          protectionCooldownUntil,
-          isMuted
+          protectionCooldownUntil
         };
         try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); } catch (e) {}
       }
@@ -1940,9 +1790,6 @@
           protectionActive = state.protectionActive || false;
           protectionTurnsLeft = state.protectionTurnsLeft || 0;
           protectionCooldownUntil = state.protectionCooldownUntil || 0;
-          isMuted = state.isMuted || false;
-          // Cập nhật icon mute
-          muteIcon.textContent = isMuted ? '🔇' : '🔊';
           updateRollUI(); updateHelp1UI(); updateHelp2UI(); updateScore();
           renderGrid(); renderPieces();
           gameoverEl.style.display = 'none';
@@ -1983,12 +1830,6 @@
         touchActive = false;
         updateCursor(); resetIdleTimer();
         localStorage.removeItem(SAVE_KEY);
-        // Đảm bảo nhạc nền tuân theo trạng thái mute
-        if (!isMuted) {
-          startBackgroundMusic();
-        } else {
-          stopBackgroundMusic();
-        }
       }
 
       // ---------- Tooltip & cursor ----------
